@@ -1,0 +1,248 @@
+#!/bin/sh
+CXX=${CXX-g++}
+PREFIX=/usr
+STATIC_LIB_ONLY=no
+VERSION=0.9.2
+NUMBER=
+DEBUG=
+ECHO=echo
+[ -f /usr/ucb/echo ] && ECHO=/usr/ucb/echo
+DOXYGEN=doxygen
+
+##
+## 1. ARGS
+## Reading configure arguments
+##
+while :
+do
+    case $# in
+    0) break ;;
+    esac
+
+    option=$1 ; shift
+
+    case $option in
+    --*=*)
+	optarg=`echo $option | sed -e 's/^[^=]*=//'`
+	arguments="$arguments $option"
+	;;
+    esac
+    case $option in
+    --prefix* | --pre*)
+	PREFIX=$optarg
+	;;
+    --static*)
+	STATIC_LIB_ONLY=yes
+	;;
+    --debug*)
+	DEBUG="-g"
+	;;
+    --no-doc*)
+	DOXYGEN=""
+	;;
+    -help | --help | --hel | --he)
+    # Omit some internal or obsolete options to make the list less imposing.
+    # This message is too long to be a string in the A/UX 3.1 sh.
+    cat << EOF
+Usage: configure [options]
+Options: [defaults in brackets after descriptions]
+Configuration:
+  --help                  print this message
+Directory and file names:
+  --prefix=PREFIX         install the library in  PREFIX/include and PREFIX/lib [/usr]
+  --debug                 compile with debug options [no]
+  --no-doc                don't build the documentation [yes if Doxygen is present]
+  --static		  build only the static version of the library [both static and dynamic]
+EOF
+    exit 0;
+    ;;
+
+    *)
+    echo "${option}: invalid command-line switch"
+    exit 1
+    ;;
+    esac
+done
+
+LDFLAGSLIB=-shared
+DYNLIB_EXTENSION=so
+##
+## Are we on a powerpc (Mac ?)
+##
+if [ `uname -m` = "ppc" ]; then
+    LDFLAGSLIB=-dynamiclib
+    DYNLIB_EXTENSION=dynlib
+fi
+
+##
+##  Are we trying to install "on place" ( PREFIX == `pwd` )
+##
+ON_PLACE=no
+if [ -e ${PREFIX}/include/Board.h -a ./include/Board.h -ef ${PREFIX}/include/Board.h ]; then
+ON_PLACE=yes
+$ECHO Installation on current dir required.
+fi
+
+
+##
+## Doxygen ?
+##
+DOXYGEN_TARGET=""
+if [ -n "$DOXYGEN" ]; then
+    ${ECHO} -n "Looking for doxygen..."
+    if ( $DOXYGEN --version > /dev/null ); then
+	echo "Found"
+	LICENSE=LICENSE.gz
+	DOXYGEN_TARGET="doc"
+    else
+	DOXYGEN=""
+	echo "Not found"
+    fi
+fi
+
+##
+## GZip
+##
+LICENSE=LICENSE
+${ECHO} -n "Looking for gzip..."
+if ( gzip --version > /dev/null ); then
+    echo "Found"
+    gzip -c LICENSE > LICENSE.gz
+    LICENSE=LICENSE.gz
+else
+    echo "Not found (No big deal, license file won't be compressed. That's all.)"
+fi
+
+##
+## Are we on a 64 bits arch
+##
+${ECHO} -n "Checking for 64 bits architecture..."
+cat > is64.c <<EOF
+int main() {
+ unsigned long n = 0;
+ n = ~n;
+ return n == 0xFFFFFFFF;
+}
+EOF
+gcc -o is64 is64.c
+if ./is64; then
+CXX64FLAGS="-fPIC"
+echo yes
+else
+CXX64FLAGS=""
+echo no
+fi
+rm -f is64 is64.c
+
+cat > Makefile <<EOF
+
+CXX = ${CXX} 
+VERSION=$VERSION
+LIBNAME=libboard
+
+DYNLIB_EXTENSION=$DYNLIB_EXTENSION
+STATICLIB_EXTENSION=a
+DYNLIB_NAME=\$(LIBNAME).\$(DYNLIB_EXTENSION)
+STATICLIB_NAME=\$(LIBNAME).\$(STATICLIB_EXTENSION)
+DYNLIB=lib/\$(DYNLIB_NAME)
+STATICLIB=lib/\$(STATICLIB_NAME)
+PREFIX=$PREFIX
+RM=rm -f
+CP=cp
+LD=\$(CXX)
+LDFLAGSLIB=$LDFLAGSLIB
+AR=ar
+ARFLAGS=rsv
+LN=ln -s
+
+CXXFLAGSOBJ=-O3 -ansi -pedantic -Wall -W ${DEBUG} -I./include ${CXX64FLAGS}
+CXXFLAGSEXEC=-O3 -ansi -pedantic -Wall -W ${DEBUG} -I./include
+
+.PHONY: all clean install examples lib doc
+
+OBJS=obj/Board.o obj/Transforms.o obj/Path.o obj/Shapes.o obj/ShapeList.o obj/Rect.o obj/Color.o obj/Tools.o obj/PSFonts.o
+
+all: lib examples ${DOXYGEN_TARGET}
+
+EOF
+
+LIBDEP="lib: \$(STATICLIB)"
+[ "$STATIC_LIB_ONLY" = "no" ] && LIBDEP="lib: \$(STATICLIB) \$(DYNLIB)"
+
+${ECHO} -n "Creating Makefile..."
+cat >> Makefile <<EOF
+$LIBDEP
+
+examples: lib bin/example1 bin/example2 bin/example3 bin/example4 bin/arithmetic bin/arrows bin/ellipse bin/koch bin/logo bin/graph bin/ruler bin/clipping bin/flag bin/scale_ellipse bin/line_style
+
+
+\$(DYNLIB): \$(OBJS)
+	\$(RM) \$@
+	\$(LD) -o \$@ \$(LDFLAGSLIB) \$(OBJS)
+	chmod 755 \$@
+
+\$(STATICLIB): \$(OBJS)
+	\$(RM) \$@
+	\$(AR) \$(ARFLAGS) \$@ \$(OBJS)
+	chmod 644 \$@
+
+obj/%.o: src/%.cpp  include/board/%.h
+	\$(CXX) \$(CXXFLAGSOBJ) -c -o \$@ \$<
+
+obj/Board.o: src/Board.cpp include/Board.h
+	\$(CXX) \$(CXXFLAGSOBJ) -c -o \$@ \$<
+
+bin/%: examples/%.cpp \$(STATICLIB)
+	\$(CXX) \$(CXXFLAGSEXEC) -o \$@ \$< \$(STATICLIB)
+
+clean:
+	rm -f obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ *~
+
+install: all
+	install -d \$(PREFIX)/lib
+	chmod 755 \$(PREFIX)/lib
+EOF
+
+if [ ${ON_PLACE} = no ]; then
+    if [ "$STATIC_LIB_ONLY" = "no" ]; then
+	${ECHO} "	cp \$(DYNLIB) \$(PREFIX)/lib ; chmod 755 \$(PREFIX)/lib/\$(DYNLIB_NAME)" >> Makefile
+    fi
+    cat >> Makefile <<EOF
+	cp \$(STATICLIB) \$(PREFIX)/lib ; chmod 644 \$(PREFIX)/lib/\$(STATICLIB_NAME)
+	install -d \$(PREFIX)/include/board
+	\$(CP) include/Board.h \$(PREFIX)/include/
+	\$(CP) include/board/*.h \$(PREFIX)/include/board
+	\$(CP) include/board/*.ih \$(PREFIX)/include/board
+EOF
+fi
+cat >> Makefile <<EOF
+	chmod 755 \$(PREFIX)/include/board
+	chmod 644 \$(PREFIX)/include/Board.h
+	chmod 644 \$(PREFIX)/include/board/*.h
+	install -d \$(PREFIX)/share/libboard/examples
+	\$(CP) examples/*.cpp \$(PREFIX)/share/libboard/examples
+	\$(CP) examples/README \$(PREFIX)/share/libboard/examples
+	\$(CP) ${LICENSE} \$(PREFIX)/share/libboard/
+
+doc: doc/html/index.html
+
+doc/html/index.html: src/*.cpp include/Board.h include/board/*.h
+	\$(RM) -rf doc/html/* ; doxygen
+
+install-doc: doc
+	\$(RM) -rf \$(PREFIX)/share/doc/libboard/html
+	install -d \$(PREFIX)/share/doc/libboard
+	\$(CP) -r doc/html \$(PREFIX)/share/doc/libboard
+EOF
+
+${ECHO} "done."
+cat <<EOF
+
+Possible commands are:
+ make
+ make install      (Will install in ${PREFIX}/include and ${PREFIX}/lib )
+ make doc
+ make install-doc  (Will install in ${PREFIX}/share/doc/libboard)
+EOF
+
+

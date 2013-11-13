@@ -1,0 +1,16 @@
+all
+bin/*
+!bin/.gitkeep
+lib/*
+!lib/.gitkeep
+obj/*
+!obj/.gitkeep
+build/*
+!build/.gitkeep
+*.o
+*.a
+*.so
+Makefile
+*~
+doc/html
+LICENSE.gz

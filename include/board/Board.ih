@@ -1,0 +1,94 @@
+/* -*- mode: c++ -*- */
+/**
+ * @file   Board.ih
+ * @author Sebastien Fourey (GREYC)
+ * @date   Sat Aug 18 2007
+ * 
+ * @brief  Definition of inline methods of the Board class.
+ *
+ * \@copyright
+ * This source code is part of the Board project, a C++ library whose
+ * purpose is to allow simple drawings in EPS, FIG or SVG files.
+ * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr/>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+namespace LibBoard {
+
+inline
+void
+Board::clear( unsigned char red, unsigned char green, unsigned char blue )
+{
+  clear( Color( red, green, blue ) );
+}
+
+inline Board &
+Board::setLineStyle( Shape::LineStyle style )
+{
+  _state.lineStyle = style;
+  return *this;
+}
+
+inline
+Board &
+Board::setLineCap( Shape::LineCap cap )
+{
+  _state.lineCap = cap;
+  return *this;
+}
+  
+inline
+Board &
+Board::setLineJoin( Shape::LineJoin join )
+{
+  _state.lineJoin = join;
+  return *this;
+}
+
+inline
+void
+Board::fillGouraudTriangle( const double x1, const double y1,
+			    const Color & color1,
+			    const double x2, const double y2, 
+			    const Color & color2,
+			    const double x3, const double y3,
+			    const Color & color3,
+			    unsigned char divisions,
+			    int depth /* = -1 */ )
+{
+  fillGouraudTriangle( Point( x1, y1 ), color1,
+		       Point( x2, y2 ), color2,
+		       Point( x3, y3 ), color3,
+		       divisions, depth );		       
+}
+
+inline
+void
+Board::fillGouraudTriangle( const double x1, const double y1,
+			    const float brightness1,
+			    const double x2, const double y2, 
+			    const float brightness2,
+			    const double x3, const double y3,
+			    const float brightness3,
+			    unsigned char divisions,
+			    int depth /* = -1 */ )
+{
+  fillGouraudTriangle( Point( x1, y1 ), brightness1,
+		       Point( x2, y2 ), brightness2,
+		       Point( x3, y3 ), brightness3,
+		       divisions, depth );
+}
+
+} // namespace LibBoard
