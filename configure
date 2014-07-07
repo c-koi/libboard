@@ -173,7 +173,7 @@ ${ECHO} -n "Creating Makefile..."
 cat >> Makefile <<EOF
 $LIBDEP
 
-examples: lib bin/example1 bin/example2 bin/example3 bin/example4 bin/arithmetic bin/arrows bin/ellipse bin/koch bin/logo bin/graph bin/ruler bin/clipping bin/flag bin/scale_ellipse bin/line_style
+examples: lib bin/example1 bin/example2 bin/example3 bin/example4 bin/arithmetic bin/arrows bin/ellipse bin/koch bin/logo bin/graph bin/ruler bin/clipping bin/flag bin/scale_ellipse bin/line_style bin/images
 
 
 \$(DYNLIB): \$(OBJS)

@@ -3,8 +3,8 @@
  * @file   Transforms.cpp
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
- * 
- * @brief  
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -31,8 +31,8 @@
 #include <cmath>
 
 namespace {
-  const float ppmm = 720.0f / 254.0f;
-  const float fig_ppmm = 1143 / 25.4f;
+const float ppmm = 720.0f / 254.0f;
+const float fig_ppmm = 1143 / 25.4f;
 }
 
 namespace LibBoard {
@@ -51,6 +51,11 @@ double
 Transform::mapX( double x ) const
 {
   return rounded( x * _scale + _deltaX );
+}
+
+Point Transform::map(const Point & point ) const
+{
+  return Point(mapX(point.x),mapY(point.y));
 }
 
 double
@@ -78,16 +83,16 @@ TransformEPS::mapY( double y ) const
 
 void
 TransformEPS::setBoundingBox( const Rect & rect,
-			      const double pageWidth,
-			      const double pageHeight,
-			      const double margin )
+                              const double pageWidth,
+                              const double pageHeight,
+                              const double margin )
 {
   if ( pageWidth <= 0 || pageHeight <= 0 ) {
     _scale = 1.0f;
     // _deltaX = - rect.left;
     _deltaX = 0.5 * 210 * ppmm - ( rect.left + 0.5 * rect.width );
     // _deltaY = - ( rect.top - rect.height );
-    _deltaY = 0.5 * 297 * ppmm - ( rect.top - 0.5 * rect.height );  
+    _deltaY = 0.5 * 297 * ppmm - ( rect.top - 0.5 * rect.height );
     _height = rect.height;
   } else {
     const double w = pageWidth - 2 * margin;
@@ -98,7 +103,7 @@ TransformEPS::setBoundingBox( const Rect & rect,
       _scale = w * ppmm / rect.width;
     }
     _deltaX = 0.5 * pageWidth * ppmm - _scale * ( rect.left + 0.5 * rect.width );
-    _deltaY = 0.5 * pageHeight * ppmm - _scale * ( rect.top - 0.5 * rect.height );  
+    _deltaY = 0.5 * pageHeight * ppmm - _scale * ( rect.top - 0.5 * rect.height );
     _height = pageHeight * ppmm;
   }
 }
@@ -132,15 +137,15 @@ TransformFIG::mapWidth( double width ) const
 
 void
 TransformFIG::setBoundingBox( const Rect & rect,
-			      const double pageWidth,
-			      const double pageHeight,
-			      const double margin )
+                              const double pageWidth,
+                              const double pageHeight,
+                              const double margin )
 {
   if ( pageWidth <= 0 || pageHeight <= 0 ) {
     _scale = fig_ppmm / ppmm;
     _deltaX = 0.5 * 210 * fig_ppmm - _scale * ( rect.left + 0.5 * rect.width );
     //_deltaX = - rect.left;
-    _deltaY = 0.5 * 297 * fig_ppmm - _scale * ( rect.top - 0.5 * rect.height );  
+    _deltaY = 0.5 * 297 * fig_ppmm - _scale * ( rect.top - 0.5 * rect.height );
     // _deltaY = - rect.top;
     // _deltaY = - ( rect.top - rect.height );
     //_height = rect.height;
@@ -154,7 +159,7 @@ TransformFIG::setBoundingBox( const Rect & rect,
       _scale = ( w * fig_ppmm ) / rect.width;
     }
     _deltaX = 0.5 * pageWidth * fig_ppmm - _scale * ( rect.left + 0.5 * rect.width );
-    _deltaY = 0.5 * pageHeight * fig_ppmm - _scale * ( rect.top - 0.5 * rect.height );  
+    _deltaY = 0.5 * pageHeight * fig_ppmm - _scale * ( rect.top - 0.5 * rect.height );
     _height = pageHeight * fig_ppmm;
   }
   // float ppmm = (1200/25.4);
@@ -206,9 +211,9 @@ TransformSVG::mapWidth( double width ) const
 
 void
 TransformSVG::setBoundingBox( const Rect & rect,
-			      const double pageWidth,
-			      const double pageHeight,
-			      const double margin )  
+                              const double pageWidth,
+                              const double pageHeight,
+                              const double margin )
 {
   if ( pageWidth <= 0 || pageHeight <= 0 ) {
     _scale = 1.0f;
@@ -230,6 +235,29 @@ TransformSVG::setBoundingBox( const Rect & rect,
     _deltaY = 0.5 * pageHeight * ppmm - _scale * ( rect.top - 0.5 * rect.height );
     _height = pageHeight * ppmm;
   }
+}
+
+TransformMatrix
+TransformSVG::matrix() const
+{
+  return TransformMatrix( _scale, 0, _deltaX,
+                          0, - _scale, _height - _deltaY );
+}
+
+Point
+TransformSVG::translation() const
+{
+  return Point(_deltaX,(_height-_deltaY));
+}
+
+double TransformSVG::deltaX() const
+{
+  return _deltaX;
+}
+
+double TransformSVG::deltaY() const
+{
+  return _height - _deltaY;
 }
 
 } // namespace LibBoard

@@ -3,7 +3,7 @@
  * @file   Transforms.h
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
- * 
+ *
  * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -29,6 +29,7 @@
 #include <limits>
 #include <vector>
 #include <cmath>
+#include "TransformMatrix.h"
 
 namespace LibBoard {
 
@@ -38,29 +39,30 @@ struct ShapeList;
 
 /**
  * The base class for transforms.
- * @brief 
+ * @brief
  */
 struct Transform {
 public:
-  inline Transform();
-  virtual ~Transform() { };
-  virtual double mapX( double x ) const;
-  virtual double mapY( double y ) const = 0;
-  virtual void apply( double & x, double & y ) const;
-  virtual double scale( double x ) const;
-  virtual double rounded( double x ) const;
-  virtual void setBoundingBox( const Rect & rect,
-			       const double pageWidth,
-			       const double pageHeight,
-			       const double margin ) = 0;
+   inline Transform();
+   virtual ~Transform() { };
+   virtual double mapX( double x ) const;
+   virtual double mapY( double y ) const = 0;
+   Point map( const Point & ) const;
+   virtual void apply( double & x, double & y ) const;
+   virtual double scale( double x ) const;
+   virtual double rounded( double x ) const;
+   virtual void setBoundingBox( const Rect & rect,
+                                const double pageWidth,
+                                const double pageHeight,
+                                const double margin ) = 0;
 
-  static inline double round( const double & x );
+   static inline double round( const double & x );
 
 protected:
-  double _scale;
-  double _deltaX;
-  double _deltaY;
-  double _height;
+   double _scale;
+   double _deltaX;
+   double _deltaY;
+   double _height;
 };
 
 /**
@@ -70,11 +72,11 @@ protected:
  */
 struct TransformEPS : public Transform {
 public:
-  double mapY( double y ) const;
-  void setBoundingBox( const Rect & rect,
-		       const double pageWidth,
-		       const double pageHeight,
-		       const double margin );
+   double mapY( double y ) const;
+   void setBoundingBox( const Rect & rect,
+                        const double pageWidth,
+                        const double pageHeight,
+                        const double margin );
 };
 
 /**
@@ -84,19 +86,19 @@ public:
  */
 struct TransformFIG : public Transform {
 public:
-  inline TransformFIG();
-  double rounded( double x ) const;
-  double mapY( double y ) const;
-  int mapWidth( double width ) const; 
-  void setBoundingBox( const Rect & rect,
-		       const double pageWidth,
-		       const double pageHeight,
-		       const double margin );
-  void setDepthRange( const ShapeList & shapes );
-  int mapDepth( int depth ) const;
+   inline TransformFIG();
+   double rounded( double x ) const;
+   double mapY( double y ) const;
+   int mapWidth( double width ) const;
+   void setBoundingBox( const Rect & rect,
+                        const double pageWidth,
+                        const double pageHeight,
+                        const double margin );
+   void setDepthRange( const ShapeList & shapes );
+   int mapDepth( int depth ) const;
 private:
-  int _maxDepth;
-  int _minDepth;
+   int _maxDepth;
+   int _minDepth;
 };
 
 /**
@@ -106,13 +108,17 @@ private:
  */
 struct TransformSVG : public Transform {
 public:
-  double rounded( double x ) const;
-  double mapY( double y ) const;
-  double mapWidth( double width ) const; 
-  void setBoundingBox( const Rect & rect,
-		       const double pageWidth,
-		       const double pageHeight,
-		       const double margin );
+   double rounded( double x ) const;
+   double mapY( double y ) const;
+   double mapWidth( double width ) const;
+   void setBoundingBox( const Rect & rect,
+                        const double pageWidth,
+                        const double pageHeight,
+                        const double margin );
+   TransformMatrix matrix() const;
+   Point translation() const;
+   double deltaX() const;
+   double deltaY() const;
 };
 
 /**

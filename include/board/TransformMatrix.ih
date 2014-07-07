@@ -1,8 +1,8 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   ShapeList.ih
+ * @file   TransformMatrix.ih
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   June 2014
  * 
  * @brief  Inline methods of the Transform classes.
  * \@copyright
@@ -24,30 +24,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined( max )
-#undef max 
-#define _HAS_MSVC_MAX_ true
-#endif
+namespace LibBoard {
 
-ShapeList::ShapeList( int depth )
-  : Shape( Color::None, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
-    _nextDepth( std::numeric_limits<int>::max() - 1 )
-{ }
-
-template<typename T>
-T &
-ShapeList::last( const unsigned int position )
+TransformMatrix::TransformMatrix()
 {
-  if ( position < _shapes.size() ) {
-    std::vector<Shape*>::reverse_iterator it = _shapes.rbegin() + position;
-    return dynamic_cast<T&>( *(*it) );
-  } else {
-    error << "Trying to access an element that does not exist ("
-          << position << "/" << _shapes.size() << ").\n";
-    throw -1;
-  }
+   _m11 = 1.0; _m12 = 0.0; _m13 = 0.0;
+   _m21 = 0.0; _m22 = 1.0; _m23 = 0.0;
 }
 
-#if defined( _HAS_MSVC_MAX_ )
-#define max(A,B) ((A)>(B)?(A):(B))
-#endif
+TransformMatrix::TransformMatrix( double m11, double m12, double m13,
+                                  double m21, double m22, double m23 )
+   : _m11(m11), _m12(m12), _m13(m13),
+     _m21(m21), _m22(m22), _m23(m23)
+{
+}
+
+} // namespace LibBoard;

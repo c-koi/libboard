@@ -3,8 +3,8 @@
  * @file   Tools.h
  * @author Sebastien Fourey (GREYC)
  * @date   Nov 2008
- * 
- * @brief  
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -29,48 +29,47 @@
 #include <iostream>
 #include <ctime>
 #include <cstring>
+#include "Rect.h"
 
 #define SHOW( V ) std::cerr << " " #V " = " << ( V ) << std::endl
 
 namespace LibBoard {
 
-  /**
-   * A "prefixable" message stream
-   * 
-   */
-  class MessageStream {
-  public:
-    
-    inline MessageStream( std::ostream & out, const char * prefix  );
-    
-    template<typename T> 
-    inline MessageStream operator<<( const T & v );
-    
-  private:
-    std::ostream & _out;    
-    const char * _prefix;
-  };
-  
-  extern MessageStream error;
-  extern MessageStream warning;
-  extern MessageStream notice;
-  
-  MessageStream::MessageStream( std::ostream & out, const char * prefix )
-    : _out( out ),
-      _prefix( prefix )
-  {
-  }
+/**
+  * A "prefixable" message stream
+  */
+class MessageStream {
+public:
 
-  template<typename T> 
-  MessageStream MessageStream::operator<<( const T & v )
-  {
-    if ( _prefix )
+   inline MessageStream( std::ostream & out, const char * prefix  );
+
+   template<typename T>
+   inline MessageStream operator<<( const T & v );
+
+private:
+   std::ostream & _out;
+   const char * _prefix;
+};
+
+extern MessageStream error;
+extern MessageStream warning;
+extern MessageStream notice;
+
+MessageStream::MessageStream( std::ostream & out, const char * prefix )
+   : _out( out ),
+     _prefix( prefix )
+{
+}
+
+template<typename T>
+MessageStream MessageStream::operator<<( const T & v )
+{
+   if ( _prefix )
       _out << _prefix << v;
-    else
+   else
       _out << v;
-    return MessageStream( _out, 0 );
-  }
-
+   return MessageStream( _out, 0 );
+}
 
 #if defined( _MSC_VER )
 #define secured_sprintf sprintf_s
@@ -81,7 +80,19 @@ namespace LibBoard {
 inline void secured_strncpy( char * dst, const char * src, size_t count );
 inline void secured_ctime( char * str, const time_t * t, size_t count ); 
 
-}
+bool base64encode(std::istream & in, std::ostream & , int linesize = 80);
+
+bool stringEndsWith( const char * str, const char * end );
+
+void flushFile( const char * filename, std::ostream & out );
+
+Rect getEPSBoundingBox( const char * filename );
+
+bool canCreateFile( const char * filename );
+
+const char * temporaryFilename( const char * extension );
+
+}  // namespace LibBoard
 
 #include "Tools.ih"
 
