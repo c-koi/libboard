@@ -28,7 +28,7 @@ int main( int , char *[] )
 
   Group g;
   g << Rectangle( 30,30,30,20, Color::Red, Color::Silver,2);
-  g << Image("../resources/saint_michel.jpg",32,28,26,16 );
+  g << Image("../resources/saint_michel.jpg",32,28,30);
   ShapeList row(g,4,35,0,1.0,1.0,0.0);
   ShapeList page(row,4,0,25,1.0,1.0,0.0);
 
@@ -36,11 +36,11 @@ int main( int , char *[] )
 
   Point c = page.boundingBox().center();
 
-  board << Image("../resources/avatar.png",c.x,c.y,20,20);
+  board << Image("../resources/avatar.png",c.x,c.y,20);
 
-  board << Image("../resources/avatar.png",c.x,c.y,20,20).rotated(M_PI_2,c);
-  board << Image("../resources/avatar.png",c.x,c.y,20,20).rotated(M_PI,c);
-  board << Image("../resources/avatar.png",c.x,c.y,20,20).rotated(3*M_PI_2,c);
+  board << Image("../resources/avatar.png",c.x,c.y,20).rotated(M_PI_2,c);
+  board << Image("../resources/avatar.png",c.x,c.y,20).rotated(M_PI,c);
+  board << Image("../resources/avatar.png",c.x,c.y,20).rotated(3*M_PI_2,c);
 
   board.saveEPS( "images.eps" /*, Board::A4 */ );
   board.saveFIG( "images.fig" /*, Board::A4 */ );

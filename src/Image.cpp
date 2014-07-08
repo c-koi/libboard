@@ -40,6 +40,39 @@ namespace LibBoard {
 
 const std::string LibBoard::Image::_name("Image");
 
+Image::Image(const char * filename,
+             double left, double top, double width, double height, int depth)
+  : Shape(Color::None, Color::None, 0.0, SolidStyle, ButtCap, MiterJoin, depth),
+    _rectangle(left, top, width, height, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth ),
+    _originalRectangle(left, top, width, height, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth ),
+    _filename( filename )
+{
+  if ( height == 0.0 ) {
+#if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1)
+    try {
+      Magick::Image image;
+      image.read(_filename);
+      Magick::Geometry geometry = image.geometry();
+      height = width * (geometry.height() / (double) geometry.width());
+      _rectangle = _originalRectangle = Rectangle(left, top, width, height, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth);
+    } catch (...) {
+      error << "Image::Image(): Could not read image.\n";
+    }
+#else
+    error << "Image::Image(): ImageMagick is required to retrieve bitmap image aspect ratio.\n";
+#endif
+  }
+}
+
+Image::Image(const char * filename,
+             const Rect & rect, int depth)
+  : Shape(Color::None, Color::None, 0.0, SolidStyle, ButtCap, MiterJoin, depth),
+    _rectangle(rect, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth ),
+    _originalRectangle(rect, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth ),
+    _filename( filename )
+{
+}
+
 const std::string &
 Image::name() const
 {
@@ -149,7 +182,7 @@ void
 Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) const
 {
   //  _rectangle.flushPostscript( stream, transform );
-#if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1)
+#if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1 )
   Magick::Image image;
   image.read(_filename);
   const char * tmpFilename = temporaryFilename(".eps");
