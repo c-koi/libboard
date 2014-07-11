@@ -94,7 +94,7 @@ int main() {
   try { 
    image.read("resources/avatar.png");
   } 
-  catch( Exception & )  { 
+  catch ( ... )  { 
       return 1; 
   } 
   return 0;
@@ -102,7 +102,6 @@ int main() {
 EOF
 g++ -o check_magick check_magick.cpp `Magick++-config --cppflags --cxxflags --ldflags --libs` > /dev/null 2>&1
 ./check_magick > /dev/null 2>&1 
-rm -f check_magick check_magick.cpp > /dev/null 2>&1
 if [ $? = 0 ]; then
     MAGICKPLUSPLUS=1
     IMAGE_SAMPLES="bin/images"
@@ -116,6 +115,7 @@ else
     IMAGE_LDFLAGS=""
     echo "Not found"
 fi
+rm -f check_magick check_magick.cpp > /dev/null 2>&1
 
 ##
 ## Doxygen ?
@@ -214,7 +214,7 @@ esac
 ${ECHO} $PLATEFORM
 
 ${ECHO} -n "Creating include/BoardConfig.h..."
-sed -e 's/@Board_Have_MagickPlusPlus@/'${MAGICKPLUSPLUS}'/' -e 's/@Board_Win32@/'${WIN32}'/' include/BoardConfig.h.in > include/BoardConfig.h.in
+sed -e 's/@Board_Have_MagickPlusPlus@/'${MAGICKPLUSPLUS}'/' -e 's/@Board_Win32@/'${WIN32}'/' include/BoardConfig.h.in > include/BoardConfig.h
 ${ECHO} "done."
 
 ${ECHO} -n "Creating Makefile..."

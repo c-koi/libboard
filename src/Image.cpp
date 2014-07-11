@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include "BoardConfig.h"
 
-#if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1)
+#if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1 )
 #define MAGICKCORE_QUANTUM_DEPTH 16
 #define MAGICKCORE_HDRI_ENABLE 0
 #include <Magick++.h>
@@ -52,14 +52,14 @@ Image::Image(const char * filename,
     try {
       Magick::Image image;
       image.read(_filename);
-      Magick::Geometry geometry = image.geometry();
-      height = width * (geometry.height() / (double) geometry.width());
+      height = width * (image.rows() / (double) image.columns());
       _rectangle = _originalRectangle = Rectangle(left, top, width, height, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth);
-    } catch (...) {
-      error << "Image::Image(): Could not read image.\n";
+    } catch (std::exception & e) {
+      error << "Image::Image(): ";
+      std::cerr << e.what() << std::endl;
     }
 #else
-    error << "Image::Image(): ImageMagick is required to retrieve bitmap image aspect ratio.\n";
+    error << "Image::Image(): ImageMagick is required to retrieve the aspect ratio of bitmap images.\n";
 #endif
   }
 }
@@ -181,13 +181,11 @@ Image::scaleAll(double s)
 void
 Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) const
 {
-  //  _rectangle.flushPostscript( stream, transform );
 #if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1 )
   Magick::Image image;
   image.read(_filename);
   const char * tmpFilename = temporaryFilename(".eps");
   image.write(tmpFilename);
-
   Rect rect = getEPSBoundingBox(tmpFilename);
   double scaleX = (_originalRectangle.width() / rect.width);
   double scaleY = (_originalRectangle.height() / rect.height);
@@ -202,19 +200,15 @@ Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) co
   stream << "%\n";
   stream <<  "%%BeginDocument: board_temporary.eps\n";
   stream << "gs\n";
-
   Point tmShift = transform.map(_rectangle.topLeft()) - (_transformMatrixEPS*_originalRectangle.topLeft());
   (fullTransform+tmShift).flushEPS(stream);
-
   stream << "\n";
-
   flushFile(tmpFilename,stream);
   std::remove(tmpFilename);
   stream <<  "%%EndDocument\n";
   stream << "gr\n";
 #else
   error << "Image::flushPostscript(): requires ImageMagick's Magick++ lib. Aborted.\n";
-  return;
 #endif
 }
 
@@ -224,7 +218,6 @@ Image::flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<
    _rectangle.flushFIG( stream, transform, colormap );
    Rect bbox = _rectangle.boundingBox();
    Rectangle rectangle(bbox,Color::None,Color::None,0.0);
-
    stream << "2 5 0 1 0 -1 " << transform.mapDepth(_depth) << " -1 -1 0.000 0 0 -1 0 0 5\n";
    stream << "\t0 " << _filename << "\n";
    stream << "\t";
@@ -235,15 +228,12 @@ Image::flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<
    stream << " " << static_cast<int>( transform.mapX( rectangle[0].x ) )
          << " " << static_cast<int>( transform.mapY( rectangle[0].y ) )
          << "\n";
-
 }
 
 void
 Image::flushSVG(std::ostream & stream, const TransformSVG & transform) const
 {
   static unsigned int imageId = 0;
-  _rectangle.flushSVG( stream, transform );
-
   stream << "<image x=\"" << _originalRectangle[0].x << "\"";
   stream << " y=\"" << _originalRectangle[0].y << "\" ";
   stream << " width=\"" << (_originalRectangle[1].x - _originalRectangle[0].x) << "\"";
@@ -260,9 +250,6 @@ Image::flushSVG(std::ostream & stream, const TransformSVG & transform) const
   in.open(_filename.c_str());
   base64encode(in,stream);
   stream << "\"\n  ";
-
-  // _transformMatrix.flushSVG(stream);
-  //(_transformMatrix*transform.matrix()).flushSVG(stream);
   Point shift = transform.map(_rectangle.topLeft()) - (_transformMatrixSVG*_originalRectangle.topLeft());
   (_transformMatrixSVG+shift).flushSVG(stream);
   stream << " />\n";
@@ -272,6 +259,7 @@ void
 Image::flushTikZ(std::ostream & stream, const TransformTikZ & transform) const
 {
   _rectangle.flushTikZ( stream, transform );
+  error << "Image::flushTikZ(): not available.\n";
 }
 
 } // namespace LibBoard

@@ -69,9 +69,7 @@ base64encode( std::istream & in, std::ostream & out, int linesize )
       ++nbBlocks;
     }
     if( nbBlocks >= (linesize/4) || ! in ) {
-      if( nbBlocks > 0 ) {
-        out << "\r\n";
-      }
+      if( nbBlocks > 0 ) out << "\r\n";
       nbBlocks = 0;
     }
   }
@@ -98,7 +96,7 @@ void flushFile(const char *filename, std::ostream & out)
   file.open(filename);
   do {
     file.read(line,4096);
-    if ( file)
+    if (file)
       out.write(line,4096);
     else
       out.write(line,file.gcount());
@@ -106,7 +104,8 @@ void flushFile(const char *filename, std::ostream & out)
   file.close();
 }
 
-Rect getEPSBoundingBox(const char *filename)
+Rect
+getEPSBoundingBox(const char *filename)
 {
   std::ifstream file;
   char line[4096];
@@ -118,17 +117,18 @@ Rect getEPSBoundingBox(const char *filename)
     if ( std::strstr(line,"%%BoundingBox:") == line ) {
       if ( std::sscanf(line,"%%%%BoundingBox: %lf %lf %lf %lf",&x1,&y1,&x2,&y2) != 4 ) {
         error << "getEPSBoundingBox(): Cannot read bounding box information.\n";
+        file.close();
         return Rect(0.0,0.0,0.0,0.0);
       }
-      file.close();
       done = true;
     }
   }
+  file.close();
   return Rect(x1,y2,x2-x1,y2-y1);
 }
 
 bool
-canCreateFile( const char * filename )
+canCreateFile(const char * filename)
 {
   std::ofstream file;
   file.open(filename);
