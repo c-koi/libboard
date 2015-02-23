@@ -3,8 +3,8 @@
  * @file   Color.cpp
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
- * 
- * @brief  
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -48,7 +48,7 @@ const Color Color::Navy((unsigned char)0,(unsigned char)0,(unsigned char)128);
 const Color Color::Aqua((unsigned char)0,(unsigned char)255,(unsigned char)255);
 
 Color::Color( const unsigned int rgb, unsigned char alpha )
- :_alpha( alpha )
+  :_alpha( alpha )
 {
   _red = ( rgb & 0xFF0000u ) >> 16;
   _green = ( rgb & 0xFF00u ) >> 8;
@@ -57,9 +57,9 @@ Color::Color( const unsigned int rgb, unsigned char alpha )
 
 Color &
 Color::setRGBf( float red,
-		float green,
-		float blue,
-		float alpha  ) {
+                float green,
+                float blue,
+                float alpha  ) {
   if ( red > 1.0f ) red = 1.0f;
   if ( red < 0.0f ) red = 0.0f;
   _red = static_cast<unsigned char>( 255 * red );
@@ -78,19 +78,19 @@ Color::setRGBf( float red,
 bool
 Color::operator==( const Color & other ) const
 {
-  return _red == other._red 
-    && _green == other._green
-    && _blue == other._blue
-    && _alpha == other._alpha;
+  return _red == other._red
+      && _green == other._green
+      && _blue == other._blue
+      && _alpha == other._alpha;
 }
 
 bool
 Color::operator!=( const Color & other ) const
 {
-  return _red != other._red  
-    || _green != other._green
-    || _blue != other._blue
-    || _alpha != other._alpha;
+  return _red != other._red
+      || _green != other._green
+      || _blue != other._blue
+      || _alpha != other._alpha;
 }
 
 bool
@@ -101,11 +101,11 @@ Color::operator<( const Color & other ) const
   if ( _red == other._red ) {
     if ( _green < other._green )
       return true;
-    if ( _green == other._green ) { 
+    if ( _green == other._green ) {
       if ( _blue < other._blue )
-	return true;
+        return true;
       if ( _blue == other._blue )
-	return _alpha < other._alpha;
+        return _alpha < other._alpha;
     }
   }
   return false;
@@ -115,8 +115,8 @@ void
 Color::flushPostscript( std::ostream & stream ) const
 {
   stream << (_red/255.0) << " "
-	 << (_green/255.0) << " "
-	 << (_blue/255.0) << " srgb\n";
+         << (_green/255.0) << " "
+         << (_blue/255.0) << " srgb\n";
 }
 
 string

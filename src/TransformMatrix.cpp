@@ -3,8 +3,8 @@
  * @file   TransformMatrix.cpp
  * @author Sebastien Fourey (GREYC)
  * @date   June 2014
- * 
- * @brief  
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -47,8 +47,8 @@ TransformMatrix::translation(const Point & point)
 TransformMatrix
 TransformMatrix::scaling(double sx, double sy)
 {
-   return TransformMatrix( sx, 0.0, 0.0,
-                           0.0, sy, 0.0 );
+  return TransformMatrix( sx, 0.0, 0.0,
+                          0.0, sy, 0.0 );
 }
 
 TransformMatrix
@@ -77,25 +77,25 @@ TransformMatrix::rotation(double angle, const Point & center, Type type )
 TransformMatrix
 TransformMatrix::operator*(const TransformMatrix & other) const
 {
-   return TransformMatrix( _m11*other._m11+_m12*other._m21,
-                           _m11*other._m12+_m12*other._m22,
-                           _m11*other._m13+_m12*other._m23+_m13,
-                           _m21*other._m11+_m22*other._m21,
-                           _m21*other._m12+_m22*other._m22,
-                           _m21*other._m13+_m22*other._m23+_m23 );
+  return TransformMatrix( _m11*other._m11+_m12*other._m21,
+                          _m11*other._m12+_m12*other._m22,
+                          _m11*other._m13+_m12*other._m23+_m13,
+                          _m21*other._m11+_m22*other._m21,
+                          _m21*other._m12+_m22*other._m22,
+                          _m21*other._m13+_m22*other._m23+_m23 );
 }
 
 TransformMatrix &
 TransformMatrix::operator*=( const TransformMatrix & right )
 {
-   TransformMatrix self(*this);
-   _m11 = self._m11*right._m11+self._m12*right._m21;
-   _m12 = self._m11*right._m12+self._m12*right._m22;
-   _m13 = self._m11*right._m13+self._m12*right._m23+self._m13;
-   _m21 = self._m21*right._m11+self._m22*right._m21;
-   _m22 = self._m21*right._m12+self._m22*right._m22;
-   _m23 = self._m21*right._m13+self._m22*right._m23+self._m23;
-   return *this;
+  TransformMatrix self(*this);
+  _m11 = self._m11*right._m11+self._m12*right._m21;
+  _m12 = self._m11*right._m12+self._m12*right._m22;
+  _m13 = self._m11*right._m13+self._m12*right._m23+self._m13;
+  _m21 = self._m21*right._m11+self._m22*right._m21;
+  _m22 = self._m21*right._m12+self._m22*right._m22;
+  _m23 = self._m21*right._m13+self._m22*right._m23+self._m23;
+  return *this;
 }
 
 Point
@@ -124,18 +124,18 @@ TransformMatrix::operator+=(const Point & point)
 
 void TransformMatrix::flushSVG(std::ostream & out) const
 {
-   out << "transform=\"matrix("
-       << _m11 << "," << _m21 << ","
-       << _m12 << "," << _m22 << ","
-       << _m13 << "," << _m23 << ")\"";
+  out << "transform=\"matrix("
+      << _m11 << "," << _m21 << ","
+      << _m12 << "," << _m22 << ","
+      << _m13 << "," << _m23 << ")\"";
 }
 
 void TransformMatrix::flushEPS(std::ostream & out) const
 {
-   out << "[ "
-       << _m11 << " " << _m21 << " "
-       << _m12 << " " << _m22 << " "
-       << _m13 << " " << _m23 << " ] concat ";
+  out << "[ "
+      << _m11 << " " << _m21 << " "
+      << _m12 << " " << _m22 << " "
+      << _m13 << " " << _m23 << " ] concat ";
 }
 
 

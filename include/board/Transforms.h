@@ -43,26 +43,26 @@ struct ShapeList;
  */
 struct Transform {
 public:
-   inline Transform();
-   virtual ~Transform() { };
-   virtual double mapX( double x ) const;
-   virtual double mapY( double y ) const = 0;
-   Point map( const Point & ) const;
-   virtual void apply( double & x, double & y ) const;
-   virtual double scale( double x ) const;
-   virtual double rounded( double x ) const;
-   virtual void setBoundingBox( const Rect & rect,
-                                const double pageWidth,
-                                const double pageHeight,
-                                const double margin ) = 0;
+  inline Transform();
+  virtual ~Transform() { };
+  virtual double mapX( double x ) const;
+  virtual double mapY( double y ) const = 0;
+  Point map( const Point & ) const;
+  virtual void apply( double & x, double & y ) const;
+  virtual double scale( double x ) const;
+  virtual double rounded( double x ) const;
+  virtual void setBoundingBox( const Rect & rect,
+                               const double pageWidth,
+                               const double pageHeight,
+                               const double margin ) = 0;
 
-   static inline double round( const double & x );
+  static inline double round( const double & x );
 
 protected:
-   double _scale;
-   double _deltaX;
-   double _deltaY;
-   double _height;
+  double _scale;
+  double _deltaX;
+  double _deltaY;
+  double _height;
 };
 
 /**
@@ -72,11 +72,11 @@ protected:
  */
 struct TransformEPS : public Transform {
 public:
-   double mapY( double y ) const;
-   void setBoundingBox( const Rect & rect,
-                        const double pageWidth,
-                        const double pageHeight,
-                        const double margin );
+  double mapY( double y ) const;
+  void setBoundingBox( const Rect & rect,
+                       const double pageWidth,
+                       const double pageHeight,
+                       const double margin );
 };
 
 /**
@@ -86,19 +86,19 @@ public:
  */
 struct TransformFIG : public Transform {
 public:
-   inline TransformFIG();
-   double rounded( double x ) const;
-   double mapY( double y ) const;
-   int mapWidth( double width ) const;
-   void setBoundingBox( const Rect & rect,
-                        const double pageWidth,
-                        const double pageHeight,
-                        const double margin );
-   void setDepthRange( const ShapeList & shapes );
-   int mapDepth( int depth ) const;
+  inline TransformFIG();
+  double rounded( double x ) const;
+  double mapY( double y ) const;
+  int mapWidth( double width ) const;
+  void setBoundingBox( const Rect & rect,
+                       const double pageWidth,
+                       const double pageHeight,
+                       const double margin );
+  void setDepthRange( const ShapeList & shapes );
+  int mapDepth( int depth ) const;
 private:
-   int _maxDepth;
-   int _minDepth;
+  int _maxDepth;
+  int _minDepth;
 };
 
 /**
@@ -108,17 +108,17 @@ private:
  */
 struct TransformSVG : public Transform {
 public:
-   double rounded( double x ) const;
-   double mapY( double y ) const;
-   double mapWidth( double width ) const;
-   void setBoundingBox( const Rect & rect,
-                        const double pageWidth,
-                        const double pageHeight,
-                        const double margin );
-   TransformMatrix matrix() const;
-   Point translation() const;
-   double deltaX() const;
-   double deltaY() const;
+  double rounded( double x ) const;
+  double mapY( double y ) const;
+  double mapWidth( double width ) const;
+  void setBoundingBox( const Rect & rect,
+                       const double pageWidth,
+                       const double pageHeight,
+                       const double margin );
+  TransformMatrix matrix() const;
+  Point translation() const;
+  double deltaX() const;
+  double deltaY() const;
 };
 
 /**

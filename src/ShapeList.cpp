@@ -3,9 +3,9 @@
  * @file   ShapeList.cpp
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
- * 
+ *
  * @brief  Definition of the ShapeList and Group classes.
- * 
+ *
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -15,7 +15,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -35,9 +35,9 @@
 
 namespace LibBoard {
 
-  //
-  // Definition of the ShapeList methods.
-  //
+//
+// Definition of the ShapeList methods.
+//
 
 const std::string ShapeList::_name("ListOfShapes");
 
@@ -104,12 +104,12 @@ ShapeList::free()
   while ( i != end ) {
     delete *i;
     ++i;
-  }  
+  }
 }
 
 ShapeList::ShapeList( const ShapeList & other ) : Shape( other )
 {
-  if ( ! other._shapes.size() ) return;  
+  if ( ! other._shapes.size() ) return;
   _shapes.resize( other._shapes.size(), 0 );
   std::vector<Shape*>::iterator t = _shapes.begin();
   std::vector<Shape*>::const_iterator i = other._shapes.begin();
@@ -140,7 +140,7 @@ ShapeList &
 ShapeList::operator<<( const Shape & shape )
 {
   if ( typeid( shape ) == typeid( ShapeList ) ) {
-    // Insertion on top, respecting the same depth order.    
+    // Insertion on top, respecting the same depth order.
     const ShapeList & sl = dynamic_cast<const ShapeList &>( shape );
     std::vector<Shape*> shapes = sl._shapes;
     stable_sort( shapes.begin(), shapes.end(), shapeGreaterDepth );
@@ -200,7 +200,7 @@ ShapeList::addShape( const Shape & shape, double scaleFactor )
 ShapeList &
 ShapeList::dup( unsigned int count )
 {
-  if ( ! _shapes.size() ) { 
+  if ( ! _shapes.size() ) {
     warning << "dup() called with an empty list of shapes.\n";
     return *this;
   }
@@ -289,7 +289,7 @@ ShapeList::translate( double dx, double dy )
     (*i)->translate( dx, dy );
     ++i;
   }
-  return *this;  
+  return *this;
 }
 
 ShapeList
@@ -346,7 +346,7 @@ ShapeList::scaleAll( double s )
 
 void
 ShapeList::flushPostscript( std::ostream & stream,
-			const TransformEPS & transform ) const
+                            const TransformEPS & transform ) const
 {
   std::vector< Shape* > shapes = _shapes;
   stable_sort( shapes.begin(), shapes.end(), shapeGreaterDepth );
@@ -358,11 +358,11 @@ ShapeList::flushPostscript( std::ostream & stream,
   }
   stream << "%%% End ShapeList\n";
 }
-  
+
 void
 ShapeList::flushFIG( std::ostream & stream,
-		 const TransformFIG & transform,
-		 std::map<Color,int> & colormap ) const
+                     const TransformFIG & transform,
+                     std::map<Color,int> & colormap ) const
 {
   std::vector< Shape* > shapes = _shapes;
   stable_sort( shapes.begin(), shapes.end(), shapeGreaterDepth );
@@ -371,12 +371,12 @@ ShapeList::flushFIG( std::ostream & stream,
   while ( i != end ) {
     (*i)->flushFIG( stream, transform, colormap );
     ++i;
-  }  
+  }
 }
 
 void
 ShapeList::flushSVG( std::ostream & stream,
-		 const TransformSVG & transform ) const
+                     const TransformSVG & transform ) const
 {
   std::vector< Shape* > shapes = _shapes;
   stable_sort( shapes.begin(), shapes.end(), shapeGreaterDepth );
@@ -386,7 +386,7 @@ ShapeList::flushSVG( std::ostream & stream,
   while ( i != end ) {
     (*i)->flushSVG( stream, transform );
     ++i;
-  }  
+  }
   //stream << "</g>\n";
 }
 
@@ -415,7 +415,7 @@ ShapeList::boundingBox() const
   if ( i == end ) return r;
   r = (*i)->boundingBox();
   ++i;
-  while ( i != end ) { 
+  while ( i != end ) {
     r = r || (*i)->boundingBox();
     ++i;
   }
@@ -430,7 +430,7 @@ ShapeList::minDepth() const
   ShapeList * sl;
   std::vector< Shape* >::const_iterator i = _shapes.begin();
   std::vector< Shape* >::const_iterator end = _shapes.end();
-  while ( i != end ) { 
+  while ( i != end ) {
     sl = dynamic_cast<ShapeList*>( *i );
     if ( sl ) {
       d = sl->minDepth();
@@ -451,7 +451,7 @@ ShapeList::maxDepth() const
   ShapeList * sl;
   std::vector< Shape* >::const_iterator i = _shapes.begin();
   std::vector< Shape* >::const_iterator end = _shapes.end();
-  while ( i != end ) { 
+  while ( i != end ) {
     sl = dynamic_cast<ShapeList*>( *i );
     if ( sl ) {
       d = sl->maxDepth();
@@ -469,7 +469,7 @@ ShapeList::shiftDepth( int shift )
 {
   std::vector< Shape* >::const_iterator i = _shapes.begin();
   std::vector< Shape* >::const_iterator end = _shapes.end();
-  while ( i != end ) { 
+  while ( i != end ) {
     (*i++)->shiftDepth( shift );
   }
 }
@@ -492,10 +492,10 @@ ShapeList::top()
   return last<Shape>( 0 );
 }
 
-  
-  //
-  // Definition of the Group methods.
-  //
+
+//
+// Definition of the Group methods.
+//
 
 const std::string Group::_name("GroupOfShapes");
 
@@ -613,14 +613,14 @@ Group::setClippingPath(  const Path & path  )
   _clippingPath = path;
   _clippingPath.setClosed( true );
   if ( _clippingPath.size() > 1 ) {
-    if ( _clippingPath[0] == _clippingPath[ _clippingPath.size() - 1 ] ) 
+    if ( _clippingPath[0] == _clippingPath[ _clippingPath.size() - 1 ] )
       _clippingPath.pop_back();
   }
 }
 
 void
 Group::flushPostscript( std::ostream & stream,
-			const TransformEPS & transform ) const
+                        const TransformEPS & transform ) const
 {
   if ( _clippingPath.size() > 2 ) {
     stream << "%%% Begin Clipped Group " << _clippingCount << "\n";
@@ -637,19 +637,19 @@ Group::flushPostscript( std::ostream & stream,
     stream << "%%% End Group\n";
   }
 }
-  
+
 void
 Group::flushFIG( std::ostream & stream,
-		 const TransformFIG & transform,
-		 std::map<Color,int> & colormap ) const
+                 const TransformFIG & transform,
+                 std::map<Color,int> & colormap ) const
 {
   Rect bbox = boundingBox();
   stream << "# Begin group\n";
   stream << "6 "
-	 << transform.mapX( bbox.left ) << " "
-	 << transform.mapY( bbox.top ) << " "
-	 << transform.mapX( bbox.left + bbox.width ) << " "
-	 << transform.mapY( bbox.top - bbox.height ) << "\n";
+         << transform.mapX( bbox.left ) << " "
+         << transform.mapY( bbox.top ) << " "
+         << transform.mapX( bbox.left + bbox.width ) << " "
+         << transform.mapY( bbox.top - bbox.height ) << "\n";
   ShapeList::flushFIG( stream, transform, colormap );
   stream << "-6\n";
   stream << "# End Group\n";
@@ -657,12 +657,12 @@ Group::flushFIG( std::ostream & stream,
 
 void
 Group::flushSVG( std::ostream & stream,
-		 const TransformSVG & transform ) const
+                 const TransformSVG & transform ) const
 {
   if ( _clippingPath.size() > 2 ) {
     stream << "<g clip-rule=\"nonzero\">\n"
-	 << " <clipPath id=\"LocalClipPath" << _clippingCount << "\">\n"
-	 << "  <path clip-rule=\"evenodd\"  d=\"";
+           << " <clipPath id=\"LocalClipPath" << _clippingCount << "\">\n"
+           << "  <path clip-rule=\"evenodd\"  d=\"";
     _clippingPath.flushSVGCommands( stream, transform );
     stream << "\" />\n";
     stream << " </clipPath>\n";
@@ -680,7 +680,7 @@ Group::flushSVG( std::ostream & stream,
 
 void
 Group::flushTikZ( std::ostream & stream,
-		  const TransformTikZ & transform ) const
+                  const TransformTikZ & transform ) const
 {
   // FIXME: implement clipping
   stream << "\\begin{scope}\n";
@@ -691,7 +691,7 @@ Group::flushTikZ( std::ostream & stream,
 Rect
 Group::boundingBox() const
 {
-  if ( _clippingPath.size() > 2 ) 
+  if ( _clippingPath.size() > 2 )
     return ShapeList::boundingBox() && _clippingPath.boundingBox();
   else
     return ShapeList::boundingBox();
