@@ -3,8 +3,8 @@
  * @file   Path.h
  * @author Sebastien Fourey (GREYC)
  * @date   Aug 2009
- * 
- * @brief  
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -47,7 +47,7 @@ struct Path {
   Path( const std::vector<Point> & points, bool closed )
     : _points( points ), _closed( closed ) { }
 
-  Path( bool closed ) : _closed( closed ) { }    
+  Path( bool closed ) : _closed( closed ) { }
   
   inline void clear();
 
@@ -55,165 +55,165 @@ struct Path {
 
   inline bool empty() const;
 
-  inline unsigned int size() const;
+  inline std::size_t size() const;
 
   inline void setClosed( bool closed  );
   
-  /** 
+  /**
    * Barycenter of the path
-   * @return 
+   * @return
    */
   Point center() const;
 
-  /** 
+  /**
    * Add a point at the end of the path.
-   * 
-   * @param p 
-   * 
-   * @return 
+   *
+   * @param p
+   *
+   * @return
    */
   Path & operator<<( const Point & p );
 
-  /** 
-   * 
-   * 
-   * 
-   * @return 
+  /**
+   *
+   *
+   *
+   * @return
    */
   Path & pop_back();
 
-  /** 
+  /**
    * Returns the n-th point of the polyline.
-   * 
-   * @param i 
-   * 
-   * @return 
+   *
+   * @param i
+   *
+   * @return
    */
-  Point & operator[]( const unsigned int n ) {
+  Point & operator[]( const std::size_t n ) {
     return _points[ n ];
   }
 
-  /** 
+  /**
    * Returns the n-th point of the polyline.
-   * 
-   * @param i 
-   * 
-   * @return 
+   *
+   * @param i
+   *
+   * @return
    */
-  const Point & operator[]( const unsigned int n ) const {
+  const Point & operator[]( const std::size_t n ) const {
     return _points[ n ];
   }
 
-  /** 
-   * 
-   * 
-   * @param angle 
-   * @param center 
-   * 
-   * @return 
+  /**
+   *
+   *
+   * @param angle
+   * @param center
+   *
+   * @return
    */
   Path & rotate( double angle, const Point & center );
 
-  /** 
-   * 
-   * 
-   * @param angle 
-   * @param center 
-   * 
-   * @return 
+  /**
+   *
+   *
+   * @param angle
+   * @param center
+   *
+   * @return
    */
   Path rotated( double angle, const Point & center ) const;
 
-  /** 
-   * 
-   * 
-   * @param angle 
-   * 
-   * @return 
+  /**
+   *
+   *
+   * @param angle
+   *
+   * @return
    */
   Path & rotate( double angle );
   
-  /** 
-   * 
-   * 
-   * @param angle 
-   * 
-   * @return 
+  /**
+   *
+   *
+   * @param angle
+   *
+   * @return
    */
   Path rotated( double angle ) const;
 
-  /** 
-   * 
-   * 
-   * @param dx 
-   * @param dy 
-   * 
-   * @return 
+  /**
+   *
+   *
+   * @param dx
+   * @param dy
+   *
+   * @return
    */
   Path & translate( double dx, double dy );
- 
-  /** 
-   * 
-   * 
-   * @param dx 
-   * @param dy 
-   * 
-   * @return 
+
+  /**
+   *
+   *
+   * @param dx
+   * @param dy
+   *
+   * @return
    */
   Path translated( double dx, double dy ) const;
 
-  /** 
-   * 
-   * 
-   * @param sx 
-   * @param sy 
-   * 
-   * @return 
+  /**
+   *
+   *
+   * @param sx
+   * @param sy
+   *
+   * @return
    */
   Path & scale( double sx, double sy );
 
-  /** 
-   * 
-   * 
-   * @param s 
-   * 
-   * @return 
+  /**
+   *
+   *
+   * @param s
+   *
+   * @return
    */
   Path & scale( double s );
   
-  /** 
-   * 
-   * 
-   * @param sx 
-   * @param sy 
-   * 
-   * @return 
+  /**
+   *
+   *
+   * @param sx
+   * @param sy
+   *
+   * @return
    */
   Path scaled( double sx, double sy )  const;
 
   Path scaled( double s )  const;
 
-  /** 
+  /**
    * Scales all the points.
-   * 
+   *
    * @param s The scaling factor.
    */
   void scaleAll( double s );
 
   void flushPostscript( std::ostream & stream,
-			const TransformEPS & transform ) const;
+                        const TransformEPS & transform ) const;
   
   void flushFIG( std::ostream & stream,
-		 const TransformFIG & transform ) const;
+                 const TransformFIG & transform ) const;
   
   void flushSVGPoints( std::ostream & stream,
-		       const TransformSVG & transform ) const;
+                       const TransformSVG & transform ) const;
 
   void flushSVGCommands( std::ostream & stream,
-			 const TransformSVG & transform ) const;
+                         const TransformSVG & transform ) const;
 
   void flushTikZPoints( std::ostream & stream,
-			const TransformTikZ & transform ) const;
+                        const TransformTikZ & transform ) const;
 
   Rect boundingBox() const;
 
@@ -221,7 +221,7 @@ protected:
   std::vector<Point> _points;
   bool _closed;
 };
-  
+
 void
 Path::clear()
 {
@@ -240,7 +240,7 @@ Path::empty() const
   return _points.empty();
 }
 
-unsigned int
+std::size_t
 Path::size() const
 {
   return _points.size();

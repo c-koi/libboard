@@ -1,10 +1,11 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   ShapeList.ih
+ * @file   Board.h
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
+ * 
+ * @brief  Declaration of the Board class.
  *
- * @brief  Inline methods of the Transform classes.
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +15,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -23,31 +24,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef _BOARD_CONFIG_H_
+#define _BOARD_CONFIG_H_
 
-#if defined( max )
-#undef max 
-#define _HAS_MSVC_MAX_ true
-#endif
+#define _BOARD_HAVE_MAGICKPLUSPLUS_ 1
 
-ShapeList::ShapeList( int depth )
-  : Shape( Color::None, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
-    _nextDepth( std::numeric_limits<int>::max() - 1 )
-{ }
+#define _BOARD_WIN32_ 0
 
-template<typename T>
-T &
-ShapeList::last( const std::size_t position )
-{
-  if ( position < _shapes.size() ) {
-    std::vector<Shape*>::reverse_iterator it = _shapes.rbegin() + position;
-    return dynamic_cast<T&>( *(*it) );
-  } else {
-    error << "Trying to access an element that does not exist ("
-          << position << "/" << _shapes.size() << ").\n";
-    throw -1;
-  }
-}
-
-#if defined( _HAS_MSVC_MAX_ )
-#define max(A,B) ((A)>(B)?(A):(B))
 #endif

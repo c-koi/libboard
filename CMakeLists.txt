@@ -86,6 +86,18 @@ SET(lib_src
   src/Transforms.cpp
   src/Tools.cpp
   src/PSFonts.cpp
+
+  include/BoardConfig.h
+  include/Board.h 
+  include/board/Point.h
+  include/board/Rect.h
+  include/board/Color.h
+  include/board/Path.h
+  include/board/PSFonts.h
+  include/board/ShapeList.h
+  include/board/Shapes.h
+  include/board/Tools.h
+  include/board/Transforms.h
   )
 
 ADD_LIBRARY(board STATIC ${lib_src})

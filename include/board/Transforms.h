@@ -3,7 +3,7 @@
  * @file   Transforms.h
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
- * 
+ *
  * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -38,7 +38,7 @@ struct ShapeList;
 
 /**
  * The base class for transforms.
- * @brief 
+ * @brief
  */
 struct Transform {
 public:
@@ -50,9 +50,9 @@ public:
   virtual double scale( double x ) const;
   virtual double rounded( double x ) const;
   virtual void setBoundingBox( const Rect & rect,
-			       const double pageWidth,
-			       const double pageHeight,
-			       const double margin ) = 0;
+                               const double pageWidth,
+                               const double pageHeight,
+                               const double margin ) = 0;
 
   static inline double round( const double & x );
 
@@ -72,9 +72,9 @@ struct TransformEPS : public Transform {
 public:
   double mapY( double y ) const;
   void setBoundingBox( const Rect & rect,
-		       const double pageWidth,
-		       const double pageHeight,
-		       const double margin );
+                       const double pageWidth,
+                       const double pageHeight,
+                       const double margin );
 };
 
 /**
@@ -87,11 +87,11 @@ public:
   inline TransformFIG();
   double rounded( double x ) const;
   double mapY( double y ) const;
-  int mapWidth( double width ) const; 
+  int mapWidth( double width ) const;
   void setBoundingBox( const Rect & rect,
-		       const double pageWidth,
-		       const double pageHeight,
-		       const double margin );
+                       const double pageWidth,
+                       const double pageHeight,
+                       const double margin );
   void setDepthRange( const ShapeList & shapes );
   int mapDepth( int depth ) const;
 private:
@@ -108,11 +108,11 @@ struct TransformSVG : public Transform {
 public:
   double rounded( double x ) const;
   double mapY( double y ) const;
-  double mapWidth( double width ) const; 
+  double mapWidth( double width ) const;
   void setBoundingBox( const Rect & rect,
-		       const double pageWidth,
-		       const double pageHeight,
-		       const double margin );
+                       const double pageWidth,
+                       const double pageHeight,
+                       const double margin );
 };
 
 /**
