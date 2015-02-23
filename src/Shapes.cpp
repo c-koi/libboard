@@ -3,8 +3,8 @@
  * @file   Shapes.cpp
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
- * 
- * @brief  
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,14 +14,14 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "board/Rect.h"
 #include "board/Shapes.h"
@@ -38,32 +38,32 @@
 #endif
 
 namespace {
-  const char * xFigDashStylesPS[] = {
-    " [] 0 sd ", // SolidStyle
-    " [1 1] 0 sd ", //DashStyle,  
-    " [1.5 4.5] 45 sd ", // DotStyle
-    " [4.5 2.3 1.5 2.3] 0 sd ", // DashDotStyle:
-    " [4.5 2.0 1.5 1.5 1.5 2.0] 0 sd ", // DashDotDotStyle:
-    " [4.5 1.8 1.5 1.4 1.5 1.4 1.5 1.8 ] 0 sd " // DashDotDotDotStyle
-  };
+const char * xFigDashStylesPS[] = {
+  " [] 0 sd ", // SolidStyle
+  " [1 1] 0 sd ", //DashStyle,
+  " [1.5 4.5] 45 sd ", // DotStyle
+  " [4.5 2.3 1.5 2.3] 0 sd ", // DashDotStyle:
+  " [4.5 2.0 1.5 1.5 1.5 2.0] 0 sd ", // DashDotDotStyle:
+  " [4.5 1.8 1.5 1.4 1.5 1.4 1.5 1.8 ] 0 sd " // DashDotDotDotStyle
+};
 
-  const char * xFigDashStylesSVG[] = {
-    "", // SolidStyle
-    "stroke-dasharray:1,1;stroke-dashoffset:0", //DashStyle,  
-    "stroke-dasharray:1.5,4.5;stroke-dashoffset:45", // DotStyle
-    "stroke-dasharray:4.5,2.3,1.5,2.3;stroke-dashoffset:0", // DashDotStyle:
-    "stroke-dasharray:4.5,2.0,1.5,1.5,1.5,2.0;stroke-dashoffset;0", // DashDotDotStyle:
-    "stroke-dasharray:4.5,1.8,1.5,1.4,1.5,1.4,1.5,1.8;stroke-dashoffset:0" // DashDotDotDotStyle
-  };
+const char * xFigDashStylesSVG[] = {
+  "", // SolidStyle
+  "stroke-dasharray:1,1;stroke-dashoffset:0", //DashStyle,
+  "stroke-dasharray:1.5,4.5;stroke-dashoffset:45", // DotStyle
+  "stroke-dasharray:4.5,2.3,1.5,2.3;stroke-dashoffset:0", // DashDotStyle:
+  "stroke-dasharray:4.5,2.0,1.5,1.5,1.5,2.0;stroke-dashoffset;0", // DashDotDotStyle:
+  "stroke-dasharray:4.5,1.8,1.5,1.4,1.5,1.4,1.5,1.8;stroke-dashoffset:0" // DashDotDotDotStyle
+};
 
-  const char * xFigDashStylesTikZ[] = {
-    "",                                           // SolidStyle
-    "dash pattern=on 1pt off 1pt,",               // DashStyle
-    "dotted,",                                    // DotStyle
-    "dashdotted,",                                // DashDotStyle
-    "dashdotdotted,",                             // DashDotDotStyle
-    "dash pattern=on 2pt off 3pt on 4pt off 4pt," // DashDotDotDotStyle
-  };
+const char * xFigDashStylesTikZ[] = {
+  "",                                           // SolidStyle
+  "dash pattern=on 1pt off 1pt,",               // DashStyle
+  "dotted,",                                    // DotStyle
+  "dashdotted,",                                // DashDotStyle
+  "dashdotdotted,",                             // DashDotDotStyle
+  "dash pattern=on 2pt off 3pt on 4pt off 4pt," // DashDotDotDotStyle
+};
 }
 
 
@@ -94,29 +94,29 @@ Shape::svgProperties( const TransformSVG & transform ) const
   std::stringstream str;
   if ( _penColor != Color::None ) {
     str << " fill=\"" << _fillColor.svg() << '"'
-	<< " stroke=\"" << _penColor.svg() << '"'
-	<< " stroke-width=\"" << transform.mapWidth( _lineWidth ) << "mm\""
-	<< " style=\"stroke-linecap:" << capStrings[ _lineCap ]  
-	<< ";stroke-linejoin:" << joinStrings[ _lineJoin ];
+        << " stroke=\"" << _penColor.svg() << '"'
+        << " stroke-width=\"" << transform.mapWidth( _lineWidth ) << "mm\""
+        << " style=\"stroke-linecap:" << capStrings[ _lineCap ]
+           << ";stroke-linejoin:" << joinStrings[ _lineJoin ];
     if ( _lineStyle != SolidStyle )
       str << ";" << xFigDashStylesSVG[ _lineStyle ];
     str << '"'
-	<< _fillColor.svgAlpha( " fill" )
-	<< _penColor.svgAlpha( " stroke" );
+        << _fillColor.svgAlpha( " fill" )
+        << _penColor.svgAlpha( " stroke" );
   } else  {
     str << " fill=\"" << _fillColor.svg() << '"'
-// 	<< " stroke=\"" << _fillColor.svg() << '"'
-// 	<< " stroke-width=\"0.5px\""
-	<< " stroke=\"none\""
-	<< " stroke-width=\"0\""
-	<< " style=\"stroke-linecap:round;stroke-linejoin:round;"
-	<< '"'
-	<< _fillColor.svgAlpha( " fill" )
-	<< _fillColor.svgAlpha( " stroke" );
+           // 	<< " stroke=\"" << _fillColor.svg() << '"'
+           // 	<< " stroke-width=\"0.5px\""
+        << " stroke=\"none\""
+        << " stroke-width=\"0\""
+        << " style=\"stroke-linecap:round;stroke-linejoin:round;"
+        << '"'
+        << _fillColor.svgAlpha( " fill" )
+        << _fillColor.svgAlpha( " stroke" );
   }
   return str.str();
 }
- 
+
 std::string
 Shape::postscriptProperties() const
 {
@@ -125,25 +125,25 @@ Shape::postscriptProperties() const
   str << _lineCap << " slc ";
   str << _lineJoin << " slj";
   str << xFigDashStylesPS[ _lineStyle ];
-  
+
   return str.str();
 }
 
 std::string
 Shape::tikzProperties( const TransformTikZ & transform ) const
 {
-    static const char * capStrings[3] = { "" /* initial value "butt" */, "line cap=round,", "line cap=rect," };
-    static const char * joinStrings[3] = { "" /* initial value "miter" */, "line join=round", "line join=bevel" };
+  static const char * capStrings[3] = { "" /* initial value "butt" */, "line cap=round,", "line cap=rect," };
+  static const char * joinStrings[3] = { "" /* initial value "miter" */, "line join=round", "line join=bevel" };
 
-    std::stringstream str;
-    str << "fill=" << _fillColor.tikz() << ',';
-    str << "draw=" << _penColor.tikz() << ',';
-    str << "line width=" << transform.mapWidth( _lineWidth ) << "mm,";
-    str << xFigDashStylesTikZ[ _lineStyle ];
-    str << capStrings[ _lineCap ];
-    str << joinStrings[ _lineJoin ];
+  std::stringstream str;
+  str << "fill=" << _fillColor.tikz() << ',';
+  str << "draw=" << _penColor.tikz() << ',';
+  str << "line width=" << transform.mapWidth( _lineWidth ) << "mm,";
+  str << xFigDashStylesTikZ[ _lineStyle ];
+  str << capStrings[ _lineCap ];
+  str << joinStrings[ _lineJoin ];
 
-    return str.str();
+  return str.str();
 }
 
 void
@@ -158,7 +158,7 @@ Shape::shiftDepth( int shift )
   _depth += shift;
 }
 
-  /*
+/*
    * Dot
    */
 
@@ -187,7 +187,7 @@ Dot::rotated( double angle, const Point & center ) const
 {
   return Dot(*this).rotate( angle, center );
 }
-  
+
 Dot &
 Dot::rotate( double )
 {
@@ -199,7 +199,7 @@ Dot::rotated( double ) const
 {
   return *this;
 }
-  
+
 Dot &
 Dot::translate( double dx, double dy )
 {
@@ -247,23 +247,23 @@ Dot::scaleAll( double s )
 
 void
 Dot::flushPostscript( std::ostream & stream,
-		       const TransformEPS & transform ) const
+                      const TransformEPS & transform ) const
 {
   stream << "\n% Dot\n";
   stream << postscriptProperties() << " "
-	 << "n "
-	 << transform.mapX( _x ) << " " 
-	 << transform.mapY( _y ) << " " 
-	 << "m "
-	 << transform.mapX( _x ) << " " 
-	 << transform.mapY( _y ) << " " 
-	 << "l " << _penColor.postscript() << " srgb stroke" << std::endl;
+         << "n "
+         << transform.mapX( _x ) << " "
+         << transform.mapY( _y ) << " "
+         << "m "
+         << transform.mapX( _x ) << " "
+         << transform.mapY( _y ) << " "
+         << "l " << _penColor.postscript() << " srgb stroke" << std::endl;
 }
 
 void
 Dot::flushFIG( std::ostream & stream,
-		const TransformFIG & transform,
-		std::map<Color,int> & colormap ) const
+               const TransformFIG & transform,
+               std::map<Color,int> & colormap ) const
 {
   stream << "2 1 0 ";
   // Thickness
@@ -281,22 +281,22 @@ Dot::flushFIG( std::ostream & stream,
   // Number of points
   stream << "2\n";
   stream << "         ";
-  stream << static_cast<int>( transform.mapX( _x ) ) << " " 
-	 << static_cast<int>( transform.mapY( _y ) ) << " "
-	 << static_cast<int>( transform.mapX( _x ) ) << " " 
-	 << static_cast<int>( transform.mapY( _y ) ) << std::endl;
+  stream << static_cast<int>( transform.mapX( _x ) ) << " "
+         << static_cast<int>( transform.mapY( _y ) ) << " "
+         << static_cast<int>( transform.mapX( _x ) ) << " "
+         << static_cast<int>( transform.mapY( _y ) ) << std::endl;
 }
 
 void
 Dot::flushSVG( std::ostream & stream,
-		const TransformSVG & transform ) const
+               const TransformSVG & transform ) const
 {
   stream << "<line x1=\"" << transform.mapX( _x ) << "\""
-	 << " y1=\"" << transform.mapY( _y ) << "\""
-	 << " x2=\"" << transform.mapX( _x ) << "\""
-	 << " y2=\"" << transform.mapY( _y ) << "\""
-    	 << svgProperties( transform ) 
-	 << " />" << std::endl;
+         << " y1=\"" << transform.mapY( _y ) << "\""
+         << " x2=\"" << transform.mapX( _x ) << "\""
+         << " y2=\"" << transform.mapY( _y ) << "\""
+         << svgProperties( transform )
+         << " />" << std::endl;
 }
 
 void
@@ -319,7 +319,7 @@ Dot::clone() const {
   return new Dot(*this);
 }
 
-  /*
+/*
    * Line
    */
 
@@ -368,7 +368,7 @@ Line::rotated( double angle ) const
   Point( _x2, _y2 ).rotate( angle, c ).get( res._x2, res._y2 );
   return res;
 }
-  
+
 Line &
 Line::translate( double dx, double dy )
 {
@@ -441,23 +441,23 @@ Line::clone() const {
 
 void
 Line::flushPostscript( std::ostream & stream,
-		       const TransformEPS & transform ) const
+                       const TransformEPS & transform ) const
 {
   stream << "\n% Line\n";
   stream << postscriptProperties() << " "
-	 << "n "
-	 << transform.mapX( _x1 ) << " " 
-	 << transform.mapY( _y1 ) << " " 
-	 << "m "
-	 << transform.mapX( _x2 ) << " " 
-	 << transform.mapY( _y2 ) << " " 
-	 << "l " << _penColor.postscript() << " srgb stroke" << std::endl;
+         << "n "
+         << transform.mapX( _x1 ) << " "
+         << transform.mapY( _y1 ) << " "
+         << "m "
+         << transform.mapX( _x2 ) << " "
+         << transform.mapY( _y2 ) << " "
+         << "l " << _penColor.postscript() << " srgb stroke" << std::endl;
 }
 
 void
 Line::flushFIG( std::ostream & stream,
-		const TransformFIG & transform,
-		std::map<Color,int> & colormap ) const
+                const TransformFIG & transform,
+                std::map<Color,int> & colormap ) const
 {
   stream << "2 1 ";
   // Line style
@@ -477,22 +477,22 @@ Line::flushFIG( std::ostream & stream,
   // Number of points
   stream << "2\n";
   stream << "         ";
-  stream << static_cast<int>( transform.mapX( _x1 ) ) << " " 
-	 << static_cast<int>( transform.mapY( _y1 ) ) << " "
-	 << static_cast<int>( transform.mapX( _x2 ) ) << " " 
-	 << static_cast<int>( transform.mapY( _y2 ) ) << std::endl;
+  stream << static_cast<int>( transform.mapX( _x1 ) ) << " "
+         << static_cast<int>( transform.mapY( _y1 ) ) << " "
+         << static_cast<int>( transform.mapX( _x2 ) ) << " "
+         << static_cast<int>( transform.mapY( _y2 ) ) << std::endl;
 }
 
 void
 Line::flushSVG( std::ostream & stream,
-		const TransformSVG & transform ) const
+                const TransformSVG & transform ) const
 {
   stream << "<line x1=\"" << transform.mapX( _x1 ) << "\""
-	 << " y1=\"" << transform.mapY( _y1 ) << "\""
-	 << " x2=\"" << transform.mapX( _x2 ) << "\""
-	 << " y2=\"" << transform.mapY( _y2 ) << "\""
-    	 << svgProperties( transform ) 
-	 << " />" << std::endl;
+         << " y1=\"" << transform.mapY( _y1 ) << "\""
+         << " x2=\"" << transform.mapX( _x2 ) << "\""
+         << " y2=\"" << transform.mapY( _y2 ) << "\""
+         << svgProperties( transform )
+         << " />" << std::endl;
 }
 
 void
@@ -500,10 +500,10 @@ Line::flushTikZ( std::ostream & stream,
                  const TransformTikZ & transform ) const
 {
   stream << "\\path[" << tikzProperties(transform) << "] ("
-	 << transform.mapX( _x1 ) << ',' << transform.mapY( _y1 )
-	 << ") -- ("
-	   << transform.mapX( _x2 ) << ',' << transform.mapY( _y2 )
-	 << ");" << std::endl;
+         << transform.mapX( _x1 ) << ',' << transform.mapY( _y1 )
+         << ") -- ("
+         << transform.mapX( _x2 ) << ',' << transform.mapY( _y2 )
+         << ");" << std::endl;
 }
 
 Rect
@@ -527,7 +527,7 @@ Line::boundingBox() const
   return rect;
 }
 
-  /*
+/*
    * Arrow
    */
 
@@ -593,7 +593,7 @@ Arrow::clone() const {
 
 void
 Arrow::flushPostscript( std::ostream & stream,
-			const TransformEPS & transform ) const
+                        const TransformEPS & transform ) const
 {
   double dx = _x1 - _x2;
   double dy = _y1 - _y2;
@@ -613,42 +613,42 @@ Arrow::flushPostscript( std::ostream & stream,
 
   stream << "\n% Arrow\n";
   stream << _penColor.postscript() << " srgb "
-	 << postscriptProperties() << " "
-	 << "n "
-	 << transform.mapX( _x1 ) << " " 
-	 << transform.mapY( _y1 ) << " " 
-	 << "m "
-	 << transform.mapX( _x2 + ( dx * cos(0.3) ) ) << " " 
-	 << transform.mapY( _y2 + ( dy * cos(0.3) ) ) << " " 
-	 << "l stroke" << std::endl;
+         << postscriptProperties() << " "
+         << "n "
+         << transform.mapX( _x1 ) << " "
+         << transform.mapY( _y1 ) << " "
+         << "m "
+         << transform.mapX( _x2 + ( dx * cos(0.3) ) ) << " "
+         << transform.mapY( _y2 + ( dy * cos(0.3) ) ) << " "
+         << "l stroke" << std::endl;
 
-  if ( filled() ) { 
+  if ( filled() ) {
     stream << "n "
-	   << transform.mapX( _x2 ) + transform.scale( ndx1 ) << " " 
-	   << transform.mapY( _y2 ) + transform.scale( ndy1 ) << " " 
-	   << "m "
-	   << transform.mapX( _x2 ) << " " 
-	   << transform.mapY( _y2 ) << " l " 
-	   << transform.mapX( _x2 ) + transform.scale( ndx2 ) << " " 
-	   << transform.mapY( _y2 ) + transform.scale( ndy2 ) << " ";
+           << transform.mapX( _x2 ) + transform.scale( ndx1 ) << " "
+           << transform.mapY( _y2 ) + transform.scale( ndy1 ) << " "
+           << "m "
+           << transform.mapX( _x2 ) << " "
+           << transform.mapY( _y2 ) << " l "
+           << transform.mapX( _x2 ) + transform.scale( ndx2 ) << " "
+           << transform.mapY( _y2 ) + transform.scale( ndy2 ) << " ";
     stream  << "l cp " << _penColor.postscript() << " srgb  fill" << std::endl;
   }
-  
+
   stream << "n "
-	 << transform.mapX( _x2 ) + transform.scale( ndx1 ) << " " 
-	 << transform.mapY( _y2 ) + transform.scale( ndy1 ) << " " 
-	 << "m "
-	 << transform.mapX( _x2 ) << " " 
-	 << transform.mapY( _y2 ) << " l " 
-	 << transform.mapX( _x2 ) + transform.scale( ndx2 ) << " " 
-	 << transform.mapY( _y2 ) + transform.scale( ndy2 ) << " l"
-	 << " " << _penColor.postscript() << " srgb cp [] 0 sd stroke" << std::endl;
+         << transform.mapX( _x2 ) + transform.scale( ndx1 ) << " "
+         << transform.mapY( _y2 ) + transform.scale( ndy1 ) << " "
+         << "m "
+         << transform.mapX( _x2 ) << " "
+         << transform.mapY( _y2 ) << " l "
+         << transform.mapX( _x2 ) + transform.scale( ndx2 ) << " "
+         << transform.mapY( _y2 ) + transform.scale( ndy2 ) << " l"
+         << " " << _penColor.postscript() << " srgb cp [] 0 sd stroke" << std::endl;
 }
 
 void
 Arrow::flushFIG( std::ostream & stream,
-		const TransformFIG & transform,
-		std::map<Color,int> & colormap ) const
+                 const TransformFIG & transform,
+                 std::map<Color,int> & colormap ) const
 {
   stream << "2 1 ";
   // Line style
@@ -667,20 +667,20 @@ Arrow::flushFIG( std::ostream & stream,
   stream << "-1 " << (_lineStyle?"4.000 ":"0.000 ") << _lineJoin << " " << _lineCap << " -1 1 0 ";
   // Number of points
   stream << "2\n";
-  if ( filled() ) 
+  if ( filled() )
     stream << "       1 1 1.00 60.00 120.00\n";
-  else 
+  else
     stream << "       1 0 1.00 60.00 120.00\n";
   stream << "         ";
-  stream << static_cast<int>( transform.mapX( _x1 ) ) << " " 
-	 << static_cast<int>( transform.mapY( _y1 ) ) << " "
-	 << static_cast<int>( transform.mapX( _x2 ) ) << " " 
-	 << static_cast<int>( transform.mapY( _y2 ) ) << std::endl;
+  stream << static_cast<int>( transform.mapX( _x1 ) ) << " "
+         << static_cast<int>( transform.mapY( _y1 ) ) << " "
+         << static_cast<int>( transform.mapX( _x2 ) ) << " "
+         << static_cast<int>( transform.mapY( _y2 ) ) << std::endl;
 }
 
 void
 Arrow::flushSVG( std::ostream & stream,
-		 const TransformSVG & transform ) const
+                 const TransformSVG & transform ) const
 {
   double dx = _x1 - _x2;
   double dy = _y1 - _y2;
@@ -689,44 +689,44 @@ Arrow::flushSVG( std::ostream & stream,
   dy /= norm;
   dx *= 10 * _lineWidth;
   dy *= 10 * _lineWidth;
-  
+
   //   double back_x = 0.8 * dx + _x2;
   //   double back_y = 0.8 * dy + _y2;
-  
+
   double ndx1 = dx*cos(0.3)-dy*sin(0.3);
   double ndy1 = dx*sin(0.3)+dy*cos(0.3);
   double ndx2 = dx*cos(-0.3)-dy*sin(-0.3);
   double ndy2 = dx*sin(-0.3)+dy*cos(-0.3);
-  
+
   stream << "<g>" << std::endl;
   // The line
   stream << " <path "
-	 << "d=\"M " << transform.mapX( _x1 ) << " " << transform.mapY( _y1 )
-	 << " L " << transform.mapX( _x2 + ( dx * cos(0.3) ) )
-	 << " " << transform.mapY( _y2 + ( dy * cos(0.3) ) ) << " z\""
-	 << " fill=\"none\" stroke=\"" << _penColor.svg() << "\""
-    	 << _penColor.svgAlpha( " stroke" );
-    if ( _lineStyle != SolidStyle )
-      stream << " style=\"" <<   xFigDashStylesSVG[ _lineStyle ] << '"';
+         << "d=\"M " << transform.mapX( _x1 ) << " " << transform.mapY( _y1 )
+         << " L " << transform.mapX( _x2 + ( dx * cos(0.3) ) )
+         << " " << transform.mapY( _y2 + ( dy * cos(0.3) ) ) << " z\""
+         << " fill=\"none\" stroke=\"" << _penColor.svg() << "\""
+         << _penColor.svgAlpha( " stroke" );
+  if ( _lineStyle != SolidStyle )
+    stream << " style=\"" <<   xFigDashStylesSVG[ _lineStyle ] << '"';
   stream << " stroke-width=\"" << transform.mapWidth( _lineWidth ) << "mm\" />";
-  
+
   // The arrow
   stream << " <polygon";
   stream << " fill=\"" << _fillColor.svg() << "\"";
   stream << " stroke=\"" << _penColor.svg() << "\""
-	 << " stroke-width=\"" << transform.mapWidth( /* 0.33 * */ _lineWidth ) << "mm\""
-	 << " style=\"stroke-linecap:butt;stroke-linejoin:miter\""
-	 << _fillColor.svgAlpha( " fill" )
-	 << _penColor.svgAlpha( " stroke" )
-	 << " points=\""
-	 << transform.mapX( _x2 ) + transform.scale( ndx1 ) << "," 
-	 << transform.mapY( _y2 ) - transform.scale( ndy1 ) << " "
-	 << transform.mapX( _x2 ) << "," 
-	 << transform.mapY( _y2 ) << " " 
-	 << transform.mapX( _x2 ) + transform.scale( ndx2 ) << "," 
-	 << transform.mapY( _y2 ) - transform.scale( ndy2 ) << " "
-	 << transform.mapX( _x2 ) + transform.scale( ndx1 ) << "," 
-	 << transform.mapY( _y2 ) - transform.scale( ndy1 ) << "\" />" << std::endl;
+         << " stroke-width=\"" << transform.mapWidth( /* 0.33 * */ _lineWidth ) << "mm\""
+         << " style=\"stroke-linecap:butt;stroke-linejoin:miter\""
+         << _fillColor.svgAlpha( " fill" )
+         << _penColor.svgAlpha( " stroke" )
+         << " points=\""
+         << transform.mapX( _x2 ) + transform.scale( ndx1 ) << ","
+         << transform.mapY( _y2 ) - transform.scale( ndy1 ) << " "
+         << transform.mapX( _x2 ) << ","
+         << transform.mapY( _y2 ) << " "
+         << transform.mapX( _x2 ) + transform.scale( ndx2 ) << ","
+         << transform.mapY( _y2 ) - transform.scale( ndy2 ) << " "
+         << transform.mapX( _x2 ) + transform.scale( ndx1 ) << ","
+         << transform.mapY( _y2 ) - transform.scale( ndy1 ) << "\" />" << std::endl;
   stream << "</g>" << std::endl;
 }
 
@@ -735,14 +735,14 @@ Arrow::flushTikZ( std::ostream & stream,
                   const TransformTikZ & transform ) const
 {
   stream << "\\path[-latex," << tikzProperties(transform) << "] ("
-	 << transform.mapX( _x1 ) << ',' << transform.mapY( _y1 )
-	 << ") -- ("
-	 << transform.mapX( _x2 ) << ',' << transform.mapY( _y2 )
-	 << ");" << std::endl;
+         << transform.mapX( _x1 ) << ',' << transform.mapY( _y1 )
+         << ") -- ("
+         << transform.mapX( _x2 ) << ',' << transform.mapY( _y2 )
+         << ");" << std::endl;
 }
 
 
-  /*
+/*
    * Ellipse
    */
 
@@ -886,37 +886,37 @@ Ellipse::clone() const {
 
 void
 Ellipse::flushPostscript( std::ostream & stream,
-			 const TransformEPS & transform ) const
+                          const TransformEPS & transform ) const
 {
   double yScale = _yRadius / _xRadius;
   stream << "\n% Ellipse\n";
   if ( filled() ) {
-    stream << "gs " 
-	   << transform.mapX( _center.x ) << " " << transform.mapY( _center.y ) << " tr";
+    stream << "gs "
+           << transform.mapX( _center.x ) << " " << transform.mapY( _center.y ) << " tr";
     if ( _angle != 0.0 ) stream << " " << (_angle*180/M_PI) << " rot ";
     if ( ! _circle ) stream << " " << 1.0 << " " << yScale << " sc";
-    stream << " n " << transform.scale( _xRadius ) << " 0 m " 
-	   << " 0 0 " << transform.scale( _xRadius ) << " 0.0 360.0 arc ";
+    stream << " n " << transform.scale( _xRadius ) << " 0 m "
+           << " 0 0 " << transform.scale( _xRadius ) << " 0.0 360.0 arc ";
     stream << " " << _fillColor.postscript() << " srgb";
-    stream << " fill gr" << std::endl;  
+    stream << " fill gr" << std::endl;
   }
-  
+
   if ( _penColor != Color::None ) {
     stream << postscriptProperties() << "\n";
     stream << "gs " << transform.mapX( _center.x ) << " " << transform.mapY( _center.y ) << " tr";
     if ( _angle != 0.0 ) stream << " " << (_angle*180/M_PI) << " rot ";
     if ( ! _circle ) stream << " " << 1.0 << " " << yScale << " sc";
-    stream << " n " << transform.scale( _xRadius ) << " 0 m " 
-	   << " 0 0 " << transform.scale( _xRadius ) << " 0.0 360.0 arc ";
+    stream << " n " << transform.scale( _xRadius ) << " 0 m "
+           << " 0 0 " << transform.scale( _xRadius ) << " 0.0 360.0 arc ";
     stream << " " << _penColor.postscript() << " srgb";
-    stream << " stroke gr" << std::endl;  
+    stream << " stroke gr" << std::endl;
   }
 }
 
 void
 Ellipse::flushFIG( std::ostream & stream,
-		  const TransformFIG & transform,
-		  std::map<Color,int> & colormap ) const
+                   const TransformFIG & transform,
+                   std::map<Color,int> & colormap ) const
 {
   // Ellipse, Sub type, Line style, Thickness
   if ( _circle )
@@ -931,48 +931,48 @@ Ellipse::flushFIG( std::ostream & stream,
     stream << transform.mapDepth( _depth ) << " -1 20 " << (_lineStyle?"4.000 ":"0.000 ") << "  1 " << _angle << " ";
   else
     stream << transform.mapDepth( _depth ) << " -1 -1 " << (_lineStyle?"4.000 ":"0.000 ") << " 1 " << _angle << " ";
-  stream << static_cast<int>( transform.mapX( _center.x ) ) << " " 
-	 << static_cast<int>( transform.mapY( _center.y ) ) << " " 
-	 << static_cast<int>( transform.scale( _xRadius ) ) << " " 
-	 << static_cast<int>( transform.scale( _yRadius ) ) << " " 
-	 << static_cast<int>( transform.mapX( _center.x ) ) << " " 
-	 << static_cast<int>( transform.mapY( _center.y ) ) << " " 
-	 << static_cast<int>( transform.mapX( _center.x ) + transform.scale( _xRadius ) ) << " "
-	 << static_cast<int>( transform.mapY( _center.y ) ) << "\n";
+  stream << static_cast<int>( transform.mapX( _center.x ) ) << " "
+         << static_cast<int>( transform.mapY( _center.y ) ) << " "
+         << static_cast<int>( transform.scale( _xRadius ) ) << " "
+         << static_cast<int>( transform.scale( _yRadius ) ) << " "
+         << static_cast<int>( transform.mapX( _center.x ) ) << " "
+         << static_cast<int>( transform.mapY( _center.y ) ) << " "
+         << static_cast<int>( transform.mapX( _center.x ) + transform.scale( _xRadius ) ) << " "
+         << static_cast<int>( transform.mapY( _center.y ) ) << "\n";
 }
 
 void
 Ellipse::flushSVG( std::ostream & stream,
-		  const TransformSVG & transform ) const
+                   const TransformSVG & transform ) const
 {
   stream << "<ellipse cx=\"" << transform.mapX( _center.x ) << '"'
-	 << " cy=\"" << transform.mapY( _center.y ) << '"'
-	 << " rx=\"" << transform.scale( _xRadius ) << '"'
-	 << " ry=\"" << transform.scale( _yRadius ) << '"'
-    	 << svgProperties( transform ) ;
+         << " cy=\"" << transform.mapY( _center.y ) << '"'
+         << " rx=\"" << transform.scale( _xRadius ) << '"'
+         << " ry=\"" << transform.scale( _yRadius ) << '"'
+         << svgProperties( transform ) ;
   if ( _angle != 0.0 ) {
-    stream << " transform=\"rotate( " 
-	   << -(_angle*180/M_PI) << ", " 
-	   << transform.mapX( _center.x ) << ", "
-	   << transform.mapY( _center.y ) << " )\" "; 
+    stream << " transform=\"rotate( "
+           << -(_angle*180/M_PI) << ", "
+           << transform.mapX( _center.x ) << ", "
+           << transform.mapY( _center.y ) << " )\" ";
   }
   stream << " />" << std::endl;
 }
 
 void
 Ellipse::flushTikZ( std::ostream & stream,
-		    const TransformTikZ & transform ) const
+                    const TransformTikZ & transform ) const
 {
   // FIXME: unimplemented
   stream << "% FIXME: Ellipse::flushTikZ unimplemented" << std::endl;
   stream << "\\path[" << tikzProperties(transform) << "] ("
-	 << transform.mapX( _center.x ) << ','
-	 << transform.mapY( _center.y ) << ')'
-	 << " circle [x radius=" << transform.scale( _xRadius ) << ','
+         << transform.mapX( _center.x ) << ','
+         << transform.mapY( _center.y ) << ')'
+         << " circle [x radius=" << transform.scale( _xRadius ) << ','
          <<          "y radius=" << transform.scale( _yRadius ) << ','
-	 <<          "rotate=" << -(_angle*180/M_PI)
-	 << "];"
-	 << std::endl;
+                  <<          "rotate=" << -(_angle*180/M_PI)
+                           << "];"
+                           << std::endl;
 }
 
 Rect
@@ -980,27 +980,27 @@ Ellipse::boundingBox() const
 {
   if ( _angle == 0.0 )
     return Rect( _center.x - _xRadius, _center.y + _yRadius,
-		 2 * _xRadius, 2 * _yRadius ); 
-    
+                 2 * _xRadius, 2 * _yRadius );
+
   double angleXmax = -atan( (_yRadius/_xRadius)*(tan(_angle) ) );
   double angleXmin = -atan( (_yRadius/_xRadius)*(tan(_angle) ) ) + M_PI;
   double angleYmax =  atan( (_yRadius/_xRadius)*(1/tan(_angle) ) );
   double angleYmin =  M_PI + atan( (_yRadius/_xRadius)*(1/tan(_angle) ) );
-  
-  if ( _angle < 0.0 ) { 
+
+  if ( _angle < 0.0 ) {
     angleYmax += M_PI;
     angleYmin -= M_PI;
   }
 
   return Rect( _center.x + _xRadius*cos(angleXmin)*cos(_angle) - _yRadius*sin(angleXmin)*sin(_angle),
-	       _center.y + _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle),
-	       ( _xRadius*cos(angleXmax)*cos(_angle) - _yRadius*sin(angleXmax)*sin(_angle) ) - 
-	       ( _xRadius*cos(angleXmin)*cos(_angle) - _yRadius*sin(angleXmin)*sin(_angle) ),
-	       ( _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle) ) -
-	       ( _xRadius*cos(angleYmin)*sin(_angle) + _yRadius*sin(angleYmin)*cos(_angle) ) );
+               _center.y + _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle),
+               ( _xRadius*cos(angleXmax)*cos(_angle) - _yRadius*sin(angleXmax)*sin(_angle) ) -
+               ( _xRadius*cos(angleXmin)*cos(_angle) - _yRadius*sin(angleXmin)*sin(_angle) ),
+               ( _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle) ) -
+               ( _xRadius*cos(angleYmin)*sin(_angle) + _yRadius*sin(angleYmin)*cos(_angle) ) );
 }
 
-  /*
+/*
    * Circle
    */
 
@@ -1101,17 +1101,17 @@ Circle::clone() const {
 
 void
 Circle::flushSVG( std::ostream & stream,
-		  const TransformSVG & transform ) const
+                  const TransformSVG & transform ) const
 {
-  if ( ! _circle ) 
+  if ( ! _circle )
     Ellipse::flushSVG( stream, transform );
   else {
     stream << "<circle cx=\"" << transform.mapX( _center.x ) << '"'
-	   << " cy=\"" << transform.mapY( _center.y ) << '"'
-	   << " r=\"" << transform.scale( _xRadius ) << '"'
-	   << svgProperties( transform ) 
-	   << " />" << std::endl;
-  }      
+           << " cy=\"" << transform.mapY( _center.y ) << '"'
+           << " r=\"" << transform.scale( _xRadius ) << '"'
+           << svgProperties( transform )
+           << " />" << std::endl;
+  }
 }
 
 void
@@ -1122,11 +1122,11 @@ Circle::flushTikZ( std::ostream & stream,
     Ellipse::flushTikZ( stream, transform );
   else {
     stream << "\\path[" << tikzProperties(transform) << "] ("
-	   << transform.mapX( _center.x ) << ','
-	   << transform.mapY( _center.y ) << ')'
-	   << " circle (" << transform.scale( _xRadius ) << ");"
-	   << std::endl;
-    }
+           << transform.mapX( _center.x ) << ','
+           << transform.mapY( _center.y ) << ')'
+           << " circle (" << transform.scale( _xRadius ) << ");"
+           << std::endl;
+  }
 }
 
 /*
@@ -1196,7 +1196,7 @@ Shape &
 Polyline::scale( double sx, double sy )
 {
   _path.scale( sx, sy );
-  return *this;  
+  return *this;
 }
 
 Shape &
@@ -1231,7 +1231,7 @@ Polyline::clone() const {
 
 void
 Polyline::flushPostscript( std::ostream & stream,
-			   const TransformEPS & transform ) const
+                           const TransformEPS & transform ) const
 {
   if ( _path.empty() ) return;
   stream << "\n% Polyline\n";
@@ -1241,7 +1241,7 @@ Polyline::flushPostscript( std::ostream & stream,
     stream << " ";
     _fillColor.flushPostscript( stream );
     stream << " " << postscriptProperties();
-    stream << " fill" << std::endl;  
+    stream << " fill" << std::endl;
   }
   if ( _penColor != Color::None ) {
     stream << " " << postscriptProperties() << "\n";
@@ -1255,12 +1255,12 @@ Polyline::flushPostscript( std::ostream & stream,
 
 void
 Polyline::flushFIG( std::ostream & stream,
-		    const TransformFIG & transform,
-		    std::map<Color,int> & colormap ) const
+                    const TransformFIG & transform,
+                    std::map<Color,int> & colormap ) const
 {
   if ( _path.empty() )
     return;
-  if ( _path.closed() ) 
+  if ( _path.closed() )
     stream << "2 3 " << _lineStyle << " ";
   else
     stream << "2 1 " << _lineStyle << " ";
@@ -1275,7 +1275,7 @@ Polyline::flushFIG( std::ostream & stream,
   // Pen style
   stream <<  "-1 ";
   // Area fill, style val, join style, cap style, radius, f_arrow, b_arrow
-  if ( filled() ) 
+  if ( filled() )
     stream << "20 " << (_lineStyle?"4.000 ":"0.000 ") << _lineJoin << " " << _lineCap << " -1 0 0 ";
   else
     stream << "-1 " << (_lineStyle?"4.000 ":"0.000 ")  << _lineJoin << " " << _lineCap << " -1 0 0 ";
@@ -1287,7 +1287,7 @@ Polyline::flushFIG( std::ostream & stream,
 
 void
 Polyline::flushSVG( std::ostream & stream,
-		    const TransformSVG & transform ) const
+                    const TransformSVG & transform ) const
 {
   if ( _path.empty() )
     return;
@@ -1307,7 +1307,7 @@ Polyline::flushTikZ( std::ostream & stream,
 {
   if ( _path.empty() )
     return;
-  
+
   stream << "\\path[" << tikzProperties(transform) << "] ";
   _path.flushTikZPoints( stream, transform );
   if ( _path.closed() )
@@ -1321,7 +1321,7 @@ Polyline::boundingBox() const
   return _path.boundingBox();
 }
 
-  /*
+/*
    * Rectangle
    */
 
@@ -1338,7 +1338,7 @@ Rectangle::rotated( double angle, const Point & center ) const
 {
   return static_cast<Rectangle &>( Rectangle(*this).rotate( angle, center ) );
 }
-  
+
 Rectangle
 Rectangle::rotated( double angle ) const
 {
@@ -1376,16 +1376,16 @@ Rectangle::clone() const {
 
 void
 Rectangle::flushFIG( std::ostream & stream,
-		     const TransformFIG & transform,
-		     std::map<Color,int> & colormap ) const
+                     const TransformFIG & transform,
+                     std::map<Color,int> & colormap ) const
 {
   if ( _path[0].y != _path[1].y ) {
     Polyline::flushFIG( stream, transform, colormap );
     return;
   }
   if ( _path[0].x != _path[3].x ) {
-      Polyline::flushFIG( stream, transform, colormap );
-      return;
+    Polyline::flushFIG( stream, transform, colormap );
+    return;
   }
   {
     double x1 = _path[1].x - _path[0].x;
@@ -1397,7 +1397,6 @@ Rectangle::flushFIG( std::ostream & stream,
       return;
     }
   }
-
   stream << "2 2 " << _lineStyle << " ";
   // Thickness
   stream << ( _penColor.valid()?transform.mapWidth( _lineWidth ):0 ) << " ";
@@ -1410,7 +1409,7 @@ Rectangle::flushFIG( std::ostream & stream,
   // Pen style
   stream <<  "-1 ";
   // Area fill, style val, join style, cap style, radius, f_arrow, b_arrow, number of points
-  if ( filled() ) 
+  if ( filled() )
     stream << "20 " << (_lineStyle?"4.000 ":"0.000 ") << _lineJoin << " " << _lineCap << " -1 0 0 5\n";
   else
     stream << "-1 " << (_lineStyle?"4.000 ":"0.000 ") << _lineJoin << " " << _lineCap << " -1 0 0 5\n";
@@ -1421,39 +1420,57 @@ Rectangle::flushFIG( std::ostream & stream,
 
 void
 Rectangle::flushSVG( std::ostream & stream,
-		     const TransformSVG & transform ) const
+                     const TransformSVG & transform ) const
 {
   {
     double x1 = _path[1].x - _path[0].x;
     double y1 = _path[1].y - _path[0].y;
     double x2 = _path[3].x - _path[0].x;
     double y2 = _path[3].y - _path[0].y;
-    if ( fabs(x1*x2 + y1*y2) > 0.01  ) {
+    if ( fabs(x1*x2 + y1*y2) > 0.001  ) {
       Polyline::flushSVG( stream, transform );
       return;
     }
   }
 
   if ( _path[0].y == _path[1].y ) {
-    stream << "<rect x=\"" << transform.mapX( _path[0].x ) << '"'
-	   << " y=\"" << transform.mapY( _path[0].y )  << '"'
-	   << " width=\"" << transform.scale( _path[1].x - _path[0].x ) << '"'
-	   << " height=\"" << transform.scale( _path[0].y - _path[3].y ) << '"'
-	   << svgProperties( transform ) 
-	   << " />" << std::endl;
+    stream << "<rect x=\""
+           << transform.mapX( _path[0].x )
+        << '"'
+        << " y=\"" << transform.mapY( _path[0].y )
+        << '"'
+        << " width=\"" << transform.scale( _path[1].x - _path[0].x )
+        << '"'
+        << " height=\"" << transform.scale( _path[0].y - _path[3].y )
+        << '"'
+        << svgProperties( transform )
+        << " />" << std::endl;
   } else {
     Point v = _path[1] - _path[0];
     v /= v.norm();
     double angle = ( _path[1].y > _path[0].y ) ? acos( v * Point(1,0) ) : -acos( v * Point( 1, 0 ) );
     angle = ( angle * 180 ) / M_PI;
-    stream << "<rect x=\"" << transform.mapX( _path[0].x ) << '"'
-	   << " y=\"" << transform.mapY( _path[0].y )  << '"'
-	   << " width=\"" << transform.scale( (_path[1] - _path[0]).norm() ) << '"'
-	   << " height=\"" << transform.scale( (_path[0] - _path[3]).norm() ) << '"'
-	   << svgProperties( transform ) << ' '
-	   << " transform=\"rotate(" << -angle << ", " 
-	   << transform.mapX( _path[0].x ) << ", " << transform.mapY( _path[0].y ) << ") \" "
-	   << " />" << std::endl;
+    stream << "<rect x=\""
+           << transform.mapX( _path[0].x )
+        << '"'
+        << " y=\""
+        << transform.mapY( _path[0].y )
+        << '"'
+        << " width=\""
+        << transform.scale( (_path[1] - _path[0]).norm() )
+        << '"'
+        << " height=\""
+        << transform.scale( (_path[0] - _path[3]).norm() )
+        << '"'
+        << svgProperties( transform )
+        << ' '
+        << " transform=\"rotate(" << -angle << ", "
+        << transform.mapX( _path[0].x )
+        << ", "
+        << transform.mapY( _path[0].y )
+        << ") \" "
+        << " />"
+        << std::endl;
   }
 }
 
@@ -1478,12 +1495,12 @@ GouraudTriangle::name() const
 }
 
 GouraudTriangle::GouraudTriangle( const Point & p0, const Color & color0,
-				  const Point & p1, const Color & color1,
-				  const Point & p2, const Color & color2,
-				  int subdivisions,
-				  int depth )
+                                  const Point & p1, const Color & color1,
+                                  const Point & p2, const Color & color2,
+                                  int subdivisions,
+                                  int depth )
   : Polyline( std::vector<Point>(), true, Color::None, Color::None,
-	      0.0f, SolidStyle, ButtCap, MiterJoin, depth ),
+              0.0f, SolidStyle, ButtCap, MiterJoin, depth ),
     _color0( color0 ), _color1( color1 ), _color2( color2 ), _subdivisions( subdivisions ) {
   _path << p0;
   _path << p1;
@@ -1495,13 +1512,13 @@ GouraudTriangle::GouraudTriangle( const Point & p0, const Color & color0,
 }
 
 GouraudTriangle::GouraudTriangle( const Point & p0, float brightness0,
-				  const Point & p1, float brightness1,
-				  const Point & p2, float brightness2,
-				  const Color & _fillColor,
-				  int subdivisions,
-				  int depth )
+                                  const Point & p1, float brightness1,
+                                  const Point & p2, float brightness2,
+                                  const Color & _fillColor,
+                                  int subdivisions,
+                                  int depth )
   : Polyline( std::vector<Point>(), true, Color::None, Color::None,
-	      0.0f, SolidStyle, ButtCap, MiterJoin, depth ),
+              0.0f, SolidStyle, ButtCap, MiterJoin, depth ),
     _color0( _fillColor ), _color1( _fillColor ), _color2( _fillColor ), _subdivisions( subdivisions )
 {
   _path << p0;
@@ -1516,7 +1533,7 @@ GouraudTriangle::GouraudTriangle( const Point & p0, float brightness0,
   _color2.red( static_cast<unsigned char>( std::min( 255.0f, _color2.red() * brightness2 ) ) );
   _color2.green( static_cast<unsigned char>( std::min( 255.0f, _color2.green() * brightness2 ) ) );
   _color2.blue( static_cast<unsigned char>( std::min( 255.0f, _color2.blue() * brightness2 ) ) );
-  
+
   Shape::_fillColor.red( ( _color0.red() + _color1.red() + _color2.red() ) / 3 );
   Shape::_fillColor.green( ( _color0.green() + _color1.green() + _color2.green() ) / 3 );
   Shape::_fillColor.blue( ( _color0.blue() + _color1.blue() + _color2.blue() ) / 3 );
@@ -1583,7 +1600,7 @@ GouraudTriangle::clone() const {
 
 void
 GouraudTriangle::flushPostscript( std::ostream & stream,
-				  const TransformEPS & transform ) const
+                                  const TransformEPS & transform ) const
 {
   if ( ! _subdivisions ) {
     Polyline::flushPostscript( stream, transform );
@@ -1591,19 +1608,19 @@ GouraudTriangle::flushPostscript( std::ostream & stream,
   }
   const Point & p0 = _path[0];
   const Point & p1 = _path[1];
-  const Point & p2 = _path[2];  
+  const Point & p2 = _path[2];
   Point p01( 0.5*(p0.x+p1.x), 0.5*(p0.y+p1.y) );
-  Color c01( (_color0.red() + _color1.red())/2, 
-	     (_color0.green() + _color1.green())/2, 
-	     (_color0.blue() + _color1.blue())/2 );
+  Color c01( (_color0.red() + _color1.red())/2,
+             (_color0.green() + _color1.green())/2,
+             (_color0.blue() + _color1.blue())/2 );
   Point p12( 0.5*(p1.x+p2.x), 0.5*(p1.y+p2.y) );
-  Color c12( (_color1.red() + _color2.red())/2, 
-	     (_color1.green() + _color2.green())/2, 
-	     (_color1.blue() + _color2.blue())/2 );
+  Color c12( (_color1.red() + _color2.red())/2,
+             (_color1.green() + _color2.green())/2,
+             (_color1.blue() + _color2.blue())/2 );
   Point p20( 0.5*(p2.x+p0.x), 0.5*(p2.y+p0.y) );
-  Color c20( (_color2.red() + _color0.red())/2, 
-	     (_color2.green() + _color0.green())/2, 
-	     (_color2.blue() + _color0.blue())/2 );
+  Color c20( (_color2.red() + _color0.red())/2,
+             (_color2.green() + _color0.green())/2,
+             (_color2.blue() + _color0.blue())/2 );
   GouraudTriangle( p0, _color0, p20, c20, p01, c01, _subdivisions - 1, _depth ).flushPostscript( stream, transform );
   GouraudTriangle( p1, _color1, p01, c01, p12, c12, _subdivisions - 1, _depth ).flushPostscript( stream, transform );
   GouraudTriangle( p2, _color2, p20, c20, p12, c12, _subdivisions - 1, _depth ).flushPostscript( stream, transform );
@@ -1612,44 +1629,44 @@ GouraudTriangle::flushPostscript( std::ostream & stream,
 
 void
 GouraudTriangle::flushFIG( std::ostream & stream,
-			   const TransformFIG & transform,
-			   std::map<Color,int> & colormap ) const
+                           const TransformFIG & transform,
+                           std::map<Color,int> & colormap ) const
 {
 
-  Color c( static_cast<unsigned char>((_color0.red() + _color1.red() + _color2.red() )/3.0), 
-	   static_cast<unsigned char>((_color0.green() + _color1.green() + _color2.green())/3.0), 
-	   static_cast<unsigned char>((_color0.blue() + _color1.blue() + _color2.blue())/3.0 ));  
+  Color c( static_cast<unsigned char>((_color0.red() + _color1.red() + _color2.red() )/3.0),
+           static_cast<unsigned char>((_color0.green() + _color1.green() + _color2.green())/3.0),
+           static_cast<unsigned char>((_color0.blue() + _color1.blue() + _color2.blue())/3.0 ));
   Polyline( _path, Color::None, c, 0.0f ).flushFIG( stream, transform, colormap );
 
   // if ( ! _subdivisions ) {
   // Polyline::flushFIG( stream, transform, colormap );
   // return;
   // }
-// TODO : Handle extended colormap through clustering...
-//   const Point & p0 = _points[0];
-//   const Point & p1 = _points[1];
-//   const Point & p2 = _points[2];  
-//   Point p01( 0.5*(p0.x+p1.x), 0.5*(p0.y+p1.y) );
-//   Color c01( (_color0.red() + _color1.red())/2, 
-// 	     (_color0.green() + _color1.green())/2, 
-// 	     (_color0.blue() + _color1.blue())/2 );
-//   Point p12( 0.5*(p1.x+p2.x), 0.5*(p1.y+p2.y) );
-//   Color c12( (_color1.red() + _color2.red())/2, 
-// 	     (_color1.green() + _color2.green())/2, 
-// 	     (_color1.blue() + _color2.blue())/2 );
-//   Point p20( 0.5*(p2.x+p0.x), 0.5*(p2.y+p0.y) );
-//   Color c20( (_color2.red() + _color0.red())/2, 
-// 	     (_color2.green() + _color0.green())/2, 
-// 	     (_color2.blue() + _color0.blue())/2 );
-//   GouraudTriangle( p0, _color0, p20, c20, p01, c01, _subdivisions - 1, _depth ).flushFIG( stream, transform, colormap );
-//   GouraudTriangle( p1, _color1, p01, c01, p12, c12, _subdivisions - 1, _depth ).flushFIG( stream, transform, colormap );
-//   GouraudTriangle( p2, _color2, p20, c20, p12, c12, _subdivisions - 1, _depth ).flushFIG( stream, transform, colormap );
-//   GouraudTriangle( p01, c01, p12, c12, p20, c20,  _subdivisions - 1, _depth ).flushFIG( stream, transform, colormap );
+  // TODO : Handle extended colormap through clustering...
+  //   const Point & p0 = _points[0];
+  //   const Point & p1 = _points[1];
+  //   const Point & p2 = _points[2];
+  //   Point p01( 0.5*(p0.x+p1.x), 0.5*(p0.y+p1.y) );
+  //   Color c01( (_color0.red() + _color1.red())/2,
+  // 	     (_color0.green() + _color1.green())/2,
+  // 	     (_color0.blue() + _color1.blue())/2 );
+  //   Point p12( 0.5*(p1.x+p2.x), 0.5*(p1.y+p2.y) );
+  //   Color c12( (_color1.red() + _color2.red())/2,
+  // 	     (_color1.green() + _color2.green())/2,
+  // 	     (_color1.blue() + _color2.blue())/2 );
+  //   Point p20( 0.5*(p2.x+p0.x), 0.5*(p2.y+p0.y) );
+  //   Color c20( (_color2.red() + _color0.red())/2,
+  // 	     (_color2.green() + _color0.green())/2,
+  // 	     (_color2.blue() + _color0.blue())/2 );
+  //   GouraudTriangle( p0, _color0, p20, c20, p01, c01, _subdivisions - 1, _depth ).flushFIG( stream, transform, colormap );
+  //   GouraudTriangle( p1, _color1, p01, c01, p12, c12, _subdivisions - 1, _depth ).flushFIG( stream, transform, colormap );
+  //   GouraudTriangle( p2, _color2, p20, c20, p12, c12, _subdivisions - 1, _depth ).flushFIG( stream, transform, colormap );
+  //   GouraudTriangle( p01, c01, p12, c12, p20, c20,  _subdivisions - 1, _depth ).flushFIG( stream, transform, colormap );
 }
 
 void
 GouraudTriangle::flushSVG( std::ostream & stream,
-			   const TransformSVG & transform ) const
+                           const TransformSVG & transform ) const
 {
   if ( ! _subdivisions ) {
     Polyline::flushSVG( stream, transform );
@@ -1657,32 +1674,32 @@ GouraudTriangle::flushSVG( std::ostream & stream,
   }
   const Point & p0 = _path[0];
   const Point & p1 = _path[1];
-  const Point & p2 = _path[2];  
+  const Point & p2 = _path[2];
   Point p01( 0.5*(p0.x+p1.x), 0.5*(p0.y+p1.y) );
-  Color c01( (_color0.red() + _color1.red())/2, 
-	     (_color0.green() + _color1.green())/2, 
-	     (_color0.blue() + _color1.blue())/2 );
+  Color c01( (_color0.red() + _color1.red())/2,
+             (_color0.green() + _color1.green())/2,
+             (_color0.blue() + _color1.blue())/2 );
   Point p12( 0.5*(p1.x+p2.x), 0.5*(p1.y+p2.y) );
-  Color c12( (_color1.red() + _color2.red())/2, 
-	     (_color1.green() + _color2.green())/2, 
-	     (_color1.blue() + _color2.blue())/2 );
+  Color c12( (_color1.red() + _color2.red())/2,
+             (_color1.green() + _color2.green())/2,
+             (_color1.blue() + _color2.blue())/2 );
   Point p20( 0.5*(p2.x+p0.x), 0.5*(p2.y+p0.y) );
-  Color c20( (_color2.red() + _color0.red())/2, 
-	     (_color2.green() + _color0.green())/2, 
-	     (_color2.blue() + _color0.blue())/2 );
+  Color c20( (_color2.red() + _color0.red())/2,
+             (_color2.green() + _color0.green())/2,
+             (_color2.blue() + _color0.blue())/2 );
   GouraudTriangle( p0, _color0, p20, c20, p01, c01,
-		   _subdivisions - 1, _depth ).flushSVG( stream, transform );
+                   _subdivisions - 1, _depth ).flushSVG( stream, transform );
   GouraudTriangle( p1, _color1, p01, c01, p12, c12,
-		   _subdivisions - 1, _depth ).flushSVG( stream, transform );
-  GouraudTriangle( p2, _color2, p20, c20, p12, c12, 
-		   _subdivisions - 1, _depth ).flushSVG( stream, transform );
+                   _subdivisions - 1, _depth ).flushSVG( stream, transform );
+  GouraudTriangle( p2, _color2, p20, c20, p12, c12,
+                   _subdivisions - 1, _depth ).flushSVG( stream, transform );
   GouraudTriangle( p01, c01, p12, c12, p20, c20,
-		   _subdivisions - 1, _depth ).flushSVG( stream, transform ); 
+                   _subdivisions - 1, _depth ).flushSVG( stream, transform );
 }
 
 void
 GouraudTriangle::flushTikZ( std::ostream & stream,
-			    const TransformTikZ & /*transform*/ ) const
+                            const TransformTikZ & /*transform*/ ) const
 {
   // FIXME: unimplemented
   stream << "% FIXME: GouraudTriangle::flushTikZ unimplemented" << std::endl;
@@ -1770,9 +1787,9 @@ Text &
 Text::rotate( double angle )
 {
   _angle += angle;
-  if ( _angle < 0 ) 
+  if ( _angle < 0 )
     while ( _angle < M_PI ) _angle += 2 * M_PI;
-  if ( _angle > 0 ) 
+  if ( _angle > 0 )
     while ( _angle > M_PI ) _angle -= 2 * M_PI;
   return *this;
 }
@@ -1780,9 +1797,9 @@ Text::rotate( double angle )
 Text
 Text::rotated( double angle ) const
 {
-  return Text(*this).rotate( angle );  
+  return Text(*this).rotate( angle );
 }
-  
+
 Text &
 Text::translate( double dx, double dy )
 {
@@ -1836,21 +1853,21 @@ Text::clone() const {
 
 void
 Text::flushPostscript( std::ostream & stream,
-		       const TransformEPS & transform ) const
+                       const TransformEPS & transform ) const
 {
   stream << "\n% Text\n";
   stream << "gs /" << PSFontNames[ _font ] << " ff " << _size << " scf sf";
   stream << " " << transform.mapX( _position.x ) << " " << transform.mapY( _position.y ) << " m";
   if ( _angle != 0.0 ) stream << " " << (_angle/M_PI)*180.0 << " rot ";
-  stream << " (" << _text << ")" 
-	 << " " << _penColor.postscript() << " srgb"
-	 << " sh gr" << std::endl;
+  stream << " (" << _text << ")"
+         << " " << _penColor.postscript() << " srgb"
+         << " sh gr" << std::endl;
 }
 
 void
 Text::flushFIG( std::ostream & stream,
-		const TransformFIG & transform,
-		std::map<Color,int> & colormap ) const
+                const TransformFIG & transform,
+                std::map<Color,int> & colormap ) const
 {
   stream << "4 0 " ;
   // Color, depth, unused, Font
@@ -1861,47 +1878,47 @@ Text::flushFIG( std::ostream & stream,
   stream << static_cast<int>(  _size * 135 / 12.0 ) << " ";
   // Width
   stream << static_cast<int>( _text.size() * _size * 135 / 12.0 ) << " ";
-  // x y 
+  // x y
   stream << static_cast<int>( transform.mapX( _position.x ) ) << " "
-	 << static_cast<int>( transform.mapY( _position.y ) ) << " ";
+         << static_cast<int>( transform.mapY( _position.y ) ) << " ";
   stream << _text << "\\001\n";
 }
 
 void
 Text::flushSVG( std::ostream & stream,
-		       const TransformSVG & transform ) const
+                const TransformSVG & transform ) const
 {
   if ( _angle != 0.0f ) {
-    stream << "<g transform=\"translate(" 
-	   << transform.mapX( _position.x ) << ","
-	   << transform.mapY( _position.y ) << ")\" >"
-	   << "<g transform=\"rotate(" << (-_angle*180.0/M_PI) << ")\" >"
-	   << "<text x=\"0\" y=\"0\"" 
-	   << " font-family=\"" << ( _svgFont.length() ? _svgFont : PSFontNames[ _font ] ) << "\""
-	   << " font-size=\"" << _size << "\""
-	   << " fill=\"" << _penColor.svg() << "\""
-	   << _fillColor.svgAlpha( " fill" )
-	   << _penColor.svgAlpha( " stroke" )
-	   << ">"
-	   << _text
-	   << "</text></g></g>" << std::endl;
+    stream << "<g transform=\"translate("
+           << transform.mapX( _position.x ) << ","
+           << transform.mapY( _position.y ) << ")\" >"
+           << "<g transform=\"rotate(" << (-_angle*180.0/M_PI) << ")\" >"
+           << "<text x=\"0\" y=\"0\""
+           << " font-family=\"" << ( _svgFont.length() ? _svgFont : PSFontNames[ _font ] ) << "\""
+           << " font-size=\"" << _size << "\""
+           << " fill=\"" << _penColor.svg() << "\""
+           << _fillColor.svgAlpha( " fill" )
+           << _penColor.svgAlpha( " stroke" )
+           << ">"
+           << _text
+           << "</text></g></g>" << std::endl;
   } else {
     stream << "<text x=\"" << transform.mapX( _position.x )
-	   << "\" y=\"" << transform.mapY( _position.y ) << "\" "
-	   << " font-family=\"" << ( _svgFont.length() ? _svgFont : PSFontNames[ _font ] ) << "\""
-	   << " font-size=\"" << _size << "\""
-	   << " fill=\"" << _penColor.svg() << "\""
-	   << _fillColor.svgAlpha( " fill" )
-	   << _penColor.svgAlpha( " stroke" )
-	   << ">"
-	   << _text
-	   << "</text>" << std::endl;    
+           << "\" y=\"" << transform.mapY( _position.y ) << "\" "
+           << " font-family=\"" << ( _svgFont.length() ? _svgFont : PSFontNames[ _font ] ) << "\""
+           << " font-size=\"" << _size << "\""
+           << " fill=\"" << _penColor.svg() << "\""
+           << _fillColor.svgAlpha( " fill" )
+           << _penColor.svgAlpha( " stroke" )
+           << ">"
+           << _text
+           << "</text>" << std::endl;
   }
 }
 
 void
 Text::flushTikZ( std::ostream & stream,
-		 const TransformTikZ & transform ) const
+                 const TransformTikZ & transform ) const
 {
   // FIXME: honor font-size
   static const char BOLD_FONT =	0x01;
@@ -1947,14 +1964,14 @@ Text::flushTikZ( std::ostream & stream,
   };
 
   stream << "\\path[" << tikzProperties(transform) << "] ("
-	 << transform.mapX( _position.x ) << ',' << transform.mapY( _position.y )
-	 << ") node {"
-	 << (fontTraits[ _font ] & ITALIC_FONT ? "\\itshape " : "")
-	 << (fontTraits[ _font ] & BOLD_FONT ? "\\bfseries " : "")
-	 << (fontTraits[ _font ] & MONOSPACE_FONT ? "\\ttfamily " : "")
-	 << (fontTraits[ _font ] & SANSSERIF_FONT ? "\\sffamily " : "")
-	 << _text
-	 << "};" << std::endl;
+         << transform.mapX( _position.x ) << ',' << transform.mapY( _position.y )
+         << ") node {"
+         << (fontTraits[ _font ] & ITALIC_FONT ? "\\itshape " : "")
+         << (fontTraits[ _font ] & BOLD_FONT ? "\\bfseries " : "")
+         << (fontTraits[ _font ] & MONOSPACE_FONT ? "\\ttfamily " : "")
+         << (fontTraits[ _font ] & SANSSERIF_FONT ? "\\sffamily " : "")
+         << _text
+         << "};" << std::endl;
 }
 
 Rect

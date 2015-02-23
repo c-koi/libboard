@@ -42,6 +42,34 @@ struct ShapeList : public Shape {
 
   ShapeList( const ShapeList & other );
 
+  /**
+   * Create a ShapeList by repeating a shape (translation & scaling)
+   * @param shape The shape to be repeated.
+   * @param times The number of repetitions.
+   * @param dx The x shift between two repetitions.
+   * @param dy The y shift between two repetitions.
+   * @param scale The scaling factor between two repetitions.
+   */
+  ShapeList( const Shape & shape,
+             unsigned int times,
+             double dx, double dy, double scale );
+
+  /**
+   * Create a ShapeList by repeating a shape (translation, scaling & rotation)
+   * @param shape The shape to be repeated.
+   * @param times The number of repetitions.
+   * @param dx The x shift between two repetitions.
+   * @param dy The y shift between two repetitions.
+   * @param scaleX The x scaling factor between two repetitions.
+   * @param scaleY The y scaling factor between two repetitions.
+   * @param angle The rotation angle between two repetitions.
+   */
+  ShapeList( const Shape & shape,
+             unsigned int times,
+             double dx, double dy,
+             double scaleX, double scaleY,
+             double angle );
+
   ~ShapeList();
 
   /**

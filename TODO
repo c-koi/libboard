@@ -1,5 +1,9 @@
 **** Group clipping 
 
+* Configure script : check presence of ImageMagick C++ API.
+
+* Bitmap insertion
+
 * Rotated text.
 
 * Color quantization
@@ -15,12 +19,11 @@
 * FIG export
    Handle figures having more than 512 color used when exporting FIG
    files.
+
 * Text bounding box
   Text bounding box is only roughly  handled yet. Take care of it!
 
 * SVG gzipped file support
-
-* Bitmap insertion
 
 * Handle arrow ends properly in SVG
    (using markers, see http://www.w3.org/TR/SVG11/painting.html)

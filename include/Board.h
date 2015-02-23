@@ -34,6 +34,7 @@
 #include "board/Point.h"
 #include "board/Path.h"
 #include "board/Shapes.h"
+#include "board/Image.h"
 #include "board/ShapeList.h"
 
 namespace LibBoard {
@@ -636,7 +637,9 @@ public:
    */
   void addDuplicates( const Shape & shape,
                       std::size_t times,
-                      double dx, double dy, double scale = 1.0 );
+                      double dx,
+                      double dy,
+                      double scale = 1.0 );
 
   /**
    * Insert duplicates of a shape, n times, starting at its current position
@@ -648,14 +651,12 @@ public:
    * @param dy The y shift.
    * @param scaleX An x scale factor between each copy.
    * @param scaleY A y scale factor between each copy.
-   * @param scaleY A y scale factor between each copy.
    * @param angle An angular increment.
    */
   void addDuplicates( const Shape & shape,
                       std::size_t times,
                       double dx, double dy,
-                      double scaleX,
-                      double scaleY,
+                      double scaleX, double scaleY,
                       double angle = 0.0 );
 
   /**

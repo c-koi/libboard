@@ -48,7 +48,7 @@ struct Path {
     : _points( points ), _closed( closed ) { }
 
   Path( bool closed ) : _closed( closed ) { }
-  
+
   inline void clear();
 
   inline bool closed() const;
@@ -58,7 +58,7 @@ struct Path {
   inline std::size_t size() const;
 
   inline void setClosed( bool closed  );
-  
+
   /**
    * Barycenter of the path
    * @return
@@ -132,7 +132,7 @@ struct Path {
    * @return
    */
   Path & rotate( double angle );
-  
+
   /**
    *
    *
@@ -180,7 +180,8 @@ struct Path {
    * @return
    */
   Path & scale( double s );
-  
+
+
   /**
    *
    *
@@ -202,10 +203,10 @@ struct Path {
 
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const;
-  
+
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform ) const;
-  
+
   void flushSVGPoints( std::ostream & stream,
                        const TransformSVG & transform ) const;
 

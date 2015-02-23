@@ -308,59 +308,6 @@ protected:
 
 };
 
-
-inline Rect
-Shape::bbox()
-{
-  return this->boundingBox();
-}
-
-
-inline Shape &
-Shape::operator++()
-{
-  ++_depth;
-  return *this;
-}
-
-inline Shape &
-Shape::operator--()
-{
-  --_depth;
-  return *this;
-}
-
-
-inline int
-Shape::depth() const
-{
-  return _depth;
-}
-
-inline const Color &
-Shape::penColor() const
-{
-  return _penColor;
-}
-
-const Color &
-Shape::fillColor() const
-{
-  return _fillColor;
-}
-
-Shape &
-Shape::rotateDeg( double angle, const Point & center )
-{
-  return rotate( angle * ( M_PI / 180.0 ), center );
-}
-
-Shape &
-Shape::rotateDeg( double angle )
-{
-  return rotate( angle * ( M_PI / 180.0 ), center() );
-}
-
 /**
  * The dot structure. This primitive ha been reported as "missing" by
  * Manuel Peinado from Spain. Manuel also suggested
@@ -424,7 +371,6 @@ struct Dot : public Shape {
   Dot rotated( double angle ) const;
 
   /**
-   *
    *
    * @param dx
    * @param dy
@@ -711,7 +657,8 @@ private:
  * The polyline structure.
  * @brief A polygonal line described by a series of 2D points.
  */
-struct Polyline : public Shape { 
+struct Polyline : public Shape {
+
   inline Polyline( const std::vector<Point> & points,
                    bool closed,
                    Color penColor, Color fillColor,
@@ -765,6 +712,16 @@ struct Polyline : public Shape {
     return _path[ n ];
   }
 
+  /**
+   * Returns the n-th point of the polyline.
+   *
+   * @param i
+   *
+   * @return
+   */
+  const Point & operator[]( const std::size_t n ) const {
+    return _path[ n ];
+  }
 
   Polyline & rotate( double angle, const Point & center );
 
@@ -842,6 +799,8 @@ struct Polyline : public Shape {
 
   Polyline * clone() const;
 
+  inline unsigned int vertexCount() const;
+
 private:
   static const std::string _name; /**< The generic name of the shape. */
 
@@ -880,12 +839,12 @@ struct Rectangle : public Polyline {
 
   double x() const { return _path[0].x; }
   double y() const { return _path[0].y; }
-  double width() { return (_path[1] - _path[0]).norm(); }
-  double height() { return (_path[0] - _path[3]).norm(); }
-  Point topLeft() { return Point( _path[0].x, _path[0].y ); }
-  Point topRight() { return Point( _path[1].x, _path[1].y ); }
-  Point bottomLeft() { return Point( _path[3].x, _path[3].y ); }
-  Point bottomRight() { return Point( _path[2].x, _path[2].y ); }
+  double width() const { return (_path[1] - _path[0]).norm(); }
+  double height() const { return (_path[0] - _path[3]).norm(); }
+  Point topLeft() const { return Point( _path[0].x, _path[0].y ); }
+  Point topRight() const { return Point( _path[1].x, _path[1].y ); }
+  Point bottomLeft() const { return Point( _path[3].x, _path[3].y ); }
+  Point bottomRight() const { return Point( _path[2].x, _path[2].y ); }
 
 
   /**
@@ -918,12 +877,12 @@ struct Rectangle : public Polyline {
   Rectangle translated( double dx, double dy ) const;
 
   /**
-   * Returns a scaled copy of the arrow.
+   * Returns a scaled copy of the rectangle.
    *
    * @param sx Scale factor along the x axis.
    * @param sy Scale factor along the y axis.
    *
-   * @return A scaled copy of the arrow.
+   * @return A scaled copy of the rectangle.
    */
   Rectangle scaled( double sx, double sy ) const;
 

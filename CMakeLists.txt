@@ -8,6 +8,26 @@ ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+find_package(ImageMagick COMPONENTS Magick++)
+IF ( ImageMagick_Magick++_FOUND )
+  SET( Board_Have_MagickPlusPlus 1 )
+  INCLUDE_DIRECTORIES( ${ImageMagick_INCLUDE_DIRS} )
+ELSE( ImageMagick_Magick++_FOUND )
+  SET( Board_Have_MagickPlusPlus 0 )
+ENDIF( ImageMagick_Magick++_FOUND )
+
+IF ( WIN32 )
+ SET( Board_Win32 1 )
+ELSE ( WIN32 )
+ SET( Board_Win32 0 )
+ENDIF ( WIN32 )
+
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/include/BoardConfig.h.in"
+  "${PROJECT_SOURCE_DIR}/include/BoardConfig.h"
+)
+
 IF(MSVC)
   SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc /RTCsu /W3")
   SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /EHsc /RTCsu /W3")
@@ -72,7 +92,7 @@ IF(NOT MYPROJ_RAN_ONCE)
 
 ENDIF(NOT MYPROJ_RAN_ONCE)
 
-INCLUDE_DIRECTORIES( include/ )
+INCLUDE_DIRECTORIES( include/ include/board )
 
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib/ )
 
@@ -82,21 +102,24 @@ SET(lib_src
   src/Rect.cpp
   src/Path.cpp
   src/Shapes.cpp
+  src/Image.cpp
   src/ShapeList.cpp
   src/Transforms.cpp
+  src/TransformMatrix.cpp
   src/Tools.cpp
   src/PSFonts.cpp
 
-  include/BoardConfig.h
-  include/Board.h 
+  include/Board.h
+  include/board/Color.h
+  include/board/Image.h
+  include/board/PSFonts.h
+  include/board/Path.h
   include/board/Point.h
   include/board/Rect.h
-  include/board/Color.h
-  include/board/Path.h
-  include/board/PSFonts.h
   include/board/ShapeList.h
   include/board/Shapes.h
   include/board/Tools.h
+  include/board/TransformMatrix.h
   include/board/Transforms.h
   )
 
@@ -109,7 +132,7 @@ SET_TARGET_PROPERTIES(board-dynamic PROPERTIES PREFIX "lib")
 
 FOREACH( EXAMPLE logo example1 example2 example3 example4
     arithmetic ellipse graph arrows  ruler koch clipping
-    flag scale_ellipse line_style )
+    flag scale_ellipse line_style images )
   ADD_EXECUTABLE(
     ${EXAMPLE}
     examples/${EXAMPLE}.cpp
@@ -119,6 +142,10 @@ FOREACH( EXAMPLE logo example1 example2 example3 example4
     debug board_d
     optimized board
     )
+  TARGET_LINK_LIBRARIES(
+   ${EXAMPLE}
+   ${ImageMagick_LIBRARIES}
+  )
   SET_TARGET_PROPERTIES(${EXAMPLE} PROPERTIES DEBUG_POSTFIX _d)
 ENDFOREACH(EXAMPLE)
 

@@ -3,8 +3,8 @@
  * @file   Path.cpp
  * @author Sebastien Fourey (GREYC)
  * @date   Aug 2009
- * 
- * @brief  
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -46,8 +46,8 @@ Path::operator<<( const Point & p )
 Point
 Path::center() const {
   Rect bbox = boundingBox();
-  return Point( bbox.left + bbox.width/2.0, 
-		bbox.top  - bbox.height/2.0 );
+  return Point( bbox.left + bbox.width/2.0,
+                bbox.top  - bbox.height/2.0 );
 }
 
 Path &
@@ -129,7 +129,7 @@ Path::scale( double sx, double sy )
   }
   Point delta = c - center();
   translate( delta.x, delta.y );
-  return *this;  
+  return *this;
 }
 
 Path &
@@ -163,7 +163,7 @@ Path::scaleAll( double s )
 
 void
 Path::flushPostscript( std::ostream & stream,
-		       const TransformEPS & transform ) const
+                       const TransformEPS & transform ) const
 {
   if ( _points.empty() )
     return;
@@ -182,7 +182,7 @@ Path::flushPostscript( std::ostream & stream,
 
 void
 Path::flushFIG( std::ostream & stream,
-		const TransformFIG & transform ) const
+                const TransformFIG & transform ) const
 {
   if ( _points.empty() )
     return;
@@ -191,25 +191,25 @@ Path::flushFIG( std::ostream & stream,
   std::vector<Point>::const_iterator end = _points.end();
   while ( i != end ) {
     stream << " " << static_cast<int>( transform.mapX( i->x ) )
-	   << " " << static_cast<int>( transform.mapY( i->y ) );
+           << " " << static_cast<int>( transform.mapY( i->y ) );
     ++i;
   }
-  if ( _closed ) { 
+  if ( _closed ) {
     stream << " " << static_cast<int>( transform.mapX( _points.begin()->x ) )
-	   << " " << static_cast<int>( transform.mapY( _points.begin()->y ) );
-  }  
+           << " " << static_cast<int>( transform.mapY( _points.begin()->y ) );
+  }
 }
 
 void
 Path::flushSVGCommands( std::ostream & stream,
-			const TransformSVG & transform ) const
+                        const TransformSVG & transform ) const
 {
   if ( _points.empty() )
     return;
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
   int count = 0;
-  
+
   stream << "M " << transform.mapX( i->x ) << " " << transform.mapY( i->y );
   ++i;
   while ( i != end ) {
@@ -218,13 +218,13 @@ Path::flushSVGCommands( std::ostream & stream,
     count = ( count + 1 ) % 6;
     if ( !count ) stream << "\n                  ";
   }
-  if ( _closed ) 
+  if ( _closed )
     stream << " Z" << std::endl;
 }
 
 void
 Path::flushSVGPoints( std::ostream & stream,
-		      const TransformSVG & transform ) const
+                      const TransformSVG & transform ) const
 {
   if ( _points.empty() )
     return;
@@ -243,7 +243,7 @@ Path::flushSVGPoints( std::ostream & stream,
 
 void
 Path::flushTikZPoints( std::ostream & stream,
-		       const TransformTikZ & transform ) const
+                       const TransformTikZ & transform ) const
 {
   if ( _points.empty() )
     return;
@@ -253,7 +253,7 @@ Path::flushTikZPoints( std::ostream & stream,
   ++i;
   while ( i != end ) {
     stream << " -- "
-	   << '(' << transform.mapX( i->x ) << "," << transform.mapY( i->y ) << ')';
+           << '(' << transform.mapX( i->x ) << "," << transform.mapY( i->y ) << ')';
     ++i;
   }
 }
@@ -271,15 +271,15 @@ Path::boundingBox() const
   rect.width = 0.0;
   rect.height = 0.0;
   ++i;
-  while ( i != end ) { 
-    if ( i->x < rect.left ) { 
+  while ( i != end ) {
+    if ( i->x < rect.left ) {
       double dw = rect.left - i->x;
       rect.left = i->x;
       rect.width += dw;
     } else if ( i->x > rect.left + rect.width ) {
       rect.width = i->x - rect.left;
     }
-    if ( i->y > rect.top ) { 
+    if ( i->y > rect.top ) {
       double dh = i->y - rect.top;
       rect.top = i->y;
       rect.height += dh;

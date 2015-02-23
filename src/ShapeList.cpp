@@ -47,6 +47,40 @@ ShapeList::name() const
   return _name;
 }
 
+ShapeList::ShapeList( const Shape & shape,
+                      unsigned int times,
+                      double dx, double dy,
+                      double scale )
+  : Shape( Color::None, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, -1 ),
+    _nextDepth( std::numeric_limits<int>::max() - 1 )
+{
+  Shape * s = shape.clone();
+  while ( times-- ) {
+    (*this) << (*s);
+    if ( scale != 1.0 )
+      s->scale( scale );
+    s->translate( dx, dy );
+  }
+  delete s;
+}
+
+ShapeList::ShapeList( const Shape & shape,
+                      unsigned int times,
+                      double dx, double dy,
+                      double scaleX, double scaleY,
+                      double angle )
+  : Shape( Color::None, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, -1 ),
+    _nextDepth( std::numeric_limits<int>::max() - 1 )
+{
+  Shape * s = shape.clone();
+  while ( times-- ) {
+    (*this) << (*s);
+    if ( scaleX != 1.0 || scaleY != 1.0 ) s->scale( scaleX, scaleY );
+    if ( dx != 0.0 || dy != 0.0 ) s->translate( dx, dy );
+    if ( angle != 0.0 ) s->rotate( angle );
+  }
+  delete s;
+}
 ShapeList::~ShapeList()
 {
   free();
@@ -142,8 +176,10 @@ ShapeList::addShape( const Shape & shape, double scaleFactor )
     while ( i != end ) {
       Shape * s = (*i)->clone();
       s->depth( _nextDepth-- );
-      if ( scaleFactor != 1.0 )
+      if ( scaleFactor != 1.0 ) {
         s->scaleAll( scaleFactor );
+      }
+
       _shapes.push_back( s );
       ++i;
     }
@@ -151,8 +187,9 @@ ShapeList::addShape( const Shape & shape, double scaleFactor )
     Shape * s = shape.clone();
     if ( s->depth() == -1 )
       s->depth( _nextDepth-- );
-    if ( scaleFactor != 1.0 )
+    if ( scaleFactor != 1.0 ) {
       s->scaleAll( scaleFactor );
+    }
     _shapes.push_back( s );
     if ( typeid( shape ) == typeid( Group ) ) {
       _nextDepth = dynamic_cast<const Group&>(shape).minDepth() - 1;

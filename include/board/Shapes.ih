@@ -3,7 +3,7 @@
  * @file   Shapes.ih
  * @author Sebastien Fourey (GREYC)
  * @date   Feb. 2010
- * 
+ *
  * @brief  Shapes inline methods
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -27,122 +27,180 @@
 namespace LibBoard {
 
 Shape::Shape( Color penColor, Color fillColor,
-	      double lineWidth, 
-	      LineStyle style,
-	      const LineCap cap,
-	      const LineJoin join,
-	      int depth )
-  : _depth( depth ),
-    _penColor( penColor ),
-    _fillColor( fillColor ), 
-    _lineWidth( lineWidth ),
-    _lineStyle( style ),
-    _lineCap( cap ), 
-    _lineJoin( join )
+              double lineWidth,
+              LineStyle style,
+              const LineCap cap,
+              const LineJoin join,
+              int depth )
+   : _depth( depth ),
+     _penColor( penColor ),
+     _fillColor( fillColor ),
+     _lineWidth( lineWidth ),
+     _lineStyle( style ),
+     _lineCap( cap ),
+     _lineJoin( join )
 {
 }
 
+
+Rect
+Shape::bbox()
+{
+  return this->boundingBox();
+}
+
+Shape &
+Shape::operator++()
+{
+  ++_depth;
+  return *this;
+}
+
+Shape &
+Shape::operator--()
+{
+  --_depth;
+  return *this;
+}
+
+
+int
+Shape::depth() const
+{
+  return _depth;
+}
+
+const Color &
+Shape::penColor() const
+{
+  return _penColor;
+}
+
+const Color &
+Shape::fillColor() const
+{
+  return _fillColor;
+}
+
+Shape &
+Shape::rotateDeg( double angle, const Point & center )
+{
+  return rotate( angle * ( M_PI / 180.0 ), center );
+}
+
+Shape &
+Shape::rotateDeg( double angle )
+{
+  return rotate( angle * ( M_PI / 180.0 ), center() );
+}
+
 Dot::Dot( double x, double y,
-	  Color color, 
-	  double lineWidth,
-	  int depth )
-  : Shape( color, 
-	   Color::None, 
-	   lineWidth, SolidStyle, RoundCap, MiterJoin, depth ),
-    _x( x ), _y( y ) 
+          Color color,
+          double lineWidth,
+          int depth )
+   : Shape( color,
+            Color::None,
+            lineWidth, SolidStyle, RoundCap, MiterJoin, depth ),
+     _x( x ), _y( y )
 {
 }
 
 Line::Line( double x1, double y1, double x2, double y2, 
-	    Color color, 
-	    double lineWidth,
-	    const LineStyle style,
-	    const LineCap cap,
-	    const LineJoin join,
-	    int depth )
-  : Shape( color, Color::None, lineWidth, style, cap, join, depth ),
-    _x1( x1 ), _y1( y1 ), _x2( x2 ), _y2( y2 )
+            Color color,
+            double lineWidth,
+            const LineStyle style,
+            const LineCap cap,
+            const LineJoin join,
+            int depth )
+   : Shape( color, Color::None, lineWidth, style, cap, join, depth ),
+     _x1( x1 ), _y1( y1 ), _x2( x2 ), _y2( y2 )
 {
 }
 
 
 Arrow::Arrow( double x1, double y1, double x2, double y2,
-	      Color penColor, Color fillColor,
-	      double lineWidth, 
-	      const LineStyle style,
-	      const LineCap cap,
-	      const LineJoin join,
-	      int depth )
-  : Line( x1, y1, x2, y2, penColor, lineWidth, style, cap, join, depth ) 
+              Color penColor, Color fillColor,
+              double lineWidth,
+              const LineStyle style,
+              const LineCap cap,
+              const LineJoin join,
+              int depth )
+   : Line( x1, y1, x2, y2, penColor, lineWidth, style, cap, join, depth )
 {
-  Shape::_fillColor = fillColor;
+   Shape::_fillColor = fillColor;
 }
 
 Polyline::Polyline( const std::vector<Point> & points, 
-		    bool closed,
-		    Color penColor, Color fillColor,
-		    double lineWidth,
-		    const LineStyle lineStyle,
-		    const LineCap cap,
-		    const LineJoin join,
-		    int depth )
-  : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth ),
-    _path( points, closed )
+                    bool closed,
+                    Color penColor, Color fillColor,
+                    double lineWidth,
+                    const LineStyle lineStyle,
+                    const LineCap cap,
+                    const LineJoin join,
+                    int depth )
+   : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth ),
+     _path( points, closed )
 {
 }
 
 Polyline::Polyline( const Path & path, 
-		    Color penColor, Color fillColor,
-		    double lineWidth,
-		    const LineStyle lineStyle,
-		    const LineCap cap,
-		    const LineJoin join,
-		    int depth )
-  : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth ),
-    _path( path )
+                    Color penColor, Color fillColor,
+                    double lineWidth,
+                    const LineStyle lineStyle,
+                    const LineCap cap,
+                    const LineJoin join,
+                    int depth )
+   : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth ),
+     _path( path )
 {
 }
 
 Polyline::Polyline( bool closed, Color penColor, Color fillColor,
-		    double lineWidth,
-		    const LineStyle lineStyle,
-		    const LineCap cap,
-		    const LineJoin join,
-		    int depth )
-  : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth ),
-    _path( closed )
+                    double lineWidth,
+                    const LineStyle lineStyle,
+                    const LineCap cap,
+                    const LineJoin join,
+                    int depth )
+   : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth ),
+     _path( closed )
 {
 }
 
-Rectangle::Rectangle( double left, double top, double width, double height,
-		      Color penColor, Color fillColor,
-		      double lineWidth, 
-		      const LineStyle style,
-		      const LineCap cap,
-		      const LineJoin join,
-		      int depth )
-  : Polyline( std::vector<Point>(), true, penColor, fillColor,
-	      lineWidth, style, cap, join, depth )
+unsigned int
+Polyline::vertexCount() const
 {
-  _path <<  Point( left, top );
-  _path << Point( left + width, top );
-  _path << Point( left + width, top - height );
-  _path << Point( left, top - height );
+   return _path.size();
 }
-  
+
+Rectangle::Rectangle( double left, double top, double width, double height,
+                      Color penColor, Color fillColor,
+                      double lineWidth,
+                      const LineStyle style,
+                      const LineCap cap,
+                      const LineJoin join,
+                      int depth )
+   : Polyline( std::vector<Point>(), true, penColor, fillColor,
+               lineWidth, style, cap, join, depth )
+{
+   _path << Point( left, top );
+   _path << Point( left + width, top );
+   _path << Point( left + width, top - height );
+   _path << Point( left, top - height );
+}
+
 Rectangle::Rectangle( const Rect & rect,
-		      Color penColor, Color fillColor,
-		      double lineWidth,
-		      const LineStyle style,
-		      const LineCap cap,
-		      const LineJoin join,
-		      int depth )
-  : Polyline( std::vector<Point>(), true, penColor, fillColor,
-	      lineWidth, style, cap, join, depth ) {
-  _path << Point( rect.left, rect.top );
-  _path << Point( rect.left + rect.width, rect.top );
-  _path << Point( rect.left + rect.width, rect.top - rect.height );
-  _path << Point( rect.left, rect.top - rect.height );
+                      Color penColor, Color fillColor,
+                      double lineWidth,
+                      const LineStyle style,
+                      const LineCap cap,
+                      const LineJoin join,
+                      int depth )
+   : Polyline( std::vector<Point>(), true, penColor, fillColor,
+               lineWidth, style, cap, join, depth ) {
+   _path << Point( rect.left, rect.top );
+   _path << Point( rect.left + rect.width, rect.top );
+   _path << Point( rect.left + rect.width, rect.top - rect.height );
+   _path << Point( rect.left, rect.top - rect.height );
 }
 
 

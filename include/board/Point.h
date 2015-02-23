@@ -27,6 +27,7 @@
 #define _BOARD_POINT_H_
 
 #include <cmath>
+#include <iostream>
 
 namespace LibBoard {
 
@@ -98,7 +99,7 @@ struct Point {
   
   inline Point & operator/=( double s );
 
-  inline Point operator-();
+  inline Point operator-() const;
   
   inline double norm() const;
   
@@ -228,9 +229,17 @@ Point::norm() const
   return sqrt( x*x + y*y );
 }
 
-Point Point::operator-()
+Point
+Point::operator-() const
 {
   return Point( -x, -y );
+}
+
+inline
+std::ostream &
+operator<<( std::ostream & out, const Point & p )
+{
+  return out << "Point(" << p.x << "," << p.y << ")";
 }
 
 } // mamespace BoardLib

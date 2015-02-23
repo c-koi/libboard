@@ -29,6 +29,7 @@
 #include <limits>
 #include <vector>
 #include <cmath>
+#include "TransformMatrix.h"
 
 namespace LibBoard {
 
@@ -46,6 +47,7 @@ public:
   virtual ~Transform() { };
   virtual double mapX( double x ) const;
   virtual double mapY( double y ) const = 0;
+  Point map( const Point & ) const;
   virtual void apply( double & x, double & y ) const;
   virtual double scale( double x ) const;
   virtual double rounded( double x ) const;
@@ -113,6 +115,11 @@ public:
                        const double pageWidth,
                        const double pageHeight,
                        const double margin );
+  TransformMatrix matrix() const;
+  Point translation() const;
+  double deltaX() const;
+  double deltaY() const;
+
 };
 
 /**

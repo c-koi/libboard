@@ -55,10 +55,11 @@ struct Rect {
         double width = 0.0f, double height = 0.0f )
     :left( left ), top( top ), width( width ), height( height ) { }
 
-  Point topLeft() { return Point( left, top ); }
-  Point topRight() { return Point( left + width, top ); }
-  Point bottomLeft() { return Point( left, top - height ); }
-  Point bottomRight() { return Point( left + width, top - height ); }
+  Point topLeft() const { return Point( left, top ); }
+  Point topRight() const { return Point( left + width, top ); }
+  Point bottomLeft() const { return Point( left, top - height ); }
+  Point bottomRight() const { return Point( left + width, top - height ); }
+  Point center() const { return Point(left+width/2.0,top-height/2.0); }
 };
 
 /** 

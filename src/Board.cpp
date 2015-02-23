@@ -46,6 +46,7 @@
 #endif
 
 namespace {
+
 const float pageSizes[][2] = { { 0.0f, 0.0f },               // BoundingBox
                                { 841.0f, 1189.0f },          // A0
                                { 594.0f, 841.0f },           // A1
@@ -62,6 +63,7 @@ const float pageSizes[][2] = { { 0.0f, 0.0f },               // BoundingBox
                                { 8.5f*25.4f, 14.0f*25.4f },  // Legal
                                { 7.2f*25.4f, 10.5f*25.4f }   // Executive
                              };
+
 const float ppmm = 720.0f / 254.0f;
 }
 

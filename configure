@@ -79,10 +79,43 @@ fi
 ##
 ON_PLACE=no
 if [ -e ${PREFIX}/include/Board.h -a ./include/Board.h -ef ${PREFIX}/include/Board.h ]; then
-ON_PLACE=yes
-$ECHO Installation on current dir required.
+    ON_PLACE=yes
+    $ECHO Installation on current dir required.
 fi
 
+##
+## ImageMagick Magick++ ?
+##
+${ECHO} -n "Looking for ImageMagick C++ API..."
+cat > check_magick.cpp <<EOF
+#include <Magick++.h>
+int main() {
+  Magick::Image image;
+  try { 
+   image.read("resources/avatar.png");
+  } 
+  catch ( ... )  { 
+      return 1; 
+  } 
+  return 0;
+}
+EOF
+g++ -o check_magick check_magick.cpp `Magick++-config --cppflags --cxxflags --ldflags --libs` > /dev/null 2>&1
+./check_magick > /dev/null 2>&1 
+if [ $? = 0 ]; then
+    MAGICKPLUSPLUS=1
+    IMAGE_SAMPLES="bin/images"
+    IMAGE_CXXFLAGS=$(Magick++-config --cxxflags)
+    IMAGE_LDFLAGS=$(Magick++-config --ldflags)
+    echo "Found"
+else
+    MAGICKPLUSPLUS=0
+    IMAGE_SAMPLES=""
+    IMAGE_CXXFLAGS=""
+    IMAGE_LDFLAGS=""
+    echo "Not found"
+fi
+rm -f check_magick check_magick.cpp > /dev/null 2>&1
 
 ##
 ## Doxygen ?
@@ -90,7 +123,7 @@ fi
 DOXYGEN_TARGET=""
 if [ -n "$DOXYGEN" ]; then
     ${ECHO} -n "Looking for doxygen..."
-    if ( $DOXYGEN --version > /dev/null ); then
+    if ( $DOXYGEN --version > /dev/null 2>&1 ); then
 	echo "Found"
 	LICENSE=LICENSE.gz
 	DOXYGEN_TARGET="doc"
@@ -156,11 +189,11 @@ ARFLAGS=rsv
 LN=ln -s
 
 CXXFLAGSOBJ=-O3 -ansi -pedantic -Wall -W ${DEBUG} -I./include ${CXX64FLAGS}
-CXXFLAGSEXEC=-O3 -ansi -pedantic -Wall -W ${DEBUG} -I./include
+CXXFLAGSEXEC=-O3 -ansi  -pedantic -Wall -W ${DEBUG} -I./include
 
 .PHONY: all clean install examples lib doc
 
-OBJS=obj/Board.o obj/Transforms.o obj/Path.o obj/Shapes.o obj/ShapeList.o obj/Rect.o obj/Color.o obj/Tools.o obj/PSFonts.o
+OBJS=obj/Board.o obj/Transforms.o obj/Path.o obj/Shapes.o obj/ShapeList.o obj/Rect.o obj/Color.o obj/Tools.o obj/PSFonts.o obj/TransformMatrix.o obj/Image.o
 
 all: lib examples ${DOXYGEN_TARGET}
 
@@ -169,16 +202,31 @@ EOF
 LIBDEP="lib: \$(STATICLIB)"
 [ "$STATIC_LIB_ONLY" = "no" ] && LIBDEP="lib: \$(STATICLIB) \$(DYNLIB)"
 
+${ECHO} -n "Checking plateform..."
+WIN32=0
+case $(uname) in
+    Linux ) WIN32=0; PLATEFORM=Linux ;;
+    Darwin) WIN32=0; PLATEFORM="Mac OS X" ;;
+    Darwin ) WIN32=0; PLATEFORM="Mac OS X" ;;
+    MINGW* ) WIN32=1; PLATEFORM="Win32/Mingw" ;;
+    CYGWIN* ) WIN32=0; PLATEFORM="Cygwin" ;;
+esac
+${ECHO} $PLATEFORM
+
+${ECHO} -n "Creating include/BoardConfig.h..."
+sed -e 's/@Board_Have_MagickPlusPlus@/'${MAGICKPLUSPLUS}'/' -e 's/@Board_Win32@/'${WIN32}'/' include/BoardConfig.h.in > include/BoardConfig.h
+${ECHO} "done."
+
 ${ECHO} -n "Creating Makefile..."
 cat >> Makefile <<EOF
 $LIBDEP
 
-examples: lib bin/example1 bin/example2 bin/example3 bin/example4 bin/arithmetic bin/arrows bin/ellipse bin/koch bin/logo bin/graph bin/ruler bin/clipping bin/flag bin/scale_ellipse bin/line_style
+examples: lib bin/example1 bin/example2 bin/example3 bin/example4 bin/arithmetic bin/arrows bin/ellipse bin/koch bin/logo bin/graph bin/ruler bin/clipping bin/flag bin/scale_ellipse bin/line_style ${IMAGE_SAMPLES}
 
 
 \$(DYNLIB): \$(OBJS)
 	\$(RM) \$@
-	\$(LD) -o \$@ \$(LDFLAGSLIB) \$(OBJS)
+	\$(LD) -o \$@ \$(LDFLAGSLIB) \$(OBJS)  ${IMAGE_LDFLAGS}
 	chmod 755 \$@
 
 \$(STATICLIB): \$(OBJS)
@@ -187,13 +235,13 @@ examples: lib bin/example1 bin/example2 bin/example3 bin/example4 bin/arithmetic
 	chmod 644 \$@
 
 obj/%.o: src/%.cpp  include/board/%.h
-	\$(CXX) \$(CXXFLAGSOBJ) -c -o \$@ \$<
+	\$(CXX) \$(CXXFLAGSOBJ) ${IMAGE_CXXFLAGS} -c -o \$@ \$<
 
 obj/Board.o: src/Board.cpp include/Board.h
-	\$(CXX) \$(CXXFLAGSOBJ) -c -o \$@ \$<
+	\$(CXX) \$(CXXFLAGSOBJ) ${IMAGE_CXXFLAGS} -c -o \$@ \$<
 
 bin/%: examples/%.cpp \$(STATICLIB)
-	\$(CXX) \$(CXXFLAGSEXEC) -o \$@ \$< \$(STATICLIB)
+	\$(CXX) \$(CXXFLAGSEXEC) -o \$@ \$< ${IMAGE_CXXFLAGS} ${IMAGE_LDFLAGS} \$(STATICLIB)
 
 clean:
 	rm -f obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ *~
@@ -236,6 +284,18 @@ install-doc: doc
 EOF
 
 ${ECHO} "done."
+
+if [ $MAGICKPLUSPLUS = 0 ]; then
+cat <<EOF
+
+*******************************[ Warning ]**************************************
+ImageMagick C++ API (Magick++) was not found. Hence inclusion of bitmap images
+will be possible only in SVG files (not in Postscript or FIG files). You may
+continue, or install Magick++ for full support of images.
+
+EOF
+fi
+
 cat <<EOF
 
 Possible commands are:
@@ -244,5 +304,3 @@ Possible commands are:
  make doc
  make install-doc  (Will install in ${PREFIX}/share/doc/libboard)
 EOF
-
-
