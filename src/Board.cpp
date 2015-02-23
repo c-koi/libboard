@@ -997,7 +997,10 @@ Board::saveSVG( std::ostream & out, double pageWidth, double pageHeight, double 
     out << "     viewBox=\"0 0 "
         << pageWidth * ppmm  << " "
         << pageHeight * ppmm  << "\" " << std::endl;
-    out << "     xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" >" << std::endl;
+    out << "     xmlns=\"http://www.w3.org/2000/svg\""
+	<< " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+	<< " version=\"1.1\" >"
+	<< std::endl;
   } else {
     out << "<svg width=\""
         << ( bbox.width / ppmm )  << "mm"
@@ -1007,7 +1010,10 @@ Board::saveSVG( std::ostream & out, double pageWidth, double pageHeight, double 
     out << "     viewBox=\"0 0 "
         << bbox.width  << " "
         << bbox.height << "\" " << std::endl;
-    out << "     xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" >" << std::endl;
+    out << "     xmlns=\"http://www.w3.org/2000/svg\""
+	<< " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+	<< " version=\"1.1\" >"
+	<< std::endl;
   }
 
   out << "<desc>"
