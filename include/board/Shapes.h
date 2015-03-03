@@ -799,7 +799,7 @@ struct Polyline : public Shape {
 
   Polyline * clone() const;
 
-  inline unsigned int vertexCount() const;
+  inline std::size_t vertexCount() const;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
