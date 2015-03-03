@@ -166,7 +166,7 @@ Polyline::Polyline( bool closed, Color penColor, Color fillColor,
 {
 }
 
-unsigned int
+std::size_t
 Polyline::vertexCount() const
 {
    return _path.size();
