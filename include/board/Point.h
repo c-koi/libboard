@@ -3,7 +3,7 @@
  * @file   Point.h
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
- * 
+ *
  * @brief  The Point structure.
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -33,56 +33,56 @@ namespace LibBoard {
 
 /**
  * The Point structure.
- * @brief Struct representing a 2D point. 
+ * @brief Struct representing a 2D point.
  */
 struct Point {
-  double x;			/**< The point's first coordinate */
-  double y;			/**< The point's second coordinate */
+  double x;     /**< The point's first coordinate */
+  double y;     /**< The point's second coordinate */
 
-  /** 
+  /**
    * Point constructor.
-   * 
+   *
    * @param x The point's first coordinate.
    * @param y The point's second coordinate.
    */
-  Point():x(0.0),y(0.0) { } 
+  Point():x(0.0),y(0.0) { }
 
-  /** 
+  /**
    * Point constructor.
-   * 
+   *
    * @param x The point's first coordinate.
    * @param y The point's second coordinate.
    */
-  Point( const Point & other ):x(other.x),y(other.y) { } 
+  Point( const Point & other ):x(other.x),y(other.y) { }
 
-  /** 
+  /**
    * Point constructor.
-   * 
+   *
    * @param x The point's first coordinate.
    * @param y The point's second coordinate.
    */
-  Point( double x, double y ):x(x),y(y) { } 
+  Point( double x, double y ):x(x),y(y) { }
   
-  /** 
+  /**
    * Rotate the point with a given angle around the origin (0,0)
-   * 
+   *
    * @param angle The rotation angle.
    */
   inline Point & rotate( double angle );
 
-  /** 
+  /**
    * Get the values of the x and y values.
-   * 
+   *
    * @param x Reference to the x to be set.
    * @param y Reference to the y to be set.
    */
   inline void get( double & x, double & y ) const;
   
-  /** 
+  /**
    * Rotate the point with a given angle around the origin (0,0)
-   * 
+   *
    * @param angle The rotation angle.
-   * 
+   *
    * @return The rotated point.
    */
   inline Point rotated( double angle ) const;
@@ -195,7 +195,7 @@ operator!=( const Point & a, const Point & b )
 Point &
 Point::rotate( double angle )
 {
-  double x = cos( angle ) * Point::x - sin( angle ) * Point::y; 
+  double x = cos( angle ) * Point::x - sin( angle ) * Point::y;
   double y = sin( angle ) * Point::x + cos( angle ) * Point::y;
   Point::x = x;
   Point::y = y;

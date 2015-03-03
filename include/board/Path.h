@@ -42,69 +42,69 @@ namespace LibBoard {
  */
 struct Path { 
 
-   Path() : _closed( false ) { }
+  Path() : _closed( false ) { }
 
-   Path( const std::vector<Point> & points, bool closed )
-      : _points( points ), _closed( closed ) { }
+  Path( const std::vector<Point> & points, bool closed )
+    : _points( points ), _closed( closed ) { }
 
-   Path( bool closed ) : _closed( closed ) { }
+  Path( bool closed ) : _closed( closed ) { }
 
-   inline void clear();
+  inline void clear();
 
-   inline bool closed() const;
+  inline bool closed() const;
 
-   inline bool empty() const;
+  inline bool empty() const;
 
-   inline unsigned int size() const;
+  inline std::size_t size() const;
 
-   inline void setClosed( bool closed  );
+  inline void setClosed( bool closed  );
 
-   /**
+  /**
    * Barycenter of the path
    * @return
    */
-   Point center() const;
+  Point center() const;
 
-   /**
+  /**
    * Add a point at the end of the path.
    *
    * @param p
    *
    * @return
    */
-   Path & operator<<( const Point & p );
+  Path & operator<<( const Point & p );
 
-   /**
+  /**
    *
    *
    *
    * @return
    */
-   Path & pop_back();
+  Path & pop_back();
 
-   /**
+  /**
    * Returns the n-th point of the polyline.
    *
    * @param i
    *
    * @return
    */
-   Point & operator[]( const unsigned int n ) {
-      return _points[ n ];
-   }
+  Point & operator[]( const std::size_t n ) {
+    return _points[ n ];
+  }
 
-   /**
+  /**
    * Returns the n-th point of the polyline.
    *
    * @param i
    *
    * @return
    */
-   const Point & operator[]( const unsigned int n ) const {
-      return _points[ n ];
-   }
+  const Point & operator[]( const std::size_t n ) const {
+    return _points[ n ];
+  }
 
-   /**
+  /**
    *
    *
    * @param angle
@@ -112,9 +112,9 @@ struct Path {
    *
    * @return
    */
-   Path & rotate( double angle, const Point & center );
+  Path & rotate( double angle, const Point & center );
 
-   /**
+  /**
    *
    *
    * @param angle
@@ -122,27 +122,27 @@ struct Path {
    *
    * @return
    */
-   Path rotated( double angle, const Point & center ) const;
+  Path rotated( double angle, const Point & center ) const;
 
-   /**
+  /**
    *
    *
    * @param angle
    *
    * @return
    */
-   Path & rotate( double angle );
+  Path & rotate( double angle );
 
-   /**
+  /**
    *
    *
    * @param angle
    *
    * @return
    */
-   Path rotated( double angle ) const;
+  Path rotated( double angle ) const;
 
-   /**
+  /**
    *
    *
    * @param dx
@@ -150,9 +150,9 @@ struct Path {
    *
    * @return
    */
-   Path & translate( double dx, double dy );
+  Path & translate( double dx, double dy );
 
-   /**
+  /**
    *
    *
    * @param dx
@@ -160,9 +160,9 @@ struct Path {
    *
    * @return
    */
-   Path translated( double dx, double dy ) const;
+  Path translated( double dx, double dy ) const;
 
-   /**
+  /**
    *
    *
    * @param sx
@@ -170,18 +170,19 @@ struct Path {
    *
    * @return
    */
-   Path & scale( double sx, double sy );
+  Path & scale( double sx, double sy );
 
-   /**
+  /**
    *
    *
    * @param s
    *
    * @return
    */
-   Path & scale( double s );
+  Path & scale( double s );
 
-   /**
+
+  /**
    *
    *
    * @param sx
@@ -189,67 +190,67 @@ struct Path {
    *
    * @return
    */
-   Path scaled( double sx, double sy )  const;
+  Path scaled( double sx, double sy )  const;
 
-   Path scaled( double s )  const;
+  Path scaled( double s )  const;
 
-   /**
+  /**
    * Scales all the points.
    *
    * @param s The scaling factor.
    */
-   void scaleAll( double s );
+  void scaleAll( double s );
 
-   void flushPostscript( std::ostream & stream,
-                         const TransformEPS & transform ) const;
+  void flushPostscript( std::ostream & stream,
+                        const TransformEPS & transform ) const;
 
-   void flushFIG( std::ostream & stream,
-                  const TransformFIG & transform ) const;
+  void flushFIG( std::ostream & stream,
+                 const TransformFIG & transform ) const;
 
-   void flushSVGPoints( std::ostream & stream,
-                        const TransformSVG & transform ) const;
+  void flushSVGPoints( std::ostream & stream,
+                       const TransformSVG & transform ) const;
 
-   void flushSVGCommands( std::ostream & stream,
-                          const TransformSVG & transform ) const;
+  void flushSVGCommands( std::ostream & stream,
+                         const TransformSVG & transform ) const;
 
-   void flushTikZPoints( std::ostream & stream,
-                         const TransformTikZ & transform ) const;
+  void flushTikZPoints( std::ostream & stream,
+                        const TransformTikZ & transform ) const;
 
-   Rect boundingBox() const;
+  Rect boundingBox() const;
 
 protected:
-   std::vector<Point> _points;
-   bool _closed;
+  std::vector<Point> _points;
+  bool _closed;
 };
 
 void
 Path::clear()
 {
-   _points.clear();
+  _points.clear();
 }
 
 bool
 Path::closed() const
 {
-   return _closed;
+  return _closed;
 }
 
 bool
 Path::empty() const
 {
-   return _points.empty();
+  return _points.empty();
 }
 
-unsigned int
+std::size_t
 Path::size() const
 {
-   return _points.size();
+  return _points.size();
 }
 
 void
 Path::setClosed( bool closed )
 {
-   _closed = closed;
+  _closed = closed;
 }
 
 } // namespace LibBoard  

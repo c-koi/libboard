@@ -48,7 +48,10 @@ class Board : public ShapeList {
   
 public:
 
-  enum PageSize { BoundingBox, A4, Letter };
+  enum PageSize { BoundingBox = 0,
+                  A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10,
+                  Letter, Legal, Executive };
+
   enum Unit { UPoint, UInche, UCentimeter, UMillimeter };
   static const double Degree;
   
@@ -633,7 +636,7 @@ public:
    * @param scale A scale factor between each copy.
    */
   void addDuplicates( const Shape & shape,
-                      unsigned int times,
+                      std::size_t times,
                       double dx,
                       double dy,
                       double scale = 1.0 );
@@ -648,15 +651,12 @@ public:
    * @param dy The y shift.
    * @param scaleX An x scale factor between each copy.
    * @param scaleY A y scale factor between each copy.
-   * @param scaleY A y scale factor between each copy.
    * @param angle An angular increment.
    */
   void addDuplicates( const Shape & shape,
-                      unsigned int times,
-                      double dx,
-                      double dy,
-                      double scaleX,
-                      double scaleY,
+                      std::size_t times,
+                      double dx, double dy,
+                      double scaleX, double scaleY,
                       double angle = 0.0 );
 
   /**
@@ -683,14 +683,15 @@ public:
   void save( const char * filename, double pageWidth, double pageHeight, double margin = 10.0 ) const;
 
   /**
-   * Saves the drawing in an EPS file. When a size is given (not BoundingBox), the drawing is
+   * Writes the drawing in a stream as an EPS file. When a size is given (not BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
-   * @param filename The EPS file name.
+   * @param out The output stream.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param title Document title (Postscript comment).
    */
-  void saveEPS( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0 ) const ;
+  void saveEPS( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 10.0, const std::string & title = std::string() ) const ;
 
   /**
    * Saves the drawing in an EPS file. When a size is given (not BoundingBox), the drawing is
@@ -698,11 +699,33 @@ public:
    *
    * @param filename The EPS file name.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param margin Minimal margin around the figure in the page, in millimeters.
+   */
+  void saveEPS( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0, const std::string & title = std::string() ) const ;
+
+  /**
+   * Writes the drawing in a stream as an EPS file. The drawing is scaled (up or
+   * down) so that it fits within the dimension while keeping its aspect ratio.
+   *
+   * @param out The output stream.
+   * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param pageWidth Width of the page in millimeters.
    * @param pageHeight Height of the page in millimeters.
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
-  void saveEPS( const char * filename, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+  void saveEPS( std::ostream & out, double pageWidth, double pageHeight, double margin = 10.0, const std::string & title = std::string() ) const ;
+
+  /**
+   * Saves the drawing in an EPS file. The drawing is scaled (up or down) so
+   * that it fits within the dimension while keeping its aspect ratio.
+   *
+   * @param filename The EPS file name.
+   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param pageWidth Width of the page in millimeters.
+   * @param pageHeight Height of the page in millimeters.
+   * @param margin Minimal margin around the figure in the page, in millimeters.
+   */
+  void saveEPS( const char * filename, double pageWidth, double pageHeight, double margin = 10.0, const std::string & title = std::string()  ) const ;
 
   /**
    * Saves the drawing in an XFig file. When a size is given (not BoundingBox), the drawing is
@@ -713,6 +736,16 @@ public:
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
   void saveFIG( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+
+  /**
+   * Saves the drawing in a stream as an XFig file. When a size is given (not BoundingBox), the drawing is
+   * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   *
+   * @param out The output stream.
+   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param margin Minimal margin around the figure in the page, in millimeters.
+   */
+  void saveFIG( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
 
   /**
    * Saves the drawing in an XFig file. When a size is given (not BoundingBox), the drawing is
@@ -727,6 +760,18 @@ public:
   void saveFIG( const char * filename, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
 
   /**
+   * Saves the drawing in a stream as an XFig file. The drawing is scaled (up or
+   * down) so that it fits within the dimension while keeping its aspect ratio.
+   *
+   * @param out The output stream.
+   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param pageWidth Width of the page in millimeters.
+   * @param pageHeight Height of the page in millimeters.
+   * @param margin Minimal margin around the figure in the page, in millimeters.
+   */
+  void saveFIG( std::ostream & out, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+
+  /**
    * Save the drawing in an SVG file. When a size is given (not BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
@@ -735,6 +780,16 @@ public:
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
   void saveSVG( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+
+  /**
+   * Saves the drawing in a stream as an SVG file. When a size is given (not BoundingBox), the drawing is
+   * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   *
+   * @param out The output stream.
+   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param margin Minimal margin around the figure in the page, in millimeters.
+   */
+  void saveSVG( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
 
   /**
    * Saves the drawing in an SVG file. When a size is given (not BoundingBox), the drawing is
@@ -749,6 +804,18 @@ public:
   void saveSVG( const char * filename, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
 
   /**
+   * Saves the drawing in a stream as an SVG file. The drawing is scaled (up or down) so
+   * that it fits within the dimension while keeping its aspect ratio.
+   *
+   * @param out The output stream.
+   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param pageWidth Width of the page in millimeters.
+   * @param pageHeight Height of the page in millimeters.
+   * @param margin Minimal margin around the figure in the page, in millimeters.
+   */
+  void saveSVG( std::ostream & out, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+
+  /**
    * Save the drawing in an TikZ file. When a size is given (not BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
@@ -757,6 +824,16 @@ public:
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
   void saveTikZ( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+
+  /**
+   * Save the drawing in a stream as TikZ file. When a size is given (not BoundingBox), the drawing is
+   * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   *
+   * @param out The output stream.
+   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param margin Minimal margin around the figure in the page, in millimeters.
+   */
+  void saveTikZ( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
 
   /**
    * Save the drawing in an TikZ file. When a size is given (not BoundingBox), the drawing is
@@ -769,7 +846,19 @@ public:
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
   void saveTikZ( const char * filename, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
-  
+
+  /**
+   * Save the drawing in a stream as a TikZ file. The drawing is scaled (up or
+   * down) so that it fits within the dimension while keeping its aspect ratio.
+   *
+   * @param out The output stream.
+   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param pageWidth Width of the page in millimeters.
+   * @param pageHeight Height of the page in millimeters.
+   * @param margin Minimal margin around the figure in the page, in millimeters.
+   */
+  void saveTikZ( std::ostream & out, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+
 protected:
   
   /**
@@ -777,22 +866,22 @@ protected:
    *
    */
   struct State {
-    Color penColor;		    /**< The pen color. */
-    Color fillColor;	   	    /**< The fill color. */
-    double lineWidth;		    /**< The line thickness. */
-    Shape::LineStyle lineStyle;	    /**< The line style. */
-    Shape::LineCap lineCap;	    /**< The type of line extremities. */
-    Shape::LineJoin lineJoin; 	    /**< The type of line junction. */
-    Fonts::Font font;               /**< The font. */
-    double fontSize;	   	    /**< The font size. */
-    double unitFactor;		    /**< The factor to be applied to arguments of the drawSomething() family. */
+    Color penColor;             /**< The pen color. */
+    Color fillColor;            /**< The fill color. */
+    double lineWidth;           /**< The line thickness. */
+    Shape::LineStyle lineStyle; /**< The line style. */
+    Shape::LineCap lineCap;     /**< The type of line extremities. */
+    Shape::LineJoin lineJoin;   /**< The type of line junction. */
+    Fonts::Font font;           /**< The font. */
+    double fontSize;            /**< The font size. */
+    double unitFactor;          /**< The factor to be applied to arguments of the drawSomething() family. */
     State();
     double unit( const double & x ) { return x * unitFactor; }
     Point unit( const Point & p ) { return Point( p.x * unitFactor, p.y * unitFactor); }
     void unit( Shape & shape ) {  shape.scaleAll( unitFactor ); }
   };
-  State _state;			 /**< The current state. */
-  Color _backgroundColor;	 /**< The color of the background. */
+  State _state;                 /**< The current state. */
+  Color _backgroundColor;       /**< The color of the background. */
   Path _clippingPath;
 };
 } // namespace LibBoard

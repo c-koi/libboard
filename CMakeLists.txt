@@ -108,19 +108,19 @@ SET(lib_src
   src/TransformMatrix.cpp
   src/Tools.cpp
   src/PSFonts.cpp
+
   include/Board.h
-  include/BoardConfig.h
   include/board/Color.h
+  include/board/Image.h
+  include/board/PSFonts.h
   include/board/Path.h
   include/board/Point.h
-  include/board/PSFonts.h
   include/board/Rect.h
   include/board/ShapeList.h
   include/board/Shapes.h
-  include/board/Image.h
   include/board/Tools.h
-  include/board/Transforms.h
   include/board/TransformMatrix.h
+  include/board/Transforms.h
   )
 
 ADD_LIBRARY(board STATIC ${lib_src})

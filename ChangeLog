@@ -1,9 +1,13 @@
+2015-02-23  Sebastien Fourey  <http://www.greyc.ensicaen.fr>
+        * All: Replaced "unsigned int" by "std::size_std" where relevant.
+        * Board: saveXXX overloaded to accept ostreams as parameters.
+
 2014-07-01 Sebastien Fourey <http://www.greyc.fr>
 	* All: Added bitmap images inclusion in SVG and EPS files
 	(partially in FIG files).
-
+	
 2011-11-29  Sebastien Fourey  <http://www.greyc.ensicaen.fr>
-	* All: Added partial TIKZ support thanks to Nicolas Normand.
+        * All: Added partial TIKZ support thanks to Nicolas Normand.
 
 2010-06-23  Sebastien Fourey  <http://www.greyc.ensicaen.fr>
 	* CMakeLists.txt has been a bit simplified with a FOREACH for examples.
@@ -42,13 +46,15 @@
 
 2008-11-07  Sebastien Fourey  <http://www.greyc.ensicaen.fr>
 
-	* include/board/Shapes.h (struct Polyline): Added the operator<< to add points.
+        * include/board/Shapes.h (struct Polyline): Added the operator<< to add
+        points.
 
 2008-11-03  Sebastien Fourey  <http://www.greyc.ensicaen.fr>
 
 	* src/Shapes.cpp (Ellipse::flushPostscript):
-	Rectangles may now my scaled properly with disctint scaling factors along x and y axis.
-	Fixed a bug in the Postscript rendering of rotated ellipses.
+        Rectangles may now my scaled properly with disctint scaling factors
+        along x and y axis.
+        Fixed a bug in the Postscript rendering of rotated ellipses.
 
 2008-11-00
 	*  Jason Gauci (University of Central Florida -

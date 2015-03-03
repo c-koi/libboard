@@ -49,7 +49,6 @@ Shape::bbox()
   return this->boundingBox();
 }
 
-
 Shape &
 Shape::operator++()
 {

@@ -3,7 +3,7 @@
  * @file   Color.h
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
- * 
+ *
  * @brief  The Color structure.
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -49,12 +49,12 @@ public:
 
   Color( const bool valid = true )
     :_red(-1),_green(-1),_blue(-1),_alpha(255)
-  { 
+  {
     if ( valid ) {
       _red = _green = _blue = 0;
     }
   }
-      
+
   inline void red( unsigned char red );
   inline void green( unsigned char green );
   inline void blue( unsigned char blue );
@@ -66,14 +66,14 @@ public:
   inline unsigned char alpha() const;
   
   inline Color & setRGBi( const unsigned char red,
-			  const unsigned char green,
-			  const unsigned char blue,
-			  const unsigned char alpha = 255 );
+                          const unsigned char green,
+                          const unsigned char blue,
+                          const unsigned char alpha = 255 );
   
-  Color & setRGBf( float red, 
-		   float green,
-		   float blue,
-		   float alpha = 1.0 );
+  Color & setRGBf( float red,
+                   float green,
+                   float blue,
+                   float alpha = 1.0 );
   
   bool operator==( const Color & other ) const;
 
@@ -85,24 +85,24 @@ public:
 
   std::string svg() const;
 
-  /** 
+  /**
    * Return a an SVG parameter string for the opacity value.
-   * 
-   * @param prefix A prefix string to be appended to the returned 
+   *
+   * @param prefix A prefix string to be appended to the returned
    * string if not empty.
-   * 
+   *
    * @return An empty string if alpha == 255, otherwise the string <prefix>-opacity="<alpha-value>".
    */
   std::string svgAlpha( const char * prefix ) const;
 
   std::string postscript() const;
   
-  /** 
+  /**
    * Return a string representation of the color usable in TikZ commands.
    * Use the corresponding named color (or a mixture of a named color and black)
    * for predefined colors. Use a mixture of red, green and blue for general
    * colors.
-   * 
+   *
    * @return a string representation of the color usable in TikZ commands.
    */
   std::string tikz() const;
@@ -137,9 +137,9 @@ private:
 
 inline Color &
 Color::setRGBi( const unsigned char red,
-		const unsigned char green,
-		const unsigned char blue,
-		const unsigned char alpha ) {
+                const unsigned char green,
+                const unsigned char blue,
+                const unsigned char alpha ) {
   _red = red;
   _green = green;
   _blue = blue;

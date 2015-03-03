@@ -3,8 +3,8 @@
  * @file   Rect.cpp
  * @author Sebastien Fourey (GREYC)
  * @date   Sat Aug 18 2007
- * 
- * @brief  
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -68,7 +68,7 @@ operator&&( const Rect & rectA, const Rect & rectB )
 std::ostream &
 operator<<( std::ostream & out, const LibBoard::Rect & rect )
 {
-  out << "Rect(" 
+  out << "Rect("
       << rect.left << "," << rect.top
       << "+" << rect.width << "x" << rect.height << ")";
   return out;

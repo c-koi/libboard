@@ -275,13 +275,13 @@ private:
   
 protected:
 
-  int _depth;    		/**< The depth of the shape. */
-  Color _penColor;		/**< The color of the shape. */
-  Color _fillColor;		/**< The color of the shape. */
-  double _lineWidth;	/**< The line thickness. */
-  LineStyle _lineStyle;	/**< The line style (solid, dashed, etc.). */
-  LineCap _lineCap;		/**< The linecap attribute. (The way line terminates.) */
-  LineJoin _lineJoin;	/**< The linejoin attribute. (The shape of line junctions.) */
+  int _depth;          /**< The depth of the shape. */
+  Color _penColor;     /**< The color of the shape. */
+  Color _fillColor;    /**< The color of the shape. */
+  double _lineWidth;   /**< The line thickness. */
+  LineStyle _lineStyle;/**< The line style (solid, dashed, etc.). */
+  LineCap _lineCap;    /**< The linecap attribute. (The way line terminates.) */
+  LineJoin _lineJoin;  /**< The linejoin attribute. (The shape of line junctions.) */
 
   /**
    * Return a string of the svg properties lineWidth, opacity, penColor, fillColor,
@@ -307,7 +307,6 @@ protected:
   std::string tikzProperties( const TransformTikZ & transform ) const;
 
 };
-
 
 /**
  * The dot structure. This primitive ha been reported as "missing" by
@@ -373,7 +372,6 @@ struct Dot : public Shape {
 
   /**
    *
-   *
    * @param dx
    * @param dy
    *
@@ -438,8 +436,8 @@ private:
   static const std::string _name; /**< The generic name of the shape. */
 
 protected:
-  double _x;			/**< First coordinate of the dot. */
-  double _y;			/**< Second coordinate of the dot. */
+  double _x;  /**< First coordinate of the dot. */
+  double _y;  /**< Second coordinate of the dot. */
 };
 
 /**
@@ -556,10 +554,10 @@ private:
   static const std::string _name; /**< The generic name of the shape. */
 
 protected:
-  double _x1;			/**< First coordinate of the start point. */
-  double _y1;			/**< Second coordinate of the start point. */
-  double _x2; 			/**< First coordinate of the end point. */
-  double _y2;			/**< Second coordinate of the end point. */
+  double _x1;   /**< First coordinate of the start point. */
+  double _y1;   /**< Second coordinate of the start point. */
+  double _x2;   /**< First coordinate of the end point. */
+  double _y2;   /**< Second coordinate of the end point. */
 };
 
 /**
@@ -710,7 +708,7 @@ struct Polyline : public Shape {
    *
    * @return
    */
-  Point & operator[]( const unsigned int n ) {
+  Point & operator[]( const std::size_t n ) {
     return _path[ n ];
   }
 
@@ -721,7 +719,7 @@ struct Polyline : public Shape {
    *
    * @return
    */
-  const Point & operator[]( const unsigned int n ) const {
+  const Point & operator[]( const std::size_t n ) const {
     return _path[ n ];
   }
 

@@ -215,19 +215,19 @@ Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) co
 void
 Image::flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const
 {
-   _rectangle.flushFIG( stream, transform, colormap );
-   Rect bbox = _rectangle.boundingBox();
-   Rectangle rectangle(bbox,Color::None,Color::None,0.0);
-   stream << "2 5 0 1 0 -1 " << transform.mapDepth(_depth) << " -1 -1 0.000 0 0 -1 0 0 5\n";
-   stream << "\t0 " << _filename << "\n";
-   stream << "\t";
-   for (unsigned int i = 0; i < rectangle.vertexCount(); ++i ) {
-      stream << " " << static_cast<int>( transform.mapX( rectangle[i].x ) )
-             << " " << static_cast<int>( transform.mapY( rectangle[i].y ) );
-   }
-   stream << " " << static_cast<int>( transform.mapX( rectangle[0].x ) )
-         << " " << static_cast<int>( transform.mapY( rectangle[0].y ) )
-         << "\n";
+  _rectangle.flushFIG( stream, transform, colormap );
+  Rect bbox = _rectangle.boundingBox();
+  Rectangle rectangle(bbox,Color::None,Color::None,0.0);
+  stream << "2 5 0 1 0 -1 " << transform.mapDepth(_depth) << " -1 -1 0.000 0 0 -1 0 0 5\n";
+  stream << "\t0 " << _filename << "\n";
+  stream << "\t";
+  for (std::size_t i = 0; i < rectangle.vertexCount(); ++i ) {
+    stream << " " << static_cast<int>( transform.mapX( rectangle[i].x ) )
+           << " " << static_cast<int>( transform.mapY( rectangle[i].y ) );
+  }
+  stream << " " << static_cast<int>( transform.mapX( rectangle[0].x ) )
+      << " " << static_cast<int>( transform.mapY( rectangle[0].y ) )
+      << "\n";
 }
 
 void
