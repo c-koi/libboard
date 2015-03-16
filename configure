@@ -261,12 +261,14 @@ if [ ${ON_PLACE} = no ]; then
 	\$(CP) include/Board.h \$(PREFIX)/include/
 	\$(CP) include/board/*.h \$(PREFIX)/include/board
 	\$(CP) include/board/*.ih \$(PREFIX)/include/board
+	ldconfig
 EOF
 fi
 cat >> Makefile <<EOF
 	chmod 755 \$(PREFIX)/include/board
 	chmod 644 \$(PREFIX)/include/Board.h
 	chmod 644 \$(PREFIX)/include/board/*.h
+	chmod 644 \$(PREFIX)/include/board/*.ih
 	install -d \$(PREFIX)/share/libboard/examples
 	\$(CP) examples/*.cpp \$(PREFIX)/share/libboard/examples
 	\$(CP) examples/README \$(PREFIX)/share/libboard/examples
