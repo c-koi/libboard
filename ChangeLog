@@ -2,6 +2,10 @@
         * All: Replaced "unsigned int" by "std::size_std" where relevant.
         * Board: saveXXX overloaded to accept ostreams as parameters.
 
+2014-07-01 Sebastien Fourey <http://www.greyc.fr>
+	* All: Added bitmap images inclusion in SVG and EPS files
+	(partially in FIG files).
+	
 2011-11-29  Sebastien Fourey  <http://www.greyc.ensicaen.fr>
         * All: Added partial TIKZ support thanks to Nicolas Normand.
 
