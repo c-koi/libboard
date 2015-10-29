@@ -23,7 +23,7 @@ LibBoard: A vector graphics C++ library (Version 0.9.0). GREYC laboratory. [Soft
    @misc{LibBoard,
       key = {{LibBoard}},
       title = {{LibBoard: A vector graphics C++ library (Version 0.9.0). [Software]. GREYC Laboratory}},
-      howpublished = {{http://libboard.sourceforge.net/}},
+      howpublished = {{https://github.com/c-koi/libboard}},
       note = {{[accessed Sept. 2014]}},
       year = {2014},
     }
