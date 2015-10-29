@@ -18,8 +18,8 @@ Starting with version 0.9.0, LibBoard is distributed under the term of the GNU L
 
 ## Citing LibBoard
 
-LibBoard: A vector graphics C++ library (Version 0.9.0). GREYC laboratory. [Software]. http://libboard.sourceforge.net/. [accessed Sept. 2014].
-`
+LibBoard: A vector graphics C++ library (Version 0.9.0). GREYC laboratory. [Software]. https://github.com/c-koi/libboard. [accessed Sept. 2015].
+```
    @misc{LibBoard,
       key = {{LibBoard}},
       title = {{LibBoard: A vector graphics C++ library (Version 0.9.0). [Software]. GREYC Laboratory}},
@@ -27,13 +27,13 @@ LibBoard: A vector graphics C++ library (Version 0.9.0). GREYC laboratory. [Soft
       note = {{[accessed Sept. 2014]}},
       year = {2014},
     }
-`
+```
 # Download
 
    You may get the lastest source code from the Git repository with the command below:
-`
+```
    git clone https://github.com/c-koi/libboard.git
-`
+```
 
 # Author
 
