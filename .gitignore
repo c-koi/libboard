@@ -16,3 +16,4 @@ doc/html
 LICENSE.gz
 include/BoardConfig.h
 CMakeLists.txt.user
+CMakeLists.txt.user.*

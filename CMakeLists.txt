@@ -96,7 +96,7 @@ INCLUDE_DIRECTORIES( include/ include/board )
 
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib/ )
 
-SET(lib_src 
+SET(lib_src
   src/Board.cpp
   src/Color.cpp
   src/Rect.cpp
@@ -132,7 +132,7 @@ SET_TARGET_PROPERTIES(board-dynamic PROPERTIES PREFIX "lib")
 
 FOREACH( EXAMPLE logo example1 example2 example3 example4
     arithmetic ellipse graph arrows  ruler koch clipping
-    flag scale_ellipse line_style images )
+    flag scale_ellipse line_style images line_segment )
   ADD_EXECUTABLE(
     ${EXAMPLE}
     examples/${EXAMPLE}.cpp
@@ -148,4 +148,3 @@ FOREACH( EXAMPLE logo example1 example2 example3 example4
   )
   SET_TARGET_PROPERTIES(${EXAMPLE} PROPERTIES DEBUG_POSTFIX _d)
 ENDFOREACH(EXAMPLE)
-
