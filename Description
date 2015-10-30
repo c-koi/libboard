@@ -17,18 +17,4 @@ draw complex figures which would be very difficult do build by hand
 using a software like XFig or Inkscape, because they require lot of
 primitives. In this case, the graphic may be C++-coded, with loops,
 variables and so on, then maybe edited using a classical soft like the
-ones mentioned before.
-
-Eventually, since I built a first release of the current state of this
-lib,  you may have a look at the following URL for a description, the
-documentation, and some usage examples.
-
-http://libboard.sourceforge.net/
-
-Hope it will fulfill your requirements, and apologies for my English ;-)
-
-Thanks!
-
-
-
-
+ones previously mentioned.

@@ -337,7 +337,7 @@ Board::backgroundColor( const Color & color )
 
 void
 Board::drawDot( double x, double y, int depth )
-{  
+{
   if ( depth != -1 )
     _shapes.push_back( new Dot( _state.unit(x), _state.unit(y),
                                 _state.penColor, _state.lineWidth, depth ) );
@@ -347,7 +347,7 @@ Board::drawDot( double x, double y, int depth )
 }
 
 void
-Board::drawLine( double x1, double y1, double x2, double y2, 
+Board::drawLine( double x1, double y1, double x2, double y2,
                  int depth /* = -1 */  )
 {
   if ( depth != -1 )
@@ -365,7 +365,7 @@ Board::drawLine( double x1, double y1, double x2, double y2,
 }
 
 void
-Board::drawArrow( double x1, double y1, double x2, double y2, 
+Board::drawArrow( double x1, double y1, double x2, double y2,
                   bool filled /* = false */,
                   int depth /* = -1 */  )
 {
@@ -387,7 +387,7 @@ Board::drawArrow( double x1, double y1, double x2, double y2,
 }
 
 void
-Board::drawRectangle( double left, double top, 
+Board::drawRectangle( double left, double top,
                       double width, double height,
                       int depth /* = -1 */ )
 {
@@ -454,7 +454,7 @@ Board::drawEllipse( double x, double y,
 }
 
 void
-Board::fillEllipse( double x, double y, 
+Board::fillEllipse( double x, double y,
                     double xRadius, double yRadius,
                     int depth /* = -1 */ )
 {
@@ -522,7 +522,7 @@ Board::fillPolyline( const std::vector<Point> & points,
 }
 
 void
-Board::drawTriangle( double x1, double y1, 
+Board::drawTriangle( double x1, double y1,
                      double x2, double y2,
                      double x3, double y3,
                      int depth /* = -1 */ )
@@ -561,7 +561,7 @@ Board::drawTriangle( const Point & p1,
 }
 
 void
-Board::fillTriangle( double x1, double y1, 
+Board::fillTriangle( double x1, double y1,
                      double x2, double y2,
                      double x3, double y3,
                      int depth /* = -1 */ )
@@ -685,7 +685,7 @@ Board::drawBoundingBox( int depth /* = -1 */ )
 }
 
 void
-Board::setClippingRectangle(  double x, double y, 
+Board::setClippingRectangle(  double x, double y,
                               double width, double height )
 {
   _clippingPath.clear();
@@ -1116,7 +1116,7 @@ Board::saveTikZ( const char * filename, double pageWidth, double pageHeight, dou
 }
 
 void
-Board::save( const char * filename, double pageWidth, double pageHeight, double margin ) const 
+Board::save( const char * filename, double pageWidth, double pageHeight, double margin ) const
 {
   const char * extension = filename + strlen( filename );
   while ( extension > filename && *extension != '.' )
@@ -1140,7 +1140,7 @@ Board::save( const char * filename, double pageWidth, double pageHeight, double 
 }
 
 void
-Board::save( const char * filename, PageSize size, double margin ) const 
+Board::save( const char * filename, PageSize size, double margin ) const
 {
   save( filename, pageSizes[size][0], pageSizes[size][1], margin );
 }
@@ -1160,6 +1160,7 @@ Board::save( const char * filename, PageSize size, double margin ) const
  * @example examples/graph.cpp
  * @example examples/koch.cpp
  * @example examples/line_style.cpp
+ * @example examples/line_segment.cpp
  * @example examples/logo.cpp
  * @example examples/ruler.cpp
  * @example examples/scale_ellipse.cpp
@@ -1169,7 +1170,7 @@ Board::save( const char * filename, PageSize size, double margin ) const
 /**
  * @mainpage LibBoard - A C++ library for simple Postscript, SVG, and XFig drawings
  *
- * <table border="0"><tr><td><img align=left src="http://libboard.sourceforge.net/images/LibBoardLogoII_Small.png"/></td>
+ * <table border="0"><tr><td><img align=left src="http://foureys.users.greyc.fr/board/doc/LibBoardLogoII_Small.png"/></td>
  * <td>(Copyleft) 2007 S&eacute;bastien Fourey - GREYC ENSICAEN</td></tr></table>
  *
  * @section intro_sec Introduction
@@ -1195,6 +1196,6 @@ Board::save( const char * filename, PageSize size, double margin ) const
  * @section links_sec Links
  *
  * <ul>
- * <li>Visit the <a href="http://libboard.sourceforge.net/">Board homepage</a>.</li>
+ * <li>Visit the <a href="https://github.com/c-koi/libboard">official source code repository</a>.</li>
  * </ul>
  */
