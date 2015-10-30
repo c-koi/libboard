@@ -8,7 +8,7 @@ The next point is: how can one draw a vector graphic with his favorite drawing s
 
 ## Features
 
-For now, LibBoard can handle primitives like lines, rectangles, triangles, polylines, circles, ellipses and text. In future releases, bitmap insertion should be supported. See the [TODO](https://raw.githubusercontent.com/c-koi/libboard/master/TODO) file for a list of features that should be added in future releases.
+For now, LibBoard can handle primitives like lines, rectangles, triangles, polylines, circles, ellipses, bitmap images and text. See the [TODO](https://raw.githubusercontent.com/c-koi/libboard/master/TODO) file for a list of features that should be added in future releases.
 
 ## Licence
 
