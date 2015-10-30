@@ -1,5 +1,7 @@
 # Libboard: a vector graphics C++ library
 
+<img src="https://foureys.users.greyc.fr/board/doc/LibBoardLogoII_Small.png">
+
 ## The LibBoard C++ library
 
 (Motivation for this piece of code) There are more people on this planet who are fluent in, or at least know as beginners, the C++ language than there are people who know all together the Postscript, SVG, and FIG (XFig) file formats. Actually Postscript is also a programming language, but that's part of another story.
