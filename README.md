@@ -18,7 +18,7 @@ For now, LibBoard can handle primitives like lines, rectangles, triangles, polyl
 
 ## Licence
 
-Starting with version 0.9.0, LibBoard is distributed under the term of the GNU Lesser General Public License.
+Starting with version 0.9.0, LibBoard is distributed under the term of the [GNU Lesser General Public License](https://github.com/c-koi/libboard/blob/master/LICENSE).
 
 ### Citing LibBoard
 
