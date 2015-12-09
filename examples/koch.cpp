@@ -1,7 +1,7 @@
 /**
  * @file   koch.cpp
  * @author Sebastien Fourey (GREYC)
- * 
+ *
  * @brief  Draws a Koch fractal.
  *
  * This source code is part of the Board project, a C++ library whose
@@ -26,25 +26,26 @@ int coordinate( int width ) {
 }
 
 void Koch( ShapeList & board, const Color & color,
-	   Point p1, Point p2, int depth ) { 
+	   Point p1, Point p2,
+	   int depth ) {
   if ( depth <= 0 ) return;
-  
+
   Point v = p2 - p1;
   Point a = p1 + ( v / 3.0 );
   Point b = p1 + 2 * ( v / 3.0 );
   Point c = b.rotated( 60 * Board::Degree, a );
 
   Color col = color;
-  
+
   col.setRGBi( static_cast<unsigned char>( std::floor( col.red() * 0.75 + 0.5 ) ),
 	       static_cast<unsigned char>( std::floor( col.green() * 0.75 + 0.5 ) ),
 	       static_cast<unsigned char>( std::floor( col.blue() * 0.75 + 0.5 ) ) );
-  
+
   board << Triangle( a, c, b, Color::None, color, 0.0 );
   Koch( board, col, p1, a, depth-1 );
   Koch( board, col, a, c, depth-1 );
   Koch( board, col, c, b, depth-1 );
-  Koch( board, col, b, p2, depth-1 );  
+  Koch( board, col, b, p2, depth-1 );
 }
 
 int main( int , char *[] )
@@ -54,19 +55,19 @@ int main( int , char *[] )
 
   Point a( -10, 0 );
   Point c( 10, 0 );
-  Point b = c.rotated( 60 * Board::Degree, a );  
+  Point b = c.rotated( 60 * Board::Degree, a );
 
   Group aux;
-  Koch( aux, Color::Green, a, b, 10 );
-  Koch( aux, Color::Green, b, c, 10 );
-  Koch( aux, Color::Green, c, a, 10 );
+  Koch( aux, Color::Green, a, b, 8 );
+  Koch( aux, Color::Green, b, c, 8 );
+  Koch( aux, Color::Green, c, a, 8 );
   aux << Triangle( a, b, c, Color::None, Color::Green, 0 );
 
   board << aux;
 
   int n = 4;
   while ( n-- ) {
-    board.dup().last().scale( 0.5 );    
+    board.dup().last().scale( 0.5 );
     board.last()
       .translate( 0.25 * board.last().bbox().width,
 		  board.last().bbox().height * 1.5 )
@@ -74,21 +75,19 @@ int main( int , char *[] )
   }
 
   board << Line( board.bbox().left,
-		 board.last().bbox().top - 1, 
+		 board.last().bbox().top - 1,
 		 board.bbox().left + board.bbox().width,
-		 board.last().bbox().top - 1, 
+		 board.last().bbox().top - 1,
 		 Color::Blue, 1 );
   board << Text( -10, board.last().bbox().top + 0.3,
 		 "LibBoard Koch's because LibBoard rocks...",
 		 Fonts::Helvetica,
 		 "NeverExists, 'Monotype Corsiva', Verdana, Arial",
-		 24, Color::Blue );  
+		 24, Color::Blue );
   board.dup().last().rotate( -90 * Board::Degree ).translate( 0, -0.5 );
 
   board.saveFIG( "koch.fig", 200, 200 );
-  board.saveSVG( "koch.svg", 300, 600 );  
+  board.saveSVG( "koch.svg", 300, 600 );
   board.saveEPS( "koch.eps", Board::A4 );
   exit(0);
 }
-
-

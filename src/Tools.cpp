@@ -38,6 +38,10 @@ LibBoard::MessageStream LibBoard::warning( std::cerr, "Warning: " );
 
 LibBoard::MessageStream LibBoard::error( std::cerr, "Error: " );
 
+namespace {
+unsigned long boardRandNext = time(0);
+}
+
 namespace LibBoard {
 
 bool
@@ -140,12 +144,21 @@ canCreateFile(const char * filename)
   return ok;
 }
 
+bool
+canReadFile(const char * filename)
+{
+  std::ifstream file;
+  file.open(filename);
+  bool ok = static_cast<bool>( file );
+  if ( file.is_open() ) {
+    file.close();
+  }
+  return ok;
+}
+
 const char *
 temporaryFilename(const char * extension)
 {
-  static char buffer[1024];
-  char name[] = "libboard_XXXXXX";
-  mktemp(name);
 #if ( _BOARD_WIN32_ == 1 )
   const char * separator = "\\";
   const int nbPaths = 5;
@@ -160,25 +173,48 @@ temporaryFilename(const char * extension)
   const char * separator = "/";
   const int nbPaths = 3;
   const char * paths[] = {
-    getenv("TMP"),
-    "/tmp",
-    "/var/tmp"
+    getenv("TMP"), "/tmp", "/var/tmp"
   };
 #endif
+  static char buffer[1024];
   const char * path = 0;
   for ( int i=0; i < nbPaths && !path; ++i ) {
     if ( paths[i] ) {
-      std::snprintf(buffer,1024,"%s%s%s",paths[i],separator,name);
-      if ( canCreateFile(buffer) )
+      do {
+        const char prefix[] = "libboard";
+        char suffix[] = "XXXXXXXXXXXXXXXXXXX";
+        for ( char * pc = suffix; *pc; ++pc ) {
+          switch (boardRand()%3) {
+          case 0: *pc = '0' + boardRand()%10; break;
+          case 1: *pc = 'a' + boardRand()%26; break;
+          case 2: *pc = 'A' + boardRand()%26; break;
+          default: break;
+          }
+        }
+        std::snprintf(buffer,1024,"%s%s%s_%s%s",
+                      paths[i],separator,prefix,suffix,extension);
+      } while ( canReadFile(buffer) );
+      if ( canCreateFile(buffer) ) {
         path = paths[i];
+      }
     }
   }
-  if ( path )
-    std::strncat(buffer,extension,1024);
-  else
+  if ( !path ) {
     buffer[0] = '\0';
+  }
   return buffer;
 }
 
+unsigned int
+boardRand() {
+  boardRandNext = boardRandNext * 1103515245 + 12345;
+  const unsigned long modulo = static_cast<unsigned long>(RAND_MAX) + 1;
+  return static_cast<unsigned int>((boardRandNext/65536) % modulo);
+}
+
+void
+boardSRand(unsigned int seed) {
+  boardRandNext = seed;
+}
 
 }  // namespace LibBoard;

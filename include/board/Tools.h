@@ -90,7 +90,11 @@ Rect getEPSBoundingBox( const char * filename );
 
 bool canCreateFile( const char * filename );
 
+bool canReadFile( const char * filename );
+
 const char * temporaryFilename( const char * extension );
+
+unsigned int boardRand();
 
 }  // namespace LibBoard
 

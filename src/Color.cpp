@@ -47,14 +47,6 @@ const Color Color::Purple((unsigned char)128,(unsigned char)128,(unsigned char)1
 const Color Color::Navy((unsigned char)0,(unsigned char)0,(unsigned char)128);
 const Color Color::Aqua((unsigned char)0,(unsigned char)255,(unsigned char)255);
 
-Color::Color( const unsigned int rgb, unsigned char alpha )
-  :_alpha( alpha )
-{
-  _red = ( rgb & 0xFF0000u ) >> 16;
-  _green = ( rgb & 0xFF00u ) >> 8;
-  _blue = rgb & 0xFF;
-}
-
 Color &
 Color::setRGBf( float red,
                 float green,

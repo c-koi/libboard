@@ -94,7 +94,7 @@ struct Shape {
   /**
    * Return a copy of the shape.
    *
-   * @return
+   * @return A copy of the shape.
    */
   virtual Shape * clone() const = 0;
   
@@ -108,7 +108,7 @@ struct Shape {
   /**
    * Returns the gravity center of the shape.
    *
-   * @return The center of the shape.
+   * @return The center of the shape, i.e. the center of its bounding box.
    */
   virtual Point center() const = 0;
   
@@ -164,8 +164,8 @@ struct Shape {
   /**
    * Scale the shape along the x an y axis.
    *
-   * @param sx The scale factor along the x axis.
-   * @param sy The scale factor along the y axis.
+   * @param sx The scaling factor along the x axis.
+   * @param sy The scaling factor along the y axis.
    *
    * @return The shape itself.
    */
@@ -174,53 +174,50 @@ struct Shape {
   /**
    * Scale the shape along both axis.
    *
-   * @param s The scale factor along both axis.
+   * @param s The scaling factor along both axis.
    *
    * @return The shape itself.
    */
   virtual Shape & scale( double s ) = 0;
 
   /**
-   * Returns the bounding box of the figure.
+   * Compute the bounding box of the figure.
    *
    * @return The rectangle of the bounding box.
    */
   virtual Rect boundingBox() const = 0;
 
-  
   /**
-   * Returns the bounding box of the figure. (Convenience method to call "boundingBox" with a short name.)
+   * Compute the bounding box of the figure. (Convenience method to call
+   * "boundingBox" with a short name.)
    *
    */
   inline Rect bbox();
   
-
   /**
    * Decrement the depth of the shape. (Pull the shape toward the foreground.)
    *
-   * @return
+   * @return A reference to the shape itself.
    */
   inline Shape & operator--();
 
   /**
    * Increment the depth of the shape. (Push the shape toward the background.)
    *
-   * @return
+   * @return A reference to the shape itself.
    */
   inline Shape & operator++();
 
-
   /**
-   * Scales all the values (positions, dimensions, etc.) associated
+   * Scale all the values (positions, dimensions, etc.) associated
    * with the shape.
    *
    * @param s The scaling factor.
    */
   virtual void scaleAll( double s ) = 0;
 
-
   /**
-   * Writes the EPS code of the shape in a stream according
+   * Write the EPS code of the shape in a stream according
    * to a transform.
    *
    * @param stream The output stream.
@@ -230,7 +227,7 @@ struct Shape {
                                 const TransformEPS & transform ) const = 0;
 
   /**
-   * Writes the FIG code of the shape in a stream according
+   * Write the FIG code of the shape in a stream according
    * to a transform.
    *
    * @param stream The output stream.
@@ -241,8 +238,7 @@ struct Shape {
                          std::map<Color,int> & colormap ) const = 0;
 
   /**
-   * Writes the SVG code of the shape in a stream according
-   * to a transform.
+   * Write the SVG code of the shape in a stream according to a transform.
    *
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
@@ -251,8 +247,7 @@ struct Shape {
                          const TransformSVG & transform ) const = 0;
 
   /**
-   * Writes the TikZ code of the shape in a stream according
-   * to a transform.
+   * Write the TikZ code of the shape in a stream according to a transform.
    *
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
@@ -271,7 +266,8 @@ struct Shape {
   inline const Color & fillColor() const;
 
 private:
-  static const std::string _name; /**< The generic name of the shape. */
+
+  static const std::string _name;       /**< The generic name of the shape. */
   
 protected:
 
@@ -371,11 +367,12 @@ struct Dot : public Shape {
   Dot rotated( double angle ) const;
 
   /**
+   * Translate the dot by a given offset.
    *
-   * @param dx
-   * @param dy
+   * @param dx The x offset.
+   * @param dy The y offset.
    *
-   * @return
+   * @return A reference to the dot itself.
    */
   Dot & translate( double dx, double dy );
 
@@ -385,26 +382,50 @@ struct Dot : public Shape {
    * @param dx Shift of the first coordinate.
    * @param dy Shift of the second coordinate.
    *
-   * @return A copy of the Dot, translated.
+   * @return A copy of the dot, translated.
    */
   Dot translated( double dx, double dy ) const;
 
-  Shape & scale( double sx, double sy );
+  /**
+   * Scale the dot, given two scaling factors.
+   *
+   * @param sx Scaling factor along the x axis.
+   * @param sy Scaling factor along the y axis.
+   *
+   * @return A reference to the dot itself, once scaled.
+   */
+  Dot & scale( double sx, double sy );
 
-  Shape & scale( double s );
+  /**
+   * Scale the dot, given a scaling factor.
+   *
+   * @param s Scaling factor.
+   *
+   * @return A reference to the dot itself, once scaled.
+   */
+  Dot & scale( double s );
 
   /**
    * Returns a scaled copy of the dot, i.e. the dot itself.
    * (Dots are not actually scaled since their diameters is given by
    * the line width.)
    *
-   * @param sx The scale factor around the x axis.
-   * @param sy The scale factor around the y axis.
+   * @param sx The scaling factor around the x axis.
+   * @param sy The scaling factor around the y axis.
    *
    * @return A scaled copy of the Dot, i.e. the Dot itself.
    */
   Dot scaled( double sx, double sy ) const;
 
+  /**
+   * Returns a scaled copy of the dot, i.e. the dot itself.
+   * (Dots are not actually scaled since their diameters is given by
+   * the line width.)
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the Dot, i.e. the Dot itself.
+   */
   Dot scaled( double s ) const;
 
   /**
@@ -433,6 +454,7 @@ struct Dot : public Shape {
   Dot * clone() const;
 
 private:
+
   static const std::string _name; /**< The generic name of the shape. */
 
 protected:
@@ -497,6 +519,15 @@ struct Line : public Shape {
    */
   Line rotated( double angle ) const;
 
+
+  /**
+   * Translate the line by a given offset.
+   *
+   * @param dx The x offset.
+   * @param dy The y offset.
+   *
+   * @return A reference to the line itself.
+   */
   Line & translate( double dx, double dy );
 
   /**
@@ -509,20 +540,42 @@ struct Line : public Shape {
    */
   Line translated( double dx, double dy ) const;
 
-  Shape & scale( double sx, double sy );
+  /**
+   * Scale the line, given two scaling factors.
+   *
+   * @param sx Scaling factor along the x axis.
+   * @param sy Scaling factor along the y axis.
+   *
+   * @return A reference to the line itself, once scaled.
+   */
+  Line & scale( double sx, double sy );
 
-  Shape & scale( double s );
+  /**
+   * Scale the line, given a scaling factor.
+   *
+   * @param s Scaling factor.
+   *
+   * @return A reference to the line itself, once scaled.
+   */
+  Line & scale( double s );
 
   /**
    * Returns a scaled copy of the line.
    *
-   * @param sx Scale factor along the x axis.
-   * @param sy Scale factor along the y axis.
+   * @param sx Scaling factor along the x axis.
+   * @param sy scaling factor along the y axis.
    *
    * @return A scaled copy of the line.
    */
   Line scaled( double sx, double sy ) const;
 
+  /**
+   * Returns a scaled copy of the line.
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the line.
+   */
   Line scaled( double s ) const;
   
   /**
@@ -625,13 +678,20 @@ struct Arrow : public Line {
   /**
    * Returns a scaled copy of the arrow.
    *
-   * @param sx Scale factor along the x axis.
-   * @param sy Scale factor along the y axis.
+   * @param sx Scaling factor along the x axis.
+   * @param sy scaling factor along the y axis.
    *
    * @return A scaled copy of the arrow.
    */
   Arrow scaled( double sx, double sy ) const;
 
+  /**
+   * Returns a scaled copy of the arrow.
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the arrow.
+   */
   Arrow scaled( double s ) const;
 
   void flushPostscript( std::ostream & stream,
@@ -746,32 +806,62 @@ struct Polyline : public Shape {
    */
   Polyline rotated( double angle ) const;
 
+  /**
+   * Translate the polyline by a given offset.
+   *
+   * @param dx The x offset.
+   * @param dy The y offset.
+   *
+   * @return A reference to the polyline itself.
+   */
   Polyline & translate( double dx, double dy );
   
   /**
+   * Returns a translated copy of the polyline.
    *
+   * @param dx Shift of the first coordinate.
+   * @param dy Shift of the second coordinate.
    *
-   * @param dx
-   * @param dy
-   *
-   * @return
+   * @return A copy of the polyline, translated.
    */
   Polyline translated( double dx, double dy ) const;
 
-  Shape & scale( double sx, double sy );
+  /**
+   * Scale the polyline, given two scaling factors.
+   *
+   * @param sx Scaling factor along the x axis.
+   * @param sy Scaling factor along the y axis.
+   *
+   * @return A reference to the polyline itself, once scaled.
+   */
+  Polyline & scale( double sx, double sy );
 
-  Shape & scale( double s );
+  /**
+   * Scale the polyline, given a scaling factor.
+   *
+   * @param s Scaling factor.
+   *
+   * @return A reference to the polyline itself, once scaled.
+   */
+  Polyline & scale( double s );
   
   /**
+   * Returns a scaled copy of the line.
    *
+   * @param sx The scaling factor along the x axis.
+   * @param sy The scaling factor along the y axis.
    *
-   * @param sx
-   * @param sy
-   *
-   * @return
+   * @return A scaled copy of the line.
    */
   Polyline scaled( double sx, double sy )  const;
 
+  /**
+   * Returns a scaled copy of the line.
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the line.
+   */
   Polyline scaled( double s )  const;
 
   /**
@@ -836,7 +926,6 @@ struct Rectangle : public Polyline {
    * @return
    */
   const std::string & name() const;
-
   double x() const { return _path[0].x; }
   double y() const { return _path[0].y; }
   double width() const { return (_path[1] - _path[0]).norm(); }
@@ -845,7 +934,6 @@ struct Rectangle : public Polyline {
   Point topRight() const { return Point( _path[1].x, _path[1].y ); }
   Point bottomLeft() const { return Point( _path[3].x, _path[3].y ); }
   Point bottomRight() const { return Point( _path[2].x, _path[2].y ); }
-
 
   /**
    * Returns a copy of the arrow, rotated around a given rotation center.
@@ -867,25 +955,32 @@ struct Rectangle : public Polyline {
   Rectangle rotated( double angle ) const;
 
   /**
-   * Returns a translated copy of the arrow.
+   * Returns a translated copy of the rectangle.
    *
    * @param dx The shift along the x axis.
    * @param dy The shift along the y axis.
    *
-   * @return A translated copy of the line.
+   * @return A translated copy of the rectangle.
    */
   Rectangle translated( double dx, double dy ) const;
 
   /**
    * Returns a scaled copy of the rectangle.
    *
-   * @param sx Scale factor along the x axis.
-   * @param sy Scale factor along the y axis.
+   * @param sx Scaling factor along the x axis.
+   * @param sy scaling factor along the y axis.
    *
    * @return A scaled copy of the rectangle.
    */
   Rectangle scaled( double sx, double sy ) const;
 
+  /**
+   * Returns a scaled copy of the rectangle.
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the rectangle.
+   */
   Rectangle scaled( double s ) const;
 
   /**
@@ -965,20 +1060,27 @@ struct Triangle : public Polyline {
    * @param dx The shift along the x axis.
    * @param dy The shift along the y axis.
    *
-   * @return A translated copy of the line.
+   * @return A translated copy of the triangle.
    */
   Triangle translated( double dx, double dy ) const;
 
   /**
    * Returns a scaled copy of the triangle.
    *
-   * @param sx Scale factor along the x axis.
-   * @param sy Scale factor along the y axis.
+   * @param sx Scaling factor along the x axis.
+   * @param sy scaling factor along the y axis.
    *
    * @return A scaled copy of the arrow.
    */
   Triangle scaled( double sx, double sy ) const;
 
+  /**
+   * Returns a scaled copy of the triangle.
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the triangle.
+   */
   Triangle scaled( double s ) const;
 
   Triangle * clone() const;
@@ -1033,20 +1135,27 @@ struct GouraudTriangle : public Polyline {
    * @param dx The shift along the x axis.
    * @param dy The shift along the y axis.
    *
-   * @return A translated copy of the line.
+   * @return A translated copy of the triangle.
    */
   GouraudTriangle translated( double dx, double dy ) const;
 
   /**
    * Returns a scaled copy of the triangle.
    *
-   * @param sx Scale factor along the x axis.
-   * @param sy Scale factor along the y axis.
+   * @param sx Scaling factor along the x axis.
+   * @param sy scaling factor along the y axis.
    *
    * @return A scaled copy of the arrow.
    */
   GouraudTriangle scaled( double sx, double sy ) const;
 
+  /**
+   * Returns a scaled copy of the triangle.
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the tiangle.
+   */
   GouraudTriangle scaled( double s ) const;
 
 
@@ -1154,32 +1263,62 @@ struct Ellipse : public Shape {
    */
   Ellipse rotated( double angle ) const;
   
+  /**
+   * Translate the ellipse by a given offset.
+   *
+   * @param dx The x offset.
+   * @param dy The y offset.
+   *
+   * @return A reference to the ellipse itself.
+   */
   Ellipse & translate( double dx, double dy );
 
   /**
+   * Returns a translated copy of the ellipse.
    *
+   * @param dx Shift of the first coordinate.
+   * @param dy Shift of the second coordinate.
    *
-   * @param dx
-   * @param dy
-   *
-   * @return
+   * @return A copy of the ellipse, translated.
    */
   Ellipse translated( double dx, double dy ) const;
 
-  Shape & scale( double sx, double sy );
-
-  Shape & scale( double s );
+  /**
+   * Scale the polyline, given two scaling factors.
+   *
+   * @param sx Scaling factor along the x axis.
+   * @param sy Scaling factor along the y axis.
+   *
+   * @return A reference to the polyline itself, once scaled.
+   */
+  Ellipse & scale( double sx, double sy );
 
   /**
+   * Scale the ellipse, given a scaling factor.
    *
+   * @param s Scaling factor.
    *
-   * @param sx
-   * @param sy
+   * @return A reference to the ellipse itself, once scaled.
+   */
+  Ellipse & scale( double s );
+
+  /**
+   * Returns a scaled copy of the ellipse.
    *
-   * @return
+   * @param sx The scaling factor along the x axis.
+   * @param sy The scaling factor along the y axis.
+   *
+   * @return A scaled copy of the ellipse.
    */
   Ellipse scaled( double sx, double sy ) const;
 
+  /**
+   * Returns a scaled copy of the ellipse.
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the ellipse.
+   */
   Ellipse scaled( double s ) const;
   
   /**
@@ -1249,16 +1388,62 @@ struct Circle : public Ellipse {
 
   Circle rotated( double angle ) const;
   
+  /**
+   * Translate the circle by a given offset.
+   *
+   * @param dx The x offset.
+   * @param dy The y offset.
+   *
+   * @return A reference to the circle itself.
+   */
   Circle & translate( double dx, double dy );
 
+  /**
+   * Returns a translated copy of the circle.
+   *
+   * @param dx Shift of the first coordinate.
+   * @param dy Shift of the second coordinate.
+   *
+   * @return A copy of the circle, translated.
+   */
   Circle translated( double dx, double dy ) const;
 
-  Shape & scale( double sx, double sy );
+  /**
+   * Scale the circle, given two scaling factors.
+   *
+   * @param sx Scaling factor along the x axis.
+   * @param sy Scaling factor along the y axis.
+   *
+   * @return A reference to the circle itself, once scaled.
+   */
+  Circle & scale( double sx, double sy );
 
-  Shape & scale( double s );
+  /**
+   * Scale the circle, given a scaling factor.
+   *
+   * @param s Scaling factor.
+   *
+   * @return A reference to the circle itself, once scaled.
+   */
+  Circle & scale( double s );
 
+  /**
+   * Returns a scaled copy of the circle.
+   *
+   * @param sx The scaling factor along the x axis.
+   * @param sy The scaling factor along the y axis.
+   *
+   * @return A scaled copy of the circle.
+   */
   Circle scaled( double sx, double sy ) const;
 
+  /**
+   * Returns a scaled copy of the circle.
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the circle.
+   */
   Circle scaled( double s ) const;
 
   /**
@@ -1357,16 +1542,62 @@ struct Text : public Shape {
 
   Text rotated( double angle ) const;
   
+  /**
+   * Translate the text by a given offset.
+   *
+   * @param dx The x offset.
+   * @param dy The y offset.
+   *
+   * @return A reference to the text itself.
+   */
   Text & translate( double dx, double dy );
 
+  /**
+   * Returns a translated copy of the text.
+   *
+   * @param dx Shift of the first coordinate.
+   * @param dy Shift of the second coordinate.
+   *
+   * @return A copy of the text, translated.
+   */
   Text translated( double dx, double dy ) const;
 
-  Shape & scale( double sx, double sy );
+  /**
+   * Scale the text, given two scaling factors.
+   *
+   * @param sx Scaling factor along the x axis.
+   * @param sy Scaling factor along the y axis.
+   *
+   * @return A reference to the text itself, once scaled.
+   */
+  Text & scale( double sx, double sy );
 
-  Shape & scale( double s );
+  /**
+   * Scale the text, given a scaling factor.
+   *
+   * @param s Scaling factor.
+   *
+   * @return A reference to the text itself, once scaled.
+   */
+  Text & scale( double s );
 
+  /**
+   * Returns a scaled copy of the text.
+   *
+   * @param sx The scaling factor along the x axis.
+   * @param sy The scaling factor along the y axis.
+   *
+   * @return A scaled copy of the text.
+   */
   Text scaled( double sx, double sy ) const;
 
+  /**
+   * Returns a scaled copy of the text.
+   *
+   * @param s The scaling factor.
+   *
+   * @return A scaled copy of the text.
+   */
   Text scaled( double s ) const;
   
   /**

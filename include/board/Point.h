@@ -62,13 +62,6 @@ struct Point {
    * @param y The point's second coordinate.
    */
   Point( double x, double y ):x(x),y(y) { }
-  
-  /**
-   * Rotate the point with a given angle around the origin (0,0)
-   *
-   * @param angle The rotation angle.
-   */
-  inline Point & rotate( double angle );
 
   /**
    * Get the values of the x and y values.
@@ -77,32 +70,94 @@ struct Point {
    * @param y Reference to the y to be set.
    */
   inline void get( double & x, double & y ) const;
-  
+
   /**
    * Rotate the point with a given angle around the origin (0,0)
    *
    * @param angle The rotation angle.
+   */
+  inline Point & rotate( double angle );
+
+  /**
+   * Get a rotated copy of the point, around the origin, by a given angle.
+   *
+   * @param angle The rotation angle (in radians).
    *
    * @return The rotated point.
    */
   inline Point rotated( double angle ) const;
 
+  /**
+   * Rotate the point, given a rotation center and an angle.
+   *
+   * @param angle The rotation angle (in radians).
+   * @param center The rotation center.
+   *
+   * @return The point itself (once rotated).
+   */
   inline Point & rotate( double angle, const Point & center );
-  
-  inline Point & rotated( double angle, const Point & center ) const;
 
+  /**
+   * Get a rotated copy of the point, given a rotation center and an angle.
+   *
+   * @param angle The rotation angle (in radians).
+   * @param center The rotation center.
+   *
+   * @return A rotated copy of the point.
+   */
+  inline Point rotated( double angle, const Point & center ) const;
+
+  /**
+   * Move the point given a translation vector (given as another Point).
+   *
+   * @param other A point seen as a translation vector.
+   *
+   * @return The point itself, once translated.
+   */
   inline Point & operator+=( const Point & other );
 
+  /**
+   * Move (backward) the point given a translation vector (given as another Point).
+   *
+   * @param other A point seen as a translation vector.
+   *
+   * @return The point itself, once translated.
+   */
   inline Point & operator-=( const Point & other );
 
+
+  /**
+   * Scale the point's coordinates.
+   *
+   * @param s A scaling factor.
+   *
+   * @return The point itself, once scaled.
+   */
   inline Point & operator*=( double s );
-  
+
+  /**
+   * Downscale the point's coordinates.
+   *
+   * @param s A (down)scaling factor.
+   *
+   * @return The point itself, once scaled.
+   */
   inline Point & operator/=( double s );
 
+  /**
+   * Get the opposite copy of the point.
+   *
+   * @return The opposite copy of the point.
+   */
   inline Point operator-() const;
-  
+
+  /**
+   * Compute the norm of the point (seen as a vector).
+   *
+   * @return The norm of the point.
+   */
   inline double norm() const;
-  
+
 };
 
 inline void
@@ -217,7 +272,7 @@ Point::rotate( double angle, const Point & center )
   return *this;
 }
 
-Point &
+Point
 Point::rotated( double angle, const Point & center ) const
 {
   return Point(*this).rotate( angle, center );
@@ -245,4 +300,3 @@ operator<<( std::ostream & out, const Point & p )
 } // mamespace BoardLib
 
 #endif // _POINT_H_
-

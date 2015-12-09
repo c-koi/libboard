@@ -599,7 +599,6 @@ public:
    */
   void drawBoundingBox( int depth = -1 );
 
-
   /**
    * Define a clipping rectangle for the whole drawing.
    *

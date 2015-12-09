@@ -195,6 +195,7 @@ struct ShapeList : public Shape {
   Shape & top();
 
 private:
+
   static const std::string _name; /**< The generic name of the shape. */
   
 protected:
@@ -276,7 +277,6 @@ struct Group : public ShapeList {
    * @param points A path.
    */
   void setClippingPath( const Path & path );
-
 
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const;

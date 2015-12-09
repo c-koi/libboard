@@ -2,7 +2,6 @@
 /**
  * @file   Image.h
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
  *
  * @brief
  * \@copyright
@@ -34,6 +33,7 @@ namespace LibBoard {
 
 /**
  * Image structure.
+ *
  * @brief Structure for a bitmap image shape.
  */
 struct Image : public Shape {
@@ -53,7 +53,9 @@ struct Image : public Shape {
    * @param depth
    *
    */
-  Image( const char * filename, double left, double top, double width, double height = 0.0, int depth = -1 );
+  Image( const char * filename,
+         double left, double top, double width, double height = 0.0,
+         int depth = -1 );
 
   /**
    *
@@ -206,29 +208,6 @@ struct Image : public Shape {
    */
   Rect boundingBox() const;
 
-
-  /**
-   * Returns the bounding box of the figure. (Convenience method to call "boundingBox" with a short name.)
-   *
-   */
-  inline Rect bbox();
-
-
-  /**
-   * Decrement the depth of the shape. (Pull the shape toward the foreground.)
-   *
-   * @return
-   */
-  inline Shape & operator--();
-
-  /**
-   * Increment the depth of the shape. (Push the shape toward the background.)
-   *
-   * @return
-   */
-  inline Shape & operator++();
-
-
   /**
    * Scales all the values (positions, dimensions, etc.) associated
    * with the shape.
@@ -236,7 +215,6 @@ struct Image : public Shape {
    * @param s The scaling factor.
    */
   void scaleAll( double s );
-
 
   /**
    * Writes the EPS code of the shape in a stream according
@@ -279,34 +257,17 @@ struct Image : public Shape {
   void flushTikZ( std::ostream & stream,
                   const TransformTikZ & transform ) const;
 
-  inline int depth() const;
-
-  const Color & penColor() const;
-
-  const Color & fillColor() const;
-
 private:
-
-  static const std::string _name; /**< The generic name of the shape. */
-
+  static const std::string _name;        /**< The generic name of the shape. */
   Rectangle _rectangle;
-
   Rectangle _originalRectangle;
-
   TransformMatrix _transformMatrixSVG;
-
   TransformMatrix _transformMatrixEPS;
-
   std::string _filename;
 };
 
 Image::~Image()
 {}
-
-Rect Image::bbox()
-{
-  return _rectangle.bbox();
-}
 
 
 } // namespace LibBoard

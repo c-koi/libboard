@@ -33,27 +33,23 @@ namespace LibBoard {
 
 /**
  * Color structure.
+ *
  * @brief Structure representing an RGB triple.
  */
 class Color {
 
 public:
 
-  Color( const unsigned int rgb, unsigned char alpha = 255 );
+  inline Color( const unsigned int rgb, unsigned char alpha = 255 );
 
-  Color( unsigned char red, unsigned char  green, unsigned char  blue, unsigned char alpha = 255 )
-    :_red(red),_green(green),_blue(blue),_alpha(alpha) { }
+  inline Color( unsigned char red,
+                unsigned char  green,
+                unsigned char  blue,
+                unsigned char alpha = 255 );
 
-  Color( unsigned char gray, unsigned char alpha = 255 )
-    :_red(gray),_green(gray),_blue(gray),_alpha(alpha) { }
+  inline Color( unsigned char gray, unsigned char alpha = 255 );
 
-  Color( const bool valid = true )
-    :_red(-1),_green(-1),_blue(-1),_alpha(255)
-  {
-    if ( valid ) {
-      _red = _green = _blue = 0;
-    }
-  }
+  inline Color( const bool valid = true );
 
   inline void red( unsigned char red );
   inline void green( unsigned char green );
@@ -129,7 +125,7 @@ public:
   static const Color Aqua;
 
 private:
-  int _red;			/**< The red component. */
+  int _red;       /**< The red component. */
   int _green;			/**< The green component. */
   int _blue;			/**< The blue component. */
   int _alpha;			/**< The opacity. */
@@ -147,6 +143,33 @@ Color::setRGBi( const unsigned char red,
   return *this;
 }
 
+
+inline Color::Color( const unsigned int rgb, unsigned char alpha )
+  :_alpha( alpha )
+{
+  _red = ( rgb & 0xFF0000u ) >> 16;
+  _green = ( rgb & 0xFF00u ) >> 8;
+  _blue = rgb & 0xFF;
+}
+
+inline Color::Color( unsigned char red,
+                     unsigned char  green,
+                     unsigned char  blue,
+                     unsigned char alpha )
+  :_red(red),_green(green),_blue(blue),_alpha(alpha)
+{ }
+
+inline Color::Color( unsigned char gray, unsigned char alpha )
+  :_red(gray),_green(gray),_blue(gray),_alpha(alpha)
+{ }
+
+inline Color::Color( const bool valid )
+  :_red(-1),_green(-1),_blue(-1),_alpha(255)
+{
+  if ( valid ) {
+    _red = _green = _blue = 0;
+  }
+}
 
 inline void
 Color::red( const unsigned char red )

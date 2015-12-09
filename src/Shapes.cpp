@@ -214,13 +214,13 @@ Dot::translated( double dx, double dy ) const
   return Dot(*this).translate( dx, dy );
 }
 
-Shape &
+Dot &
 Dot::scale( double , double )
 {
   return *this;
 }
 
-Shape &
+Dot &
 Dot::scale( double )
 {
   return *this;
@@ -386,7 +386,7 @@ Line::translated( double dx, double dy ) const
   return *this;
 }
 
-Shape &
+Line &
 Line::scale( double sx, double sy )
 {
   Point c = center();
@@ -399,7 +399,7 @@ Line::scale( double sx, double sy )
   return *this;
 }
 
-Shape &
+Line &
 Line::scale( double s )
 {
   scale( s, s );
@@ -803,7 +803,7 @@ Ellipse::translated( double dx, double dy ) const
   return Ellipse(*this).translate( dx, dy );
 }
 
-Shape &
+Ellipse &
 Ellipse::scale( double sx, double sy )
 {
   // Thanks to Freddie Exall for pointing an error with the first version
@@ -853,7 +853,7 @@ Ellipse::scale( double sx, double sy )
   return *this;
 }
 
-Shape &
+Ellipse &
 Ellipse::scale( double s )
 {
   return Ellipse::scale( s, s );
@@ -1062,28 +1062,30 @@ Circle::translated( double dx, double dy ) const
   return Circle(*this).translate( dx, dy );
 }
 
-Shape &
+Circle &
 Circle::scale( double sx, double sy )
 {
-  return Ellipse::scale( sx, sy );
+  Ellipse::scale( sx, sy );
+  return *this;
 }
 
-Shape &
+Circle &
 Circle::scale( double s )
 {
-  return Ellipse::scale( s );
+  Ellipse::scale( s );
+  return *this;
 }
 
 Circle
 Circle::scaled( double sx, double sy ) const
 {
-  return static_cast<Circle &>( Circle(*this).scale( sx, sy ) );
+  return Circle(*this).scale( sx, sy );
 }
 
 Circle
 Circle::scaled( double s ) const
 {
-  return static_cast<Circle &>( Circle(*this).scale( s, s ) );
+  return Circle(*this).scale( s, s );
 }
 
 void
@@ -1103,9 +1105,9 @@ void
 Circle::flushSVG( std::ostream & stream,
                   const TransformSVG & transform ) const
 {
-  if ( ! _circle )
+  if ( ! _circle ) {
     Ellipse::flushSVG( stream, transform );
-  else {
+  } else {
     stream << "<circle cx=\"" << transform.mapX( _center.x ) << '"'
            << " cy=\"" << transform.mapY( _center.y ) << '"'
            << " r=\"" << transform.scale( _xRadius ) << '"'
@@ -1118,9 +1120,9 @@ void
 Circle::flushTikZ( std::ostream & stream,
                    const TransformTikZ & transform ) const
 {
-  if ( ! _circle )
+  if ( ! _circle ) {
     Ellipse::flushTikZ( stream, transform );
-  else {
+  } else {
     stream << "\\path[" << tikzProperties(transform) << "] ("
            << transform.mapX( _center.x ) << ','
            << transform.mapY( _center.y ) << ')'
@@ -1192,14 +1194,14 @@ Polyline::translated( double dx, double dy ) const
   return Polyline(*this).translate( dx, dy );
 }
 
-Shape &
+Polyline &
 Polyline::scale( double sx, double sy )
 {
   _path.scale( sx, sy );
   return *this;
 }
 
-Shape &
+Polyline &
 Polyline::scale( double s )
 {
   Polyline::scale( s, s );
@@ -1813,7 +1815,7 @@ Text::translated( double dx, double dy ) const
   return static_cast<Text&>( Text(*this).translate( dx, dy ) );
 }
 
-Shape &
+Text &
 Text::scale( double sx, double sy )
 {
   _xScale = sx;
@@ -1821,7 +1823,7 @@ Text::scale( double sx, double sy )
   return *this;
 }
 
-Shape &
+Text &
 Text::scale( double s )
 {
   _xScale = _yScale = s;

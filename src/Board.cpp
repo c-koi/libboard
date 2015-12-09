@@ -799,33 +799,33 @@ Board::saveEPS( std::ostream & out, double pageWidth, double pageHeight, double 
   out << "%Magnification: 1.0000" << std::endl;
   out << "%%EndComments" << std::endl;
 
-  out << std::endl;
-  out << "/cp {closepath} bind def" << std::endl;
-  out << "/ef {eofill} bind def" << std::endl;
-  out << "/gr {grestore} bind def" << std::endl;
-  out << "/gs {gsave} bind def" << std::endl;
-  out << "/sa {save} bind def" << std::endl;
-  out << "/rs {restore} bind def" << std::endl;
-  out << "/l {lineto} bind def" << std::endl;
-  out << "/m {moveto} bind def" << std::endl;
-  out << "/rm {rmoveto} bind def" << std::endl;
-  out << "/n {newpath} bind def" << std::endl;
-  out << "/s {stroke} bind def" << std::endl;
-  out << "/sh {show} bind def" << std::endl;
-  out << "/slc {setlinecap} bind def" << std::endl;
-  out << "/slj {setlinejoin} bind def" << std::endl;
-  out << "/slw {setlinewidth} bind def" << std::endl;
-  out << "/srgb {setrgbcolor} bind def" << std::endl;
-  out << "/rot {rotate} bind def" << std::endl;
-  out << "/sc {scale} bind def" << std::endl;
-  out << "/sd {setdash} bind def" << std::endl;
-  out << "/ff {findfont} bind def" << std::endl;
-  out << "/sf {setfont} bind def" << std::endl;
-  out << "/scf {scalefont} bind def" << std::endl;
-  out << "/sw {stringwidth} bind def" << std::endl;
-  out << "/sd {setdash} bind def" << std::endl;
-  out << "/tr {translate} bind def" << std::endl;
-  out << " 0.5 setlinewidth" << std::endl;
+  out << "\n"
+          "/cp {closepath} bind def\n"
+          "/ef {eofill} bind def\n"
+          "/gr {grestore} bind def\n"
+          "/gs {gsave} bind def\n"
+          "/sa {save} bind def\n"
+          "/rs {restore} bind def\n"
+          "/l {lineto} bind def\n"
+          "/m {moveto} bind def\n"
+          "/rm {rmoveto} bind def\n"
+          "/n {newpath} bind def\n"
+          "/s {stroke} bind def\n"
+          "/sh {show} bind def\n"
+          "/slc {setlinecap} bind def\n"
+          "/slj {setlinejoin} bind def\n"
+          "/slw {setlinewidth} bind def\n"
+          "/srgb {setrgbcolor} bind def\n"
+          "/rot {rotate} bind def\n"
+          "/sc {scale} bind def\n"
+          "/sd {setdash} bind def\n"
+          "/ff {findfont} bind def\n"
+          "/sf {setfont} bind def\n"
+          "/scf {scalefont} bind def\n"
+          "/sw {stringwidth} bind def\n"
+          "/sd {setdash} bind def\n"
+          "/tr {translate} bind def\n"
+          " 0.5 setlinewidth\n";
 
   if ( clipping ) {
     out << " newpath ";
