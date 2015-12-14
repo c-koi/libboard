@@ -8,6 +8,13 @@ ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+if(COMPILER_SUPPORTS_CXX11)
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
+    set(CMAKE_CXX_STANDARD 11)
+endif()
+
 find_package(ImageMagick COMPONENTS Magick++)
 IF ( ImageMagick_Magick++_FOUND )
   SET( Board_Have_MagickPlusPlus 1 )
@@ -21,7 +28,6 @@ IF ( WIN32 )
 ELSE ( WIN32 )
  SET( Board_Win32 0 )
 ENDIF ( WIN32 )
-
 
 configure_file (
   "${PROJECT_SOURCE_DIR}/include/BoardConfig.h.in"
@@ -132,7 +138,7 @@ SET_TARGET_PROPERTIES(board-dynamic PROPERTIES PREFIX "lib")
 
 FOREACH( EXAMPLE logo example1 example2 example3 example4
     arithmetic ellipse graph arrows  ruler koch clipping
-    flag scale_ellipse line_style images line_segment )
+    flag scale_ellipse line_style images line_segment tilings )
   ADD_EXECUTABLE(
     ${EXAMPLE}
     examples/${EXAMPLE}.cpp

@@ -60,6 +60,8 @@ struct Rect {
   Point bottomLeft() const { return Point( left, top - height ); }
   Point bottomRight() const { return Point( left + width, top - height ); }
   Point center() const { return Point(left+width/2.0,top-height/2.0); }
+  double bottom() const { return top - height; }
+  double right() const { return left + width; }
 };
 
 /** 

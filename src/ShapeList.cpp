@@ -27,6 +27,7 @@
 #include "board/ShapeList.h"
 #include <algorithm>
 #include <typeinfo>
+#include <utility>
 #include "board/Tools.h"
 
 #if defined( max )
@@ -108,7 +109,10 @@ ShapeList::free()
 
 ShapeList::ShapeList( const ShapeList & other ) : Shape( other )
 {
-  if ( ! other._shapes.size() ) return;
+  _nextDepth = other._nextDepth;
+  if ( ! other._shapes.size() ) {
+    return;
+  }
   _shapes.resize( other._shapes.size(), 0 );
   std::vector<Shape*>::iterator t = _shapes.begin();
   std::vector<Shape*>::const_iterator i = other._shapes.begin();
@@ -123,7 +127,9 @@ ShapeList &
 ShapeList::operator=( const ShapeList & other )
 {
   free();
-  if ( ! other._shapes.size() ) return *this;
+  if ( ! other._shapes.size() ) {
+    return *this;
+  }
   _shapes.resize( other._shapes.size(), 0 );
   std::vector<Shape*>::iterator t = _shapes.begin();
   std::vector<Shape*>::const_iterator i = other._shapes.begin();
@@ -134,6 +140,26 @@ ShapeList::operator=( const ShapeList & other )
   }
   return *this;
 }
+
+#if __cplusplus > 201100
+
+ShapeList::ShapeList( ShapeList && other )
+  : Shape( other )
+{
+  _nextDepth = other._nextDepth;
+  _shapes = std::move(other._shapes);
+}
+
+ShapeList &
+ShapeList::operator=( ShapeList && other )
+{
+  free();
+  _nextDepth = other._nextDepth;
+  _shapes = std::move(other._shapes);
+  return *this;
+}
+
+#endif // __cplusplus > 201100
 
 ShapeList &
 ShapeList::operator<<( const Shape & shape )
@@ -179,7 +205,6 @@ ShapeList::addShape( const Shape & shape, double scaleFactor )
       if ( scaleFactor != 1.0 ) {
         s->scaleAll( scaleFactor );
       }
-
       _shapes.push_back( s );
       ++i;
     }
@@ -228,25 +253,79 @@ ShapeList::operator+=( const Shape & shape )
   return *this;
 }
 
+Group &
+ShapeList::addTiling( const Shape & shape,
+                      Point topLeftCorner,
+                      std::size_t columns,
+                      std::size_t rows, double spacing )
+{
+  Group group;
+  if ( columns && rows ) {
+    Shape * s = shape.clone();
+    Rect box = shape.boundingBox();
+    s->translate(topLeftCorner.x-box.left,topLeftCorner.y-box.top);
+    for ( std::size_t r = 0; r < rows; ++r ) {
+      group << (*s);
+      for ( std::size_t c = 1; c < columns; ++c ) {
+        group << group.last();
+        group.last().translate(box.width+spacing,0);
+      }
+      s->translate(0,-(box.height+spacing));
+    }
+    delete s;
+  }
+  (*this) << group;
+  return last<Group>();
+}
+
+ShapeList &
+ShapeList::append(const Shape & shape,
+                  ShapeList::Direction direction,
+                  ShapeList::Alignment alignment)
+{
+  Rect box = boundingBox();
+  Point c = box.center();
+  Rect shapeBox = shape.boundingBox();
+  const double shapeHalfWidth = shapeBox.width / 2.0;
+  const double shapeHalfHeight = shapeBox.height / 2.0;
+  double x,y;
+  Shape * s = shape.clone();
+  if ( direction == Right || direction == Left ) {
+    x = (direction==Right) ? (box.right() + shapeHalfWidth)
+                           : (box.left - shapeHalfWidth);
+    switch(alignment) {
+    case AlignCenter: y = c.y; break;
+    case AlignTop: y = box.top - shapeBox.height/2.0; break;
+    case AlignBottom: y = (box.top - box.height) + shapeBox.height/2.0; break;
+    case AlignLeft:
+    case AlignRight:
+      error << "ShapeList::append(): bad alignement\n";
+      break;
+    }
+  } else {
+    y = (direction==Top) ? (box.top + shapeHalfHeight)
+                         : (box.bottom() - shapeHalfHeight);
+    switch(alignment) {
+    case AlignCenter: x = c.x; break;
+    case AlignLeft: x = box.left + shapeBox.width/2.0; break;
+    case AlignRight: x = (box.left + box.width) - shapeBox.width/2.0; break;
+    case AlignTop:
+    case AlignBottom:
+      error << "ShapeList::append(): bad alignement\n";
+      break;
+    }
+  }
+  s->moveCenter(x,y);
+  (*this) << (*s);
+  delete s;
+  return *this;
+}
+
 ShapeList &
 ShapeList::insert( const Shape & , int /* depth */ )
 {
   warning << "ShapeList::insert() not implemented yet.\n";
   return *this;
-}
-
-
-Point
-ShapeList::center() const {
-  std::vector<Shape*>::const_iterator i = _shapes.begin();
-  std::vector<Shape*>::const_iterator end = _shapes.end();
-  double f = 1.0 / _shapes.size();
-  Point r(0,0);
-  while ( i != end ) {
-    r += f * (*i)->center();
-    ++i;
-  }
-  return r;
 }
 
 ShapeList &
@@ -583,7 +662,6 @@ Group::scaled( double s )
 {
   return static_cast<const Group &>( Group( *this ).scale( s ) );
 }
-
 
 void
 Group::setClippingRectangle(  float x, float y, float width, float height )

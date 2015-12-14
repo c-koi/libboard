@@ -106,11 +106,11 @@ struct Shape {
   inline bool filled() const { return _fillColor != Color::None; }
   
   /**
-   * Returns the gravity center of the shape.
+   * Returns the center of the shape.
    *
    * @return The center of the shape, i.e. the center of its bounding box.
    */
-  virtual Point center() const = 0;
+  virtual Point center() const;
   
   /**
    * Rotate the shape around a given center of rotation.
@@ -162,6 +162,25 @@ struct Shape {
   virtual Shape & translate( double dx, double dy ) = 0;
 
   /**
+   * Move the center of the shape.
+   *
+   * @param x The new x coordinate of the center.
+   * @param y The new y coordinate of the center.
+   *
+   * @return A reference to the shape itself.
+   */
+  Shape & moveCenter( double x, double y );
+
+  /**
+   * Move the center of the shape.
+   *
+   * @param p The new center.
+   *
+   * @return A reference to the shape itself.
+   */
+  Shape & moveCenter( Point p );
+
+  /**
    * Scale the shape along the x an y axis.
    *
    * @param sx The scaling factor along the x axis.
@@ -192,7 +211,7 @@ struct Shape {
    * "boundingBox" with a short name.)
    *
    */
-  inline Rect bbox();
+  inline Rect bbox() const;
   
   /**
    * Decrement the depth of the shape. (Pull the shape toward the foreground.)

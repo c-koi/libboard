@@ -45,9 +45,7 @@ Path::operator<<( const Point & p )
 
 Point
 Path::center() const {
-  Rect bbox = boundingBox();
-  return Point( bbox.left + bbox.width/2.0,
-                bbox.top  - bbox.height/2.0 );
+  return boundingBox().center();
 }
 
 Path &

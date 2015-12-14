@@ -128,7 +128,6 @@ Board::operator<<( Unit unit )
 
 Board::~Board()
 {
-
 }
 
 void
@@ -800,32 +799,32 @@ Board::saveEPS( std::ostream & out, double pageWidth, double pageHeight, double 
   out << "%%EndComments" << std::endl;
 
   out << "\n"
-          "/cp {closepath} bind def\n"
-          "/ef {eofill} bind def\n"
-          "/gr {grestore} bind def\n"
-          "/gs {gsave} bind def\n"
-          "/sa {save} bind def\n"
-          "/rs {restore} bind def\n"
-          "/l {lineto} bind def\n"
-          "/m {moveto} bind def\n"
-          "/rm {rmoveto} bind def\n"
-          "/n {newpath} bind def\n"
-          "/s {stroke} bind def\n"
-          "/sh {show} bind def\n"
-          "/slc {setlinecap} bind def\n"
-          "/slj {setlinejoin} bind def\n"
-          "/slw {setlinewidth} bind def\n"
-          "/srgb {setrgbcolor} bind def\n"
-          "/rot {rotate} bind def\n"
-          "/sc {scale} bind def\n"
-          "/sd {setdash} bind def\n"
-          "/ff {findfont} bind def\n"
-          "/sf {setfont} bind def\n"
-          "/scf {scalefont} bind def\n"
-          "/sw {stringwidth} bind def\n"
-          "/sd {setdash} bind def\n"
-          "/tr {translate} bind def\n"
-          " 0.5 setlinewidth\n";
+         "/cp {closepath} bind def\n"
+         "/ef {eofill} bind def\n"
+         "/gr {grestore} bind def\n"
+         "/gs {gsave} bind def\n"
+         "/sa {save} bind def\n"
+         "/rs {restore} bind def\n"
+         "/l {lineto} bind def\n"
+         "/m {moveto} bind def\n"
+         "/rm {rmoveto} bind def\n"
+         "/n {newpath} bind def\n"
+         "/s {stroke} bind def\n"
+         "/sh {show} bind def\n"
+         "/slc {setlinecap} bind def\n"
+         "/slj {setlinejoin} bind def\n"
+         "/slw {setlinewidth} bind def\n"
+         "/srgb {setrgbcolor} bind def\n"
+         "/rot {rotate} bind def\n"
+         "/sc {scale} bind def\n"
+         "/sd {setdash} bind def\n"
+         "/ff {findfont} bind def\n"
+         "/sf {setfont} bind def\n"
+         "/scf {scalefont} bind def\n"
+         "/sw {stringwidth} bind def\n"
+         "/sd {setdash} bind def\n"
+         "/tr {translate} bind def\n"
+         " 0.5 setlinewidth\n";
 
   if ( clipping ) {
     out << " newpath ";
@@ -998,9 +997,9 @@ Board::saveSVG( std::ostream & out, double pageWidth, double pageHeight, double 
         << pageWidth * ppmm  << " "
         << pageHeight * ppmm  << "\" " << std::endl;
     out << "     xmlns=\"http://www.w3.org/2000/svg\""
-	<< " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-	<< " version=\"1.1\" >"
-	<< std::endl;
+        << " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+        << " version=\"1.1\" >"
+        << std::endl;
   } else {
     out << "<svg width=\""
         << ( bbox.width / ppmm )  << "mm"
@@ -1011,9 +1010,9 @@ Board::saveSVG( std::ostream & out, double pageWidth, double pageHeight, double 
         << bbox.width  << " "
         << bbox.height << "\" " << std::endl;
     out << "     xmlns=\"http://www.w3.org/2000/svg\""
-	<< " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-	<< " version=\"1.1\" >"
-	<< std::endl;
+        << " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+        << " version=\"1.1\" >"
+        << std::endl;
   }
 
   out << "<desc>"
@@ -1105,6 +1104,34 @@ Board::saveTikZ( std::ostream & out, double pageWidth, double pageHeight, double
     ++i;
   }
   out << "\\end{tikzpicture}" << std::endl;
+}
+
+Group
+Board::makeGrid( Point topLeft,
+                 size_t columns, size_t rows,
+                 double width, double height,
+                 Color penColor, Color fillColor, double lineWidth,
+                 const LineStyle style,
+                 const LineCap cap,
+                 const LineJoin join,
+                 int depth )
+{
+  Group group;
+  double cellSide = width / columns;
+  group << Rectangle(topLeft.x,topLeft.y,width,height,penColor,fillColor,lineWidth,style,cap,join,depth);
+  Line vLine(topLeft.x+cellSide,topLeft.y,topLeft.x+cellSide,topLeft.y-height,penColor,lineWidth,style,Shape::RoundCap,join,depth);
+  while ( --columns ) {
+    group << vLine;
+    vLine.translate(cellSide,0);
+  }
+  cellSide = height / rows;
+  Line hLine(topLeft.x,topLeft.y-cellSide,topLeft.x+width,topLeft.y-cellSide,penColor,lineWidth,style,Shape::RoundCap,join,depth);
+  while ( --rows ) {
+    group << hLine;
+    hLine.translate(0,-cellSide);
+  }
+
+  return group;
 }
 
 void

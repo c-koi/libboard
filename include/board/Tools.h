@@ -64,10 +64,11 @@ MessageStream::MessageStream( std::ostream & out, const char * prefix )
 template<typename T>
 MessageStream MessageStream::operator<<( const T & v )
 {
-  if ( _prefix )
+  if ( _prefix ) {
     _out << _prefix << v;
-  else
+  } else {
     _out << v;
+  }
   return MessageStream( _out, 0 );
 }
 
@@ -78,6 +79,7 @@ MessageStream MessageStream::operator<<( const T & v )
 #endif // defined( _MSC_VER )
 
 inline void secured_strncpy( char * dst, const char * src, size_t count );
+
 inline void secured_ctime( char * str, const time_t * t, size_t count ); 
 
 bool base64encode(std::istream & in, std::ostream & , int linesize = 80);

@@ -858,6 +858,33 @@ public:
    */
   void saveTikZ( std::ostream & out, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
 
+
+  /**
+   * Build a grid with specified number of rows and columns and a given size.
+   *
+   * @param topLeft Coordinates of the top left point of the grid.
+   * @param columns
+   * @param rows
+   * @param width
+   * @param height
+   * @param penColor
+   * @param fillColor
+   * @param lineWidth
+   * @param style
+   * @param cap
+   * @param join
+   * @param depth
+   * @return The gris as a group.
+   */
+  static Group makeGrid(Point topLeft, size_t columns, size_t rows,
+                        double width, double height,
+                        Color penColor, Color fillColor,
+                        double lineWidth,
+                        const LineStyle style = SolidStyle,
+                        const LineCap cap = ButtCap,
+                        const LineJoin join = MiterJoin,
+                        int depth = -1 );
+
 protected:
   
   /**

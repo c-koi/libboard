@@ -32,15 +32,31 @@
 
 namespace LibBoard {
 
+struct Group;
+
 /**
  * The ShapeList structure.
  * @brief A group of shapes
  */
 struct ShapeList : public Shape {
   
+  enum Direction { Top, Right, Bottom, Left };
+  enum Alignment { AlignTop, AlignBottom, AlignCenter, AlignLeft, AlignRight };
+
   inline ShapeList( int depth = -1 );
 
   ShapeList( const ShapeList & other );
+
+  ShapeList & operator=( const ShapeList & other );
+
+#if __cplusplus > 201100
+
+  ShapeList( ShapeList && other );
+
+  ShapeList & operator=( ShapeList && other );
+
+#endif
+
 
   /**
    * Create a ShapeList by repeating a shape (translation & scaling)
@@ -80,8 +96,6 @@ struct ShapeList : public Shape {
   const std::string & name() const;
   
   ShapeList & clear();
-
-  Point center() const;
 
   ShapeList & rotate( double angle, const Point & center );
 
@@ -134,8 +148,6 @@ struct ShapeList : public Shape {
 
   ShapeList * clone() const;
   
-  ShapeList & operator=( const ShapeList & other );
-
   /**
    * Adds a shape to the shape list. If the shape has no given depth
    * or is a compound shape (ShapeList) then it is placed on top of
@@ -156,6 +168,35 @@ struct ShapeList : public Shape {
    */
   ShapeList & operator+=( const Shape & shape );
   
+
+  /**
+   * Append a shape beside the shapelist.
+   *
+   * @param shape A shape.
+   * @param direction The direction where the shape should be appended.
+   * @param alignment The alignement with the current shapelist.
+   * @return The shapelist itself, after the shape has been appended.
+   */
+  ShapeList & append( const Shape & shape,
+                      Direction direction,
+                      Alignment alignment );
+
+
+  /**
+   * Insert a tiling based on a shape by repeating this shape along its
+   * bounding box.
+   *
+   * @param shape A shape to be repeated.
+   * @param topLeftCorner Position of the top left corner of the tiling.
+   * @param columns Number of columns of the tiling.
+   * @param rows Number of rows of the tiling.
+   * @param spacing Spacing between rows and columns.
+   * @return A reference to the tiling that has been added, as a Group.
+   */
+  Group & addTiling( const Shape & shape, Point topLeftCorner,
+                     std::size_t columns, std::size_t rows,
+                     double spacing = 0.0 );
+
   /**
    * Insert the shape at a given depth. If the shape is ShapeList or a Board,
    * then all shapes above it will be shifted.

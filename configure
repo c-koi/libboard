@@ -8,6 +8,7 @@ DEBUG=
 ECHO=echo
 [ -f /usr/ucb/echo ] && ECHO=/usr/ucb/echo
 DOXYGEN=doxygen
+SANITIZE=""
 
 ##
 ## 1. ARGS
@@ -40,6 +41,9 @@ do
     --no-doc*)
 	DOXYGEN=""
 	;;
+    --sanitize-address )
+	SANITIZE="-fsanitize=address"
+	;;
     -help | --help | --hel | --he)
     # Omit some internal or obsolete options to make the list less imposing.
     # This message is too long to be a string in the A/UX 3.1 sh.
@@ -53,6 +57,7 @@ Directory and file names:
   --debug                 compile with debug options [no]
   --no-doc                don't build the documentation [yes if Doxygen is present]
   --static		  build only the static version of the library [both static and dynamic]
+  --sanitize-address      build using -fsanitize=address option
 EOF
     exit 0;
     ;;
@@ -91,26 +96,26 @@ cat > check_magick.cpp <<EOF
 #include <Magick++.h>
 int main() {
   Magick::Image image;
-  try { 
+  try {
    image.read("resources/avatar.png");
-  } 
-  catch ( ... )  { 
-      return 1; 
-  } 
+  }
+  catch ( ... )  {
+      return 1;
+  }
   return 0;
 }
 EOF
 g++ -o check_magick check_magick.cpp `Magick++-config --cppflags --cxxflags --ldflags --libs` > /dev/null 2>&1
-./check_magick > /dev/null 2>&1 
+./check_magick > /dev/null 2>&1
 if [ $? = 0 ]; then
     MAGICKPLUSPLUS=1
-    IMAGE_SAMPLES="bin/images"
+    IMAGE_EXAMPLES="bin/images"
     IMAGE_CXXFLAGS=$(Magick++-config --cxxflags)
     IMAGE_LDFLAGS=$(Magick++-config --ldflags)
     echo "Found"
 else
     MAGICKPLUSPLUS=0
-    IMAGE_SAMPLES=""
+    IMAGE_EXAMPLES=""
     IMAGE_CXXFLAGS=""
     IMAGE_LDFLAGS=""
     echo "Not found"
@@ -169,7 +174,7 @@ rm -f is64 is64.c
 
 cat > Makefile <<EOF
 
-CXX = ${CXX} 
+CXX = ${CXX}
 VERSION=$VERSION
 LIBNAME=libboard
 
@@ -188,8 +193,8 @@ AR=ar
 ARFLAGS=rsv
 LN=ln -s
 
-CXXFLAGSOBJ=-O3 -ansi -pedantic -Wall -W ${DEBUG} -I./include ${CXX64FLAGS}
-CXXFLAGSEXEC=-O3 -ansi  -pedantic -Wall -W ${DEBUG} -I./include
+CXXFLAGSOBJ=-O3 -ansi -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include ${CXX64FLAGS}
+CXXFLAGSEXEC=-O3 -ansi  -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include
 
 .PHONY: all clean install examples lib doc
 
@@ -221,8 +226,7 @@ ${ECHO} -n "Creating Makefile..."
 cat >> Makefile <<EOF
 $LIBDEP
 
-examples: lib bin/example1 bin/example2 bin/example3 bin/example4 bin/arithmetic bin/arrows bin/ellipse bin/koch bin/logo bin/graph bin/ruler bin/clipping bin/flag bin/scale_ellipse bin/line_style ${IMAGE_SAMPLES}
-
+examples: lib bin/example1 bin/example2 bin/example3 bin/example4 bin/arithmetic bin/arrows bin/ellipse bin/koch bin/logo bin/graph bin/ruler bin/clipping bin/flag bin/scale_ellipse bin/line_style ${IMAGE_EXAMPLES} bin/line_segment bin/tilings
 
 \$(DYNLIB): \$(OBJS)
 	\$(RM) \$@

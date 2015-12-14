@@ -44,7 +44,7 @@ Shape::Shape( Color penColor, Color fillColor,
 
 
 Rect
-Shape::bbox()
+Shape::bbox() const
 {
   return this->boundingBox();
 }

@@ -66,8 +66,6 @@ const char * xFigDashStylesTikZ[] = {
 };
 }
 
-
-
 namespace LibBoard {
 
 extern const char * XFigPostscriptFontnames[];
@@ -84,6 +82,29 @@ const std::string &
 Shape::name() const
 {
   return _name;
+}
+
+Point
+Shape::center() const
+{
+  return boundingBox().center();
+}
+
+
+Shape &
+Shape::moveCenter(double x, double y)
+{
+  Point c = center();
+  translate(x-c.x,y-c.y);
+  return *this;
+}
+
+Shape &
+Shape::moveCenter(Point p)
+{
+  Point c = center();
+  translate(p.x-c.x,p.y-c.y);
+  return *this;
 }
 
 std::string
@@ -159,8 +180,8 @@ Shape::shiftDepth( int shift )
 }
 
 /*
-   * Dot
-   */
+ * Dot
+ */
 
 const std::string Dot::_name("Dot");
 
@@ -333,7 +354,7 @@ Line::name() const
 
 Point
 Line::center() const {
-  return 0.5 * Point( _x1 + _x2, _y1 + _y2 );
+  return Point( (_x1 + _x2) / 2.0, (_y1 + _y2) / 2.0 );
 }
 
 Line &
@@ -1065,6 +1086,7 @@ Circle::translated( double dx, double dy ) const
 Circle &
 Circle::scale( double sx, double sy )
 {
+  _circle = false;
   Ellipse::scale( sx, sy );
   return *this;
 }
@@ -1543,7 +1565,7 @@ GouraudTriangle::GouraudTriangle( const Point & p0, float brightness0,
 
 Point
 GouraudTriangle::center() const {
-  return ( _path[0] + _path[1] + _path[2] ) / 3.0;
+  return _path.center();
 }
 
 GouraudTriangle &
