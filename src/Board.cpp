@@ -1191,6 +1191,7 @@ Board::save( const char * filename, PageSize size, double margin ) const
  * @example examples/logo.cpp
  * @example examples/ruler.cpp
  * @example examples/scale_ellipse.cpp
+ * @example examples/tilings.cpp
  * @example examples/Makefile
  */
 
