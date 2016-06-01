@@ -82,6 +82,7 @@ ShapeList::ShapeList( const Shape & shape,
   }
   delete s;
 }
+
 ShapeList::~ShapeList()
 {
   free();
@@ -226,7 +227,7 @@ ShapeList &
 ShapeList::dup( std::size_t copies )
 {
   if ( ! _shapes.size() ) {
-    warning << "dup() called with an empty list of shapes.\n";
+    Tools::warning << "dup() called with an empty list of shapes.\n";
     return *this;
   }
   while ( copies-- ) {
@@ -278,11 +279,29 @@ ShapeList::addTiling( const Shape & shape,
   return last<Group>();
 }
 
+void
+ShapeList::repeat(const Shape & shape, unsigned int times, double dx, double dy, double scaleX, double scaleY, double angle)
+{
+  Shape * s = shape.clone();
+  while ( times-- ) {
+    (*this) << (*s);
+    if ( scaleX != 1.0 || scaleY != 1.0 ) s->scale( scaleX, scaleY );
+    if ( dx != 0.0 || dy != 0.0 ) s->translate( dx, dy );
+    if ( angle != 0.0 ) s->rotate( angle );
+  }
+  delete s;
+}
+
 ShapeList &
 ShapeList::append(const Shape & shape,
                   ShapeList::Direction direction,
-                  ShapeList::Alignment alignment)
+                  ShapeList::Alignment alignment,
+                  double margin )
 {
+  if ( _shapes.size() == 0 ) {
+    (*this) << shape;
+    return *this;
+  }
   Rect box = boundingBox();
   Point c = box.center();
   Rect shapeBox = shape.boundingBox();
@@ -291,27 +310,27 @@ ShapeList::append(const Shape & shape,
   double x,y;
   Shape * s = shape.clone();
   if ( direction == Right || direction == Left ) {
-    x = (direction==Right) ? (box.right() + shapeHalfWidth)
-                           : (box.left - shapeHalfWidth);
+    x = (direction==Right) ? (box.right() + shapeHalfWidth + margin)
+                           : (box.left - (margin + shapeHalfWidth));
     switch(alignment) {
     case AlignCenter: y = c.y; break;
     case AlignTop: y = box.top - shapeBox.height/2.0; break;
     case AlignBottom: y = (box.top - box.height) + shapeBox.height/2.0; break;
     case AlignLeft:
     case AlignRight:
-      error << "ShapeList::append(): bad alignement\n";
+      Tools::error << "ShapeList::append(): bad alignement\n";
       break;
     }
   } else {
-    y = (direction==Top) ? (box.top + shapeHalfHeight)
-                         : (box.bottom() - shapeHalfHeight);
+    y = (direction==Top) ? (box.top + shapeHalfHeight + margin)
+                         : (box.bottom() - (shapeHalfHeight + margin));
     switch(alignment) {
     case AlignCenter: x = c.x; break;
     case AlignLeft: x = box.left + shapeBox.width/2.0; break;
     case AlignRight: x = (box.left + box.width) - shapeBox.width/2.0; break;
     case AlignTop:
     case AlignBottom:
-      error << "ShapeList::append(): bad alignement\n";
+      Tools::error << "ShapeList::append(): bad alignement\n";
       break;
     }
   }
@@ -324,7 +343,7 @@ ShapeList::append(const Shape & shape,
 ShapeList &
 ShapeList::insert( const Shape & , int /* depth */ )
 {
-  warning << "ShapeList::insert() not implemented yet.\n";
+  Tools::warning << "ShapeList::insert() not implemented yet.\n";
   return *this;
 }
 

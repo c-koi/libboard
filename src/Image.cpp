@@ -27,7 +27,7 @@
 #include <sstream>
 #include <fstream>
 #include <cstring>
-#include <unistd.h>
+#include <cstdio>
 #include "BoardConfig.h"
 
 #if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1 )
@@ -55,11 +55,11 @@ Image::Image(const char * filename,
       height = width * (image.rows() / (double) image.columns());
       _rectangle = _originalRectangle = Rectangle(left, top, width, height, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth);
     } catch (std::exception & e) {
-      error << "Image::Image(): ";
+      Tools::error << "Image::Image(): ";
       std::cerr << e.what() << std::endl;
     }
 #else
-    error << "Image::Image(): ImageMagick is required to retrieve the aspect ratio of bitmap images.\n";
+    Tools::error << "Image::Image(): ImageMagick is required to retrieve the aspect ratio of bitmap images.\n";
 #endif
   }
 }
@@ -184,9 +184,9 @@ Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) co
 #if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1 )
   Magick::Image image;
   image.read(_filename);
-  const char * tmpFilename = temporaryFilename(".eps");
+  const char * tmpFilename = Tools::temporaryFilename(".eps");
   image.write(tmpFilename);
-  Rect rect = getEPSBoundingBox(tmpFilename);
+  Rect rect = Tools::getEPSBoundingBox(tmpFilename);
   double scaleX = (_originalRectangle.width() / rect.width);
   double scaleY = (_originalRectangle.height() / rect.height);
   TransformMatrix scaling = TransformMatrix::scaling(scaleX,scaleY);
@@ -203,7 +203,7 @@ Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) co
   Point tmShift = transform.map(_rectangle.topLeft()) - (_transformMatrixEPS*_originalRectangle.topLeft());
   (fullTransform+tmShift).flushEPS(stream);
   stream << "\n";
-  flushFile(tmpFilename,stream);
+  Tools::flushFile(tmpFilename,stream);
   std::remove(tmpFilename);
   stream <<  "%%EndDocument\n";
   stream << "gr\n";
@@ -239,16 +239,16 @@ Image::flushSVG(std::ostream & stream, const TransformSVG & transform) const
   stream << " width=\"" << (_originalRectangle[1].x - _originalRectangle[0].x) << "\"";
   stream << " height=\"" << ( _originalRectangle[0].y - _originalRectangle[3].y) << "\"";
   stream << " id=\"image" << imageId++ << "\"";
-  if ( stringEndsWith(_filename.c_str(),".png") )
+  if ( Tools::stringEndsWith(_filename.c_str(),".png") )
     stream << "\n     xlink:href=\"data:image/png;base64,";
-  else if ( stringEndsWith(_filename.c_str(),".jpg") || stringEndsWith(_filename.c_str(),".jpeg") )
+  else if ( Tools::stringEndsWith(_filename.c_str(),".jpg") || Tools::stringEndsWith(_filename.c_str(),".jpeg") )
     stream << "\n     xlink:href=\"data:image/jpeg;base64,";
   else {
-    error << "Only png and jpeg image files may be included. SVG file will be corrupted.\n";
+    Tools::error << "Only png and jpeg image files may be included. SVG file will be corrupted.\n";
   }
   std::ifstream in;
   in.open(_filename.c_str());
-  base64encode(in,stream);
+  Tools::base64encode(in,stream);
   stream << "\"\n  ";
   Point shift = transform.map(_rectangle.topLeft()) - (_transformMatrixSVG*_originalRectangle.topLeft());
   (_transformMatrixSVG+shift).flushSVG(stream);
@@ -259,7 +259,7 @@ void
 Image::flushTikZ(std::ostream & stream, const TransformTikZ & transform) const
 {
   _rectangle.flushTikZ( stream, transform );
-  error << "Image::flushTikZ(): not available.\n";
+  Tools::error << "Image::flushTikZ(): not available.\n";
 }
 
 } // namespace LibBoard

@@ -23,6 +23,7 @@ float myRound(float x)
 {
   return (x>=0)?floor(x+0.5):ceil(x-0.5);
 }
+
 template<typename T>
 void mySwap( T & a, T & b )
 {
@@ -74,27 +75,29 @@ void drawLine( Board & board, float x1, float y1, float x2, float y2 )
     drawPixel( board, x, myRound(y1));
   }
   int y = myRound( slope*((x + xStep*0.5)-x1) + y1 );
-  if ( permute ) {
-    drawPixel( board, y, x );
-  } else {
-    drawPixel( board, x, y );
+  if ( y != myRound(y1) ) {
+    if ( permute ) {
+      drawPixel( board, y, x );
+    } else {
+      drawPixel( board, x, y );
+    }
   }
   // Traverse all xs
   if ( permute ) {
     do {
       x += xStep;
-      float y = myRound( slope*((x - 0.5)-x1) + y1 );
-      drawPixel( board, y, x );
-      y = myRound( slope*((x + 0.5)-x1) + y1 );
-      drawPixel( board, y, x );
+      float yA = myRound( slope*((x - 0.5)-x1) + y1 );
+      drawPixel( board, yA, x );
+      float yB = myRound( slope*((x + 0.5)-x1) + y1 );
+      if ( yB != yA ) { drawPixel( board, yB, x ); }
     } while ( x != xStop );
   } else {
     do {
       x += xStep;
-      float y = myRound( slope*((x - 0.5)-x1) + y1 );
-      drawPixel( board, x, y );
-      y = myRound( slope*((x + 0.5)-x1) + y1 );
-      drawPixel( board, x, y );
+      float yA = myRound( slope*((x - 0.5)-x1) + y1 );
+      drawPixel( board, x, yA );
+      float yB = myRound( slope*((x + 0.5)-x1) + y1 );
+      if ( yB != yA ) { drawPixel( board, x, yB ); }
     } while ( x != xStop );
   }
 }
@@ -106,6 +109,7 @@ int main( int, char *[] )
 
   board.setPenColorRGBi( 0, 0, 0 );
   board.setLineWidth( 1.0 );
+  board.setLineCap(Shape::RoundCap);
   board.drawLine(-side,0,side,0);
   board.drawLine(0,-side,0,side);
 
@@ -117,5 +121,6 @@ int main( int, char *[] )
   drawLine(board, 7.6, 1.2, 10.5, 12.1 );
 
   board.saveSVG( "line_segment.svg" );
+  board.saveEPS( "line_segment.eps" );
   exit(0);
 }

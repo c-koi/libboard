@@ -1,10 +1,10 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   ShapeList.ih
+ * @file   Point.cpp
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Dec. 2015
  *
- * @brief  Inline methods of the Transform classes.
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -23,31 +23,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "board/Point.h"
+#include <limits>
 
-#if defined( max )
-#undef max 
-#define _HAS_MSVC_MAX_ true
-#endif
+namespace LibBoard {
+Point Point::Infinity( std::numeric_limits<double>::infinity(),
+                       std::numeric_limits<double>::infinity());
 
-ShapeList::ShapeList( int depth )
-  : Shape( Color::None, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
-    _nextDepth( std::numeric_limits<int>::max() - 1 )
-{ }
-
-template<typename T>
-T &
-ShapeList::last( const std::size_t position )
-{
-  if ( position < _shapes.size() ) {
-    std::vector<Shape*>::reverse_iterator it = _shapes.rbegin() + position;
-    return dynamic_cast<T&>( *(*it) );
-  } else {
-    Tools::error << "Trying to access an element that does not exist ("
-                 << position << "/" << _shapes.size() << ").\n";
-    throw -1;
+std::ostream &
+operator<<( std::ostream & out, const std::vector<Point> & v ) {
+  std::vector<Point>::const_iterator it = v.begin();
+  while ( it != v.end() ) {
+    out << (*it++) << std::endl;
   }
+  return out;
 }
 
-#if defined( _HAS_MSVC_MAX_ )
-#define max(A,B) ((A)>(B)?(A):(B))
-#endif
+}

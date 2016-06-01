@@ -48,20 +48,48 @@ struct Rect {
    * @param top
    * @param width
    * @param height
-   *
-   * @return
    */
   Rect( double left = 0.0f, double top = 0.0f,
         double width = 0.0f, double height = 0.0f )
     :left( left ), top( top ), width( width ), height( height ) { }
+
+  /**
+   * Rect constructor.
+   *
+   * @param topLeft The top-left point of the rectangle.
+   * @param width
+   * @param height
+   */
+  Rect( Point topLeft,
+        double width = 0.0f, double height = 0.0f )
+    :left( topLeft.x ), top( topLeft.y ), width( width ), height( height ) { }
+
+  /**
+   * Rect constructor.
+   *
+   * @param topLeft The top-left point of the rectangle.
+   * @param bottomRight The bottom-right point of the rectangle.
+   */
+  Rect( Point topLeft, Point bottomRight )
+    :left( topLeft.x ),
+      top( topLeft.y ),
+      width( bottomRight.x - topLeft.x ),
+      height( topLeft.y - bottomRight.y ) { }
 
   Point topLeft() const { return Point( left, top ); }
   Point topRight() const { return Point( left + width, top ); }
   Point bottomLeft() const { return Point( left, top - height ); }
   Point bottomRight() const { return Point( left + width, top - height ); }
   Point center() const { return Point(left+width/2.0,top-height/2.0); }
+  Point centerLeft() const { return Point(left,top-height/2.0); }
+  Point centerRight() const { return Point(left+width,top-height/2.0); }
+  Point centerTop() const { return Point(left+width/2.0,top); }
+  Point centerBottom() const { return Point(left+width/2.0,top-height); }
   double bottom() const { return top - height; }
   double right() const { return left + width; }
+  void growToContain(Point );
+  bool contains(Point ) const;
+  Rect & grow(double margin);
 };
 
 /** 
@@ -84,10 +112,7 @@ Rect operator||( const Rect & rectA, const Rect & rectB );
  */
 Rect operator&&( const Rect & rectA, const Rect & rectB );
 
-
-} // mamespace BoardLib
-
-/** 
+/**
  * Stream output operator for Rect structure.
  *
  * @param out An output stream.
@@ -96,5 +121,9 @@ Rect operator&&( const Rect & rectA, const Rect & rectB );
  * @return The output stream.
  */
 std::ostream & operator<<( std::ostream & out, const LibBoard::Rect & rect );
+
+} // mamespace LibBoard
+
+using LibBoard::operator<<;
 
 #endif // _RECT_H_

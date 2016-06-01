@@ -1,9 +1,9 @@
 /**
  * @file   example4.cpp
  * @author Sebastien Fourey (GREYC)
- * 
+ *
  * @brief  Illustration of the use of Board, ShapeList and Group.
- * 
+ *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
@@ -25,7 +25,7 @@ int main( int , char *[] )
     for ( double y = -20.0; y <= 20; y+= 1.0 ) {
       board << Dot(x,y,Color::Black,1.0);
       board.setPenColorRGBf( 1.0, 0.0, 0.0 );
-      board.drawDot( x+0.2, y+0.2 );      
+      board.drawDot( x+0.2, y+0.2 );
     }
   
 
@@ -46,11 +46,10 @@ int main( int , char *[] )
   board << f.rotateDeg( 45.0 );
 
   ShapeList l;
-  Circle c( 0, 0, 1.8, Color::Red, Color::Green, 0.02 );
-  for ( int i = 0; i < 5; ++i ) 
+  Circle c( 2, 5, 1.8, Color::Red, Color::Green, 0.02 );
+  for ( int i = 0; i < 5; ++i ) {
     l << c.scale( 1, 0.5 );
-
-  
+  }
   for ( double x = -20, a = 0; x < 20 ; x += 4, a += 0.3 ) {
     board << l.rotated( a ).translate( x, 10 );
   }
@@ -63,11 +62,9 @@ int main( int , char *[] )
     g << r1.rotated( alpha );
     board << r2.rotated( alpha, r2.topLeft() );
   }
-  
   board << g.scale( 1.5, 1 );
-
   board.scale(10);
-
+  // board.disableLineWidthScaling();
   board.saveEPS( "draw4.eps", Board::A4 );
   board.saveFIG( "draw4.fig", Board::A4 );
   board.saveSVG( "draw4.svg", Board::A4 );

@@ -63,7 +63,40 @@ operator&&( const Rect & rectA, const Rect & rectB )
   return rect;
 }
 
-} // namespace LibBoard
+void
+Rect::growToContain(Point p)
+{
+  if ( p.x < left ) {
+    double dw = left - p.x;
+    left = p.x;
+    width += dw;
+  } else if ( p.x > left + width ) {
+    width = p.x - left;
+  }
+  if ( p.y > top ) {
+    double dh = p.y - top;
+    top = p.y;
+    height += dh;
+  } else if ( p.y < top - height ) {
+    height = top - p.y;
+  }
+}
+
+bool Rect::contains(Point p) const
+{
+  return p.x >= left && p.x <= left + width
+      && p.y <= top && p.y >= top - height;
+}
+
+Rect &
+Rect::grow(double margin)
+{
+  top += margin;
+  left -= margin;
+  width += 2 * margin;
+  height += 2 * margin;
+  return *this;
+}
 
 std::ostream &
 operator<<( std::ostream & out, const LibBoard::Rect & rect )
@@ -73,3 +106,6 @@ operator<<( std::ostream & out, const LibBoard::Rect & rect )
       << "+" << rect.width << "x" << rect.height << ")";
   return out;
 }
+
+} // namespace LibBoard
+

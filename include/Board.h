@@ -115,8 +115,6 @@ public:
    */
   inline void clear( unsigned char red, unsigned char green, unsigned char blue );
 
-
-
   Board & rotate( double angle, const Point & center );
 
   Board & rotate( double angle );
@@ -176,6 +174,16 @@ public:
                  int depth = -1 );
 
   /**
+   * Draws a line from p to q.
+   *
+   * @param p First extremity.
+   * @param q Second extremity.
+   * @param filled Whether or not the arrow is filled.
+   * @param depth Depth of the line.
+   */
+  void drawLine( Point p, Point q, int depth = -1 );
+
+  /**
    * Draws a line from (x1,y1) to (x2,y2) with an arrow at (x2,y2).
    *
    * @param x1 First coordinate of the first extremity.
@@ -188,6 +196,16 @@ public:
   void drawArrow( double x1, double y1, double x2, double y2,
                   bool filled = true,
                   int depth = -1 );
+
+  /**
+   * Draws a line from p to q with an arrow at (x2,y2).
+   *
+   * @param p First extremity.
+   * @param q Second extremity.
+   * @param filled Whether or not the arrow is filled.
+   * @param depth Depth of the line.
+   */
+  void drawArrow( Point p, Point q, bool filled = true, int depth = -1 );
 
   /**
    * Draws a triangle.
@@ -353,6 +371,14 @@ public:
                       int depth = -1 );
 
   /**
+   * Draws a rectangle.
+   *
+   * @param rect Position and size of the rectangle.
+   * @param depth Depth of the rectangle.
+   */
+  void drawRectangle( const Rect & r, int depth = -1 );
+
+  /**
    * Draws a rectangle filled with the current pen color.
    *
    * @param left First coordinate of the upper left corner.
@@ -364,6 +390,14 @@ public:
   void fillRectangle( double left, double top,
                       double width, double height,
                       int depth = -1 );
+
+  /**
+   * Draws a rectangle filled with the current pen color.
+   *
+   * @param rect Position and size of the rectangle.
+   * @param depth Depth of the rectangle.
+   */
+  void fillRectangle( const Rect & r, int depth = -1 );
 
   /**
    * Draws a circle.

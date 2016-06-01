@@ -25,7 +25,8 @@
  */
 #include "board/Path.h"
 #include "board/Transforms.h"
-
+#include <algorithm>
+#include <iterator>
 
 namespace LibBoard {
 
@@ -40,6 +41,13 @@ Path &
 Path::operator<<( const Point & p )
 {
   _points.push_back( p );
+  return *this;
+}
+
+Path &
+Path::operator<<(const std::vector<Point> & v )
+{
+  std::copy(v.begin(),v.end(),std::back_inserter(_points));
   return *this;
 }
 
@@ -60,6 +68,12 @@ Path::rotate( double angle, const Point & center )
   return *this;
 }
 
+Path &
+Path::rotateDeg( double angle, const Point & center )
+{
+  return rotate( angle  * (M_PI / 180.0), center );
+}
+
 Path
 Path::rotated( double angle, const Point & center ) const
 {
@@ -73,17 +87,34 @@ Path::rotated( double angle, const Point & center ) const
   return res;
 }
 
+Path
+Path::rotatedDeg( double angle, const Point & center ) const
+{
+  return rotated( angle  * (M_PI / 180.0), center );
+}
+
 Path &
 Path::rotate( double angle )
 {
   return Path::rotate( angle, center() );
 }
 
+Path &
+Path::rotateDeg( double angle )
+{
+  return Path::rotate( angle  * (M_PI / 180.0), center() );
+}
+
 Path
 Path::rotated( double angle ) const
 {
-  Path res(*this);
-  return static_cast<Path&>( res.rotate( angle, center() ) );
+  return Path(*this).rotate( angle, center() );
+}
+
+Path
+Path::rotatedDeg( double angle ) const
+{
+  return Path(*this).rotate( angle * (M_PI / 180.0), center() );
 }
 
 Path &
@@ -261,32 +292,20 @@ Path::boundingBox() const
 {
   if ( _points.empty() )
     return Rect( 0, 0, 0, 0 );
-  Rect rect;
-  std::vector< Point >::const_iterator i = _points.begin();
+  std::vector< Point >::const_iterator it = _points.begin();
   std::vector< Point >::const_iterator end = _points.end();
-  rect.top = i->y;
-  rect.left = i->x;
-  rect.width = 0.0;
-  rect.height = 0.0;
-  ++i;
-  while ( i != end ) {
-    if ( i->x < rect.left ) {
-      double dw = rect.left - i->x;
-      rect.left = i->x;
-      rect.width += dw;
-    } else if ( i->x > rect.left + rect.width ) {
-      rect.width = i->x - rect.left;
-    }
-    if ( i->y > rect.top ) {
-      double dh = i->y - rect.top;
-      rect.top = i->y;
-      rect.height += dh;
-    } else if ( i->y < rect.top - rect.height ) {
-      rect.height = rect.top - i->y;
-    }
-    ++i;
+  Rect rect(*it,0.0,0.0);
+  ++it;
+  while ( it != end ) {
+    rect.growToContain(*it++);
   }
   return rect;
+}
+
+const
+std::vector<Point> Path::points() const
+{
+  return _points;
 }
 
 } // namespace LibBoard

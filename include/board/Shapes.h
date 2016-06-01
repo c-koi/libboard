@@ -274,6 +274,22 @@ struct Shape {
   virtual void flushTikZ( std::ostream & stream,
                           const TransformTikZ & transform ) const = 0;
 
+
+  /**
+   *  Globally enable linewidth scaling when using scale functions.
+   */
+  static void enableLineWidthScaling();
+
+  /**
+   *  Globally disable linewidth scaling when using scale functions.
+   */
+  static void disableLineWidthScaling();
+
+  /**
+   *  Globally enable/disable linewidth scaling when using scale functions.
+   */
+  static void setLineWidthScaling(bool );
+
   inline int depth() const;
 
   virtual void depth( int );
@@ -284,11 +300,66 @@ struct Shape {
 
   inline const Color & fillColor() const;
 
+  static void setDefaultLineWidth( double );
+  static void setDefaultPenColor( Color );
+  static void setDefaultFillColor( Color );
+  static void setDefaultLineStyle( Shape::LineStyle );
+  static void setDefaultLineCap( Shape::LineCap );
+  static void setDefaultLineJoin( Shape::LineJoin );
+
+  /**
+   * @brief defaultLineWidth
+   * @return Default lineWidth value for shapes (intialized as 1.0).
+   */
+  static double defaultLineWidth();
+
+  /**
+   * @brief defaultPenColor
+   * @return Default pen color for shapes (initialized as Black)
+   */
+  static Color defaultPenColor();
+
+  /**
+   * @brief defaultFillColor
+   * @return Default fill color for shapes (initialized as Color::None)
+   */
+  static Color defaultFillColor();
+
+  /**
+   * @brief defaultLineStyle
+   * @return Default line style for shapes (initialized as SolidStyle)
+   */
+  static Shape::LineStyle defaultLineStyle();
+
+  /**
+   * @brief defaultLineCap
+   * @return Default line cap for shapes (initialized as ButtCap)
+   */
+  static Shape::LineCap defaultLineCap();
+
+  /**
+   * @brief defaultLineJoin
+   * @return Default line join for shapes (initialized as MiterJoin)
+   */
+  static Shape::LineJoin defaultLineJoin();
+
 private:
 
   static const std::string _name;       /**< The generic name of the shape. */
-  
+
 protected:
+
+  static bool _lineWidthScaling;        /**< Linewidth should be scaled by
+                                             scaling functions. */
+
+  static double _defaultLineWidth;
+  static Color _defaultPenColor;
+  static Color _defaultFillColor;
+  static Shape::LineStyle _defaultLineStyle;
+  static Shape::LineCap _defaultLineCap;
+  static Shape::LineJoin _defaultLineJoin;
+
+  inline void updateLineWidth(double s);
 
   int _depth;          /**< The depth of the shape. */
   Color _penColor;     /**< The color of the shape. */
@@ -312,7 +383,7 @@ protected:
    * as Postscript commands.
    * @return A string of the Postscript commands.
    */
-  std::string postscriptProperties() const;
+  std::string postscriptProperties( const TransformEPS & transform ) const;
 
   /**
    * Return a string of the properties lineWidth, penColor, lineCap, and lineJoin
@@ -500,10 +571,28 @@ struct Line : public Shape {
    */
   inline Line( double x1, double y1, double x2, double y2,
                Color color,
-               double lineWidth,
-               const LineStyle style = SolidStyle,
-               const LineCap cap = ButtCap,
-               const LineJoin join = MiterJoin,
+               double lineWidth = Shape::defaultLineWidth(),
+               const LineStyle lineStyle = Shape::defaultLineStyle(),
+               const LineCap cap = Shape::defaultLineCap(),
+               const LineJoin join = Shape::defaultLineJoin(),
+               int depth = -1 );
+
+  /**
+   * Constructs a line.
+   *
+   * @param a First extremity.
+   * @param b Second extremity.
+   * @param color The color of the line.
+   * @param lineWidth The line thickness.
+   * @param depth The depth of the line.
+   */
+  inline Line( Point a,
+               Point b,
+               Color color,
+               double lineWidth = Shape::defaultLineWidth(),
+               const LineStyle lineStyle = Shape::defaultLineStyle(),
+               const LineCap cap = Shape::defaultLineCap(),
+               const LineJoin join = Shape::defaultLineJoin(),
                int depth = -1 );
 
   /**
@@ -651,11 +740,12 @@ struct Arrow : public Line {
    * @param depth The depth of the line.
    */
   inline Arrow( double x1, double y1, double x2, double y2,
-                Color penColor, Color fillColor,
-                double lineWidth,
-                const LineStyle style = SolidStyle,
-                const LineCap cap = ButtCap,
-                const LineJoin join = MiterJoin,
+                Color penColor = Shape::defaultPenColor(),
+                Color fillColor = Shape::defaultFillColor(),
+                double lineWidth = Shape::defaultLineWidth(),
+                const LineStyle lineStyle = Shape::defaultLineStyle(),
+                const LineCap cap = Shape::defaultLineCap(),
+                const LineJoin join = Shape::defaultLineJoin(),
                 int depth = -1 );
 
   /**
@@ -740,26 +830,30 @@ struct Polyline : public Shape {
 
   inline Polyline( const std::vector<Point> & points,
                    bool closed,
-                   Color penColor, Color fillColor,
-                   double lineWidth,
-                   const LineStyle lineStyle = SolidStyle,
-                   const LineCap cap = ButtCap,
-                   const LineJoin join = MiterJoin,
+                   Color penColor = Shape::defaultPenColor(),
+                   Color fillColor = Shape::defaultFillColor(),
+                   double lineWidth = Shape::defaultLineWidth(),
+                   const LineStyle lineStyle = Shape::defaultLineStyle(),
+                   const LineCap cap = Shape::defaultLineCap(),
+                   const LineJoin join = Shape::defaultLineJoin(),
                    int depth = -1 );
 
   inline Polyline( const Path & path,
-                   Color penColor, Color fillColor,
-                   double lineWidth,
-                   const LineStyle lineStyle = SolidStyle,
-                   const LineCap cap = ButtCap,
-                   const LineJoin join = MiterJoin,
+                   Color penColor = Shape::defaultPenColor(),
+                   Color fillColor = Shape::defaultFillColor(),
+                   double lineWidth = Shape::defaultLineWidth(),
+                   const LineStyle lineStyle = Shape::defaultLineStyle(),
+                   const LineCap cap = Shape::defaultLineCap(),
+                   const LineJoin join = Shape::defaultLineJoin(),
                    int depth = -1 );
 
-  inline Polyline( bool closed, Color penColor, Color fillColor,
-                   double lineWidth,
-                   const LineStyle lineStyle = SolidStyle,
-                   const LineCap cap = ButtCap,
-                   const LineJoin join = MiterJoin,
+  inline Polyline( bool closed,
+                   Color penColor = Shape::defaultPenColor(),
+                   Color fillColor = Shape::defaultFillColor(),
+                   double lineWidth = Shape::defaultLineWidth(),
+                   const LineStyle lineStyle = Shape::defaultLineStyle(),
+                   const LineCap cap = Shape::defaultLineCap(),
+                   const LineJoin join = Shape::defaultLineJoin(),
                    int depth = -1 );
 
   /**
@@ -910,6 +1004,8 @@ struct Polyline : public Shape {
 
   inline std::size_t vertexCount() const;
 
+  inline const Path & path() const;
+
 private:
   static const std::string _name; /**< The generic name of the shape. */
 
@@ -924,19 +1020,21 @@ protected:
 struct Rectangle : public Polyline {
 
   inline Rectangle( double left, double top, double width, double height,
-                    Color penColor, Color fillColor,
-                    double lineWidth,
-                    const LineStyle style = SolidStyle,
-                    const LineCap cap = ButtCap,
-                    const LineJoin join = MiterJoin,
+                    Color penColor = Shape::defaultPenColor(),
+                    Color fillColor = Shape::defaultFillColor(),
+                    double lineWidth = Shape::defaultLineWidth(),
+                    const LineStyle lineStyle = Shape::defaultLineStyle(),
+                    const LineCap cap = Shape::defaultLineCap(),
+                    const LineJoin join = Shape::defaultLineJoin(),
                     int depth = -1 );
 
   inline Rectangle( const Rect & rect,
-                    Color penColor, Color fillColor,
-                    double lineWidth,
-                    const LineStyle style = SolidStyle,
-                    const LineCap cap = ButtCap,
-                    const LineJoin join = MiterJoin,
+                    Color penColor = Shape::defaultPenColor(),
+                    Color fillColor = Shape::defaultFillColor(),
+                    double lineWidth = Shape::defaultLineWidth(),
+                    const LineStyle lineStyle = Shape::defaultLineStyle(),
+                    const LineCap cap = Shape::defaultLineCap(),
+                    const LineJoin join = Shape::defaultLineJoin(),
                     int depth = -1 );
 
   /**
@@ -1037,13 +1135,14 @@ protected:
 struct Triangle : public Polyline {
 
   Triangle( const Point & p1, const Point & p2, const Point & p3,
-            Color penColor, Color fillColor,
-            double lineWidth,
-            const LineStyle style = SolidStyle,
-            const LineCap cap = ButtCap,
-            const LineJoin join = MiterJoin,
+            Color penColor = Shape::defaultPenColor(),
+            Color fillColor = Shape::defaultFillColor(),
+            double lineWidth = Shape::defaultLineWidth(),
+            const LineStyle lineStyle = Shape::defaultLineStyle(),
+            const LineCap cap = Shape::defaultLineCap(),
+            const LineJoin join = Shape::defaultLineJoin(),
             int depth = -1 )
-    : Polyline( std::vector<Point>(), true, penColor, fillColor, lineWidth, style, cap, join, depth ) {
+    : Polyline( std::vector<Point>(), true, penColor, fillColor, lineWidth, lineStyle, cap, join, depth ) {
     _path << p1;
     _path << p2;
     _path << p3;
@@ -1052,13 +1151,14 @@ struct Triangle : public Polyline {
   Triangle( const double x1, const double y1,
             const double x2, const double y2,
             const double x3, const double y3,
-            Color penColor, Color fillColor,
-            double lineWidth,
-            const LineStyle style = SolidStyle,
-            const LineCap cap = ButtCap,
-            const LineJoin join = MiterJoin,
+            Color penColor = Shape::defaultPenColor(),
+            Color fillColor = Shape::defaultFillColor(),
+            double lineWidth = Shape::defaultLineWidth(),
+            const LineStyle lineStyle = Shape::defaultLineStyle(),
+            const LineCap cap = Shape::defaultLineCap(),
+            const LineJoin join = Shape::defaultLineJoin(),
             int depth = -1 )
-    : Polyline( std::vector<Point>(), true, penColor, fillColor, lineWidth, style, cap, join, depth ) {
+    : Polyline( std::vector<Point>(), true, penColor, fillColor, lineWidth, lineStyle, cap, join, depth ) {
     _path << Point( x1, y1 );
     _path << Point( x2, y2 );
     _path << Point( x3, y3 );
@@ -1237,13 +1337,30 @@ struct Ellipse : public Shape {
   
   Ellipse( double x, double y,
            double xRadius, double yRadius,
-           Color penColor, Color fillColor,
-           double lineWidth,
-           const LineStyle lineStyle = SolidStyle,
+           Color penColor = Shape::defaultPenColor(),
+           Color fillColor = Shape::defaultFillColor(),
+           double lineWidth = Shape::defaultLineWidth(),
+           const LineStyle lineStyle = Shape::defaultLineStyle(),
            int depth = -1 )
     : Shape( penColor, fillColor,
              lineWidth, lineStyle, ButtCap, MiterJoin, depth ),
       _center( x, y ), _xRadius( xRadius ), _yRadius( yRadius ),
+      _angle( 0.0 ),
+      _circle( false ) {
+    while ( _angle > M_PI_2 ) _angle -= M_PI;
+    while ( _angle < -M_PI_2 ) _angle += M_PI;
+  }
+
+  Ellipse( Point center,
+           double xRadius, double yRadius,
+           Color penColor = Shape::defaultPenColor(),
+           Color fillColor = Shape::defaultFillColor(),
+           double lineWidth = Shape::defaultLineWidth(),
+           const LineStyle lineStyle = Shape::defaultLineStyle(),
+           int depth = -1 )
+    : Shape( penColor, fillColor,
+             lineWidth, lineStyle, ButtCap, MiterJoin, depth ),
+      _center( center ), _xRadius( xRadius ), _yRadius( yRadius ),
       _angle( 0.0 ),
       _circle( false ) {
     while ( _angle > M_PI_2 ) _angle -= M_PI;
@@ -1383,11 +1500,21 @@ protected:
 struct Circle : public Ellipse {
 
   Circle( double x, double y, double radius,
-          Color penColor, Color fillColor,
-          double lineWidth,
-          const LineStyle style = SolidStyle,
+          Color penColor = Shape::defaultPenColor(),
+          Color fillColor = Shape::defaultFillColor(),
+          double lineWidth = Shape::defaultLineWidth(),
+          const LineStyle lineStyle = Shape::defaultLineStyle(),
           int depth = -1 )
-    : Ellipse( x, y, radius, radius, penColor, fillColor, lineWidth, style, depth )
+    : Ellipse( x, y, radius, radius, penColor, fillColor, lineWidth, lineStyle, depth )
+  { _circle = true; }
+
+  Circle( Point center, double radius,
+          Color penColor = Shape::defaultPenColor(),
+          Color fillColor = Shape::defaultFillColor(),
+          double lineWidth = Shape::defaultLineWidth(),
+          const LineStyle lineStyle = Shape::defaultLineStyle(),
+          int depth = -1 )
+    : Ellipse( center, radius, radius, penColor, fillColor, lineWidth, lineStyle, depth )
   { _circle = true; }
 
   /**
@@ -1509,12 +1636,7 @@ struct Text : public Shape {
         const Fonts::Font font,
         double size,
         Color color = Color::Black,
-        int depth = -1 )
-    : Shape( color, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
-      _position( x, y ), _text( text ), _font( font ),
-      _angle( 0.0 ), _size( size ),
-      _xScale( 1.0 ), _yScale( 1.0 ) { }
-
+        int depth = -1 );
   
   /**
    * Create a Text sctucture.
@@ -1536,14 +1658,8 @@ struct Text : public Shape {
         const std::string & svgFont,
         double size,
         Color color = Color::Black,
-        int depth = -1 )
-    : Shape( color, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
-      _position( x, y ),
-      _text( text ), _font( font ), _svgFont( svgFont ),
-      _angle( 0.0 ),
-      _size( size ),
-      _xScale( 1.0 ), _yScale( 1.0 ) { }
-  
+        int depth = -1 );
+
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
    *
@@ -1645,17 +1761,24 @@ struct Text : public Shape {
   Text * clone() const;
 
 private:
+
   static const std::string _name; /**< The generic name of the shape. */
 
+  double boxHeight(const Transform &) const;
+  double boxLength(const Transform &) const;
+
+  double angle() const;
+
+  Point position() const;
+
 protected:
-  Point _position;
   std::string _text;
   Fonts::Font _font;
   std::string _svgFont;
-  double _angle;
   double _size;
   double _xScale;
   double _yScale;
+  Path _box;           // Rectangle around the text
 };
 
 /** 

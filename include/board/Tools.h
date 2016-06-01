@@ -31,9 +31,15 @@
 #include <cstring>
 #include "Rect.h"
 
-#define SHOW( V ) std::cerr << " " #V " = " << ( V ) << std::endl
+#if defined( _MSC_VER )
+#define secured_sprintf sprintf_s
+#else
+#define secured_sprintf snprintf
+#endif // defined( _MSC_VER )
 
 namespace LibBoard {
+
+namespace Tools {
 
 /**
   * A "prefixable" message stream
@@ -72,15 +78,9 @@ MessageStream MessageStream::operator<<( const T & v )
   return MessageStream( _out, 0 );
 }
 
-#if defined( _MSC_VER )
-#define secured_sprintf sprintf_s
-#else
-#define secured_sprintf snprintf
-#endif // defined( _MSC_VER )
-
 inline void secured_strncpy( char * dst, const char * src, size_t count );
 
-inline void secured_ctime( char * str, const time_t * t, size_t count ); 
+inline void secured_ctime( char * str, const time_t * t, size_t count );
 
 bool base64encode(std::istream & in, std::ostream & , int linesize = 80);
 
@@ -98,9 +98,10 @@ const char * temporaryFilename( const char * extension );
 
 unsigned int boardRand();
 
+}  // namespace Tools
+
 }  // namespace LibBoard
 
 #include "Tools.ih"
 
 #endif /* _SHAPE_H_ */
-

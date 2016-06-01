@@ -32,17 +32,19 @@
 #include <cstdlib>
 #include <cstdio>
 
-LibBoard::MessageStream LibBoard::notice( std::cerr, "Information: " );
+LibBoard::Tools::MessageStream LibBoard::Tools::notice( std::cerr, "Information: " );
 
-LibBoard::MessageStream LibBoard::warning( std::cerr, "Warning: " );
+LibBoard::Tools::MessageStream LibBoard::Tools::warning( std::cerr, "Warning: " );
 
-LibBoard::MessageStream LibBoard::error( std::cerr, "Error: " );
+LibBoard::Tools::MessageStream LibBoard::Tools::error( std::cerr, "Error: " );
 
 namespace {
 unsigned long boardRandNext = time(0);
 }
 
 namespace LibBoard {
+
+namespace Tools {
 
 bool
 base64encode( std::istream & in, std::ostream & out, int linesize )
@@ -216,5 +218,7 @@ void
 boardSRand(unsigned int seed) {
   boardRandNext = seed;
 }
+
+}  // namespace Tools;
 
 }  // namespace LibBoard;

@@ -94,6 +94,15 @@ Shape::rotateDeg( double angle )
   return rotate( angle * ( M_PI / 180.0 ), center() );
 }
 
+void
+Shape::updateLineWidth(double s)
+{
+  if ( _lineWidthScaling ) {
+     _lineWidth *= s;
+  }
+}
+
+
 Dot::Dot( double x, double y,
           Color color,
           double lineWidth,
@@ -105,7 +114,7 @@ Dot::Dot( double x, double y,
 {
 }
 
-Line::Line( double x1, double y1, double x2, double y2, 
+Line::Line( double x1, double y1, double x2, double y2,
             Color color,
             double lineWidth,
             const LineStyle style,
@@ -117,6 +126,17 @@ Line::Line( double x1, double y1, double x2, double y2,
 {
 }
 
+Line::Line( Point a, Point b,
+            Color color,
+            double lineWidth,
+            const LineStyle style,
+            const LineCap cap,
+            const LineJoin join,
+            int depth )
+   : Shape( color, Color::None, lineWidth, style, cap, join, depth ),
+     _x1( a.x ), _y1( a.y ), _x2( b.x ), _y2( b.y )
+{
+}
 
 Arrow::Arrow( double x1, double y1, double x2, double y2,
               Color penColor, Color fillColor,
@@ -171,6 +191,13 @@ Polyline::vertexCount() const
 {
    return _path.size();
 }
+
+const Path &
+Polyline::path() const
+{
+  return _path;
+}
+
 
 Rectangle::Rectangle( double left, double top, double width, double height,
                       Color penColor, Color fillColor,

@@ -28,6 +28,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 namespace LibBoard {
 
@@ -108,6 +109,13 @@ struct Point {
   inline Point rotated( double angle, const Point & center ) const;
 
   /**
+   * Get a PI/2 rotated copy of the point around (0,0), counterclockwise.
+   *
+   * @return A rotated copy of the point.
+   */
+  inline Point rotatedPI2() const;
+
+  /**
    * Move the point given a translation vector (given as another Point).
    *
    * @param other A point seen as a translation vector.
@@ -157,6 +165,36 @@ struct Point {
    * @return The norm of the point.
    */
   inline double norm() const;
+
+  /**
+   * Make the point (seen as a vector) a unit vector.
+   *
+   * @return The point itself.
+   */
+  inline Point & normalise();
+
+  /**
+   * Return a normalized copy of the point (seen as a vector).
+   *
+   * @return A unit vector.
+   */
+  inline Point normalised() const;
+
+  /**
+   * Return the argument of the point (seen as a complex number).
+   *
+   * @return The argument of the point.
+   */
+  inline double argument() const;
+
+  /**
+   * Returns true if point is (Inf,Inf).
+   *
+   * @return true if point is (Inf,Inf).
+   */
+  inline bool isInf() const;
+
+  static Point Infinity;
 
 };
 
@@ -278,11 +316,45 @@ Point::rotated( double angle, const Point & center ) const
   return Point(*this).rotate( angle, center );
 }
 
+Point
+Point::rotatedPI2() const
+{
+  return Point(-y,x);
+}
+
 double
 Point::norm() const
 {
-  return sqrt( x*x + y*y );
+  return std::sqrt( x*x + y*y );
 }
+
+Point
+Point::normalised() const
+{
+  return (*this) / norm();
+}
+
+Point &
+Point::normalise()
+{
+  double n = norm();
+  x /= n;
+  y /= n;
+  return *this;
+}
+
+double
+Point::argument() const
+{
+  return std::atan2( y, x );
+}
+
+bool
+Point::isInf() const
+{
+  return (*this) == Point::Infinity;
+}
+
 
 Point
 Point::operator-() const
@@ -297,6 +369,12 @@ operator<<( std::ostream & out, const Point & p )
   return out << "Point(" << p.x << "," << p.y << ")";
 }
 
-} // mamespace BoardLib
+std::ostream &
+operator<<( std::ostream & out, const std::vector<Point> & v );
+
+
+} // mamespace LibBoard
+
+using LibBoard::operator<<;
 
 #endif // _POINT_H_

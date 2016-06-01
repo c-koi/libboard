@@ -31,7 +31,7 @@
 #include <cmath>
 
 namespace {
-const float ppmm = 720.0f / 254.0f;
+const float ppmm = 72.0f / 25.4f;
 const float fig_ppmm = 1143 / 25.4f;
 }
 
@@ -79,6 +79,12 @@ double
 TransformEPS::mapY( double y ) const
 {
   return rounded( y * _scale + _deltaY );
+}
+
+double
+TransformEPS::mapWidth( double w ) const
+{
+  return w * _scale;
 }
 
 void
@@ -131,7 +137,7 @@ TransformFIG::mapWidth( double width ) const
   // Postscript points are 1/72 inch
   if ( width == 0.0 )
     return 0;
-  int result = static_cast<int>( Transform::round( 160 * ( width / 72.0 ) ) );
+  int result = static_cast<int>( Transform::round( 80 * ( width * _postscriptScale / 72.0 ) ) );
   return result>0?result:1;
 }
 
@@ -141,8 +147,9 @@ TransformFIG::setBoundingBox( const Rect & rect,
                               const double pageHeight,
                               const double margin )
 {
-  if ( pageWidth <= 0 || pageHeight <= 0 ) {
+  if ( pageWidth <= 0.0 || pageHeight <= 0.0 ) { // Keep bounding box
     _scale = fig_ppmm / ppmm;
+    _postscriptScale = 1.0;
     _deltaX = 0.5 * 210 * fig_ppmm - _scale * ( rect.left + 0.5 * rect.width );
     //_deltaX = - rect.left;
     _deltaY = 0.5 * 297 * fig_ppmm - _scale * ( rect.top - 0.5 * rect.height );
@@ -150,13 +157,15 @@ TransformFIG::setBoundingBox( const Rect & rect,
     // _deltaY = - ( rect.top - rect.height );
     //_height = rect.height;
     _height = 297 * fig_ppmm;
-  } else {
+  } else {                                   // Fit to pageWidth/pageHeight
     const double w = pageWidth - 2 * margin;
     const double h = pageHeight - 2 * margin;
     if ( rect.height / rect.width > ( h / w ) ) {
       _scale = ( h * fig_ppmm ) / rect.height;
+      _postscriptScale = h * ppmm / rect.height;
     } else {
       _scale = ( w * fig_ppmm ) / rect.width;
+      _postscriptScale = w * ppmm / rect.width;
     }
     _deltaX = 0.5 * pageWidth * fig_ppmm - _scale * ( rect.left + 0.5 * rect.width );
     _deltaY = 0.5 * pageHeight * fig_ppmm - _scale * ( rect.top - 0.5 * rect.height );
@@ -206,7 +215,7 @@ double
 TransformSVG::mapWidth( double width ) const
 {
   // return Transform::round( 1000 * width / ppmm ) / 1000.0;
-  return Transform::round( 1000 * width  / ppmm  ) / 1000.0;
+  return Transform::round( _scale * 1000 * width  / ppmm  ) / 1000.0;
 }
 
 void

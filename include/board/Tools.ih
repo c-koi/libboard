@@ -26,6 +26,8 @@
 
 namespace LibBoard {
 
+namespace Tools {
+
 void secured_strncpy( char * dst, const char * src, size_t count )
 {
 #if defined( _MSC_VER )
@@ -44,6 +46,6 @@ void secured_ctime( char * str, const time_t * t, size_t count )
 #endif // defined( _MSC_VER )  
 }
 
-
+} // namespace Tools
 
 } // namespace LibBoard

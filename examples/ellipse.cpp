@@ -31,8 +31,6 @@ int main( int, char *[] )
   g.scale( 1.5, 2 );
   board << g;
   std::cerr << board.boundingBox() << std::endl;
-  std::cerr << board.minDepth() << std::endl;
-  std::cerr << board.maxDepth() << std::endl;
   board.saveEPS( "ellipse.eps" );
   board.saveFIG( "ellipse.fig" );
   board.saveSVG( "ellipse.svg" );

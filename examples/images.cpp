@@ -22,29 +22,36 @@ int main( int , char *[] )
 {
   Board board;
   board.clear( Color::Navy );
-  board.setLineWidth(1);
 
-  board << Board::UCentimeter;
+  board.setLineWidth(1);
+  board << Board::UCentimeter;  //  Or: board.setUnit(Board::UCentimeter);
 
   Group g;
-  g << Rectangle( 30,30,30,20, Color::Red, Color::Silver,2);
-  g << Image("../resources/saint_michel.jpg",32,28,30);
-  ShapeList row(g,4,35,0,1.0,1.0,0.0);
-  ShapeList page(row,4,0,25,1.0,1.0,0.0);
+  Image michel("../resources/saint_michel.jpg",0,0,5);
+  Rectangle rectangle( michel.boundingBox(), Color::Red, Color::Silver,2);
+  g << rectangle;
+  g << michel;
 
-  board << page;
+  board << g;
 
-  Point c = page.boundingBox().center();
+  //  ShapeList row;
+  //  row.repeat(g,4,g.boundingBox().width*1.1,0);
+  //  ShapeList page;
+  //  page.repeat(row,4,0,g.boundingBox().height);
+  //  board << page;
 
-  board << Image("../resources/avatar.png",c.x,c.y,20);
+  //  Point c = page.boundingBox().center();
+  //  Image avatar("../resources/avatar.png",c.x,c.y,3);
+  //  board << avatar;
+  //  board << avatar.rotated(M_PI_2,c);
+  //  board << avatar.rotated(M_PI,c);
+  //  board << avatar.rotated(3*M_PI_2,c);
 
-  board << Image("../resources/avatar.png",c.x,c.y,20).rotated(M_PI_2,c);
-  board << Image("../resources/avatar.png",c.x,c.y,20).rotated(M_PI,c);
-  board << Image("../resources/avatar.png",c.x,c.y,20).rotated(3*M_PI_2,c);
+
 
   board.saveEPS( "images.eps" /*, Board::A4 */ );
   board.saveFIG( "images.fig" /*, Board::A4 */ );
-  board.saveSVG( "images.svg" /*, Board::A4 */ );
+  board.saveSVG( "images.svg" , Board::A4  );
 
   exit(0);
 }

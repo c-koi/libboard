@@ -24,18 +24,18 @@ int main( int, char *[] )
 {
   Board board;
 
+  Shape::disableLineWidthScaling();
+
   // board.clear( Color(0,120,0) );
-  board << Text( -0.45, -0.2, "LibBoard", 
-   		 Fonts::Helvetica, "'Bookman Old Style',Verdana", 64.0f, Color::Green );
-  
-  board.setLineWidth( 2.5 ).setPenColorRGBi( 255, 100, 0 );
+
+  board.setLineWidth( 1 ).setPenColorRGBi( 255, 100, 0 );
   board.setLineStyle( Shape::SolidStyle );
   board.setLineJoin( Shape::MiterJoin );
   board.setLineCap( Shape::RoundCap );
-  board.drawLine( -0.5, -0.27, 0.5, -0.27 ); 
-  board.addDuplicates( board.last(), 10, 0, -0.02 );
+  board.drawLine( -50, -27, 50, -27 );
+  board.addDuplicates( board.last(), 10, 0, -2 );
 
-  Point p = board.last<Line>().boundingBox().topLeft();
+  Point p = board.last<Line>().boundingBox().centerLeft();
   int n = 20;
   double angle = -M_PI/(2*n);
   while ( n-- ) 
@@ -46,10 +46,18 @@ int main( int, char *[] )
   while ( n-- ) 
     board << board.last<Line>().scaled( 0.95 ).rotated( angle, p );
 
-  board.saveEPS( "logo_A4.eps", Board::A4 );
-  board.saveFIG( "logo_A4.fig", Board::A4 );
+  double textHeight = board.last<Line>().boundingBox().height;
+  board << Text( -45, -20, "LibBoard",
+                 Fonts::Helvetica,
+                 "'Bookman Old Style',Verdana",
+                 textHeight * 1.5,
+                 Color::Green );
 
-  board.scale( 310 );
-  board.saveSVG( "logo_A4.svg", -1, -1, 10 );
+  std::cout << textHeight << std::endl;
+
+  Shape::enableLineWidthScaling();
+  //board.saveEPS( "logo_A4.eps", Board::A4 );
+  board.saveFIG( "logo_A4.fig", Board::A4  );
+  //board.saveSVG( "logo_A4.svg" /* -1, -1, 10 */);
   exit(0);
 }

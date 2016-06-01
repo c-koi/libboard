@@ -26,12 +26,14 @@
 #include "board/Rect.h"
 #include "board/Shapes.h"
 #include "board/Tools.h"
+#include "board/PathBoundaries.h"
 #include "board/PSFonts.h"
 #include <cmath>
 #include <cstring>
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <limits>
 
 #ifndef M_PI
 #define M_PI		3.14159265358979323846	/* pi */
@@ -70,6 +72,14 @@ namespace LibBoard {
 
 extern const char * XFigPostscriptFontnames[];
 
+bool Shape::_lineWidthScaling = false;
+double Shape::_defaultLineWidth = 1.0;
+Color Shape::_defaultPenColor = Color::Black;
+Color Shape::_defaultFillColor = Color::None;
+Shape::LineStyle Shape::_defaultLineStyle = Shape::SolidStyle;
+Shape::LineCap Shape::_defaultLineCap = Shape::ButtCap;
+Shape::LineJoin Shape::_defaultLineJoin = Shape::MiterJoin;
+
 bool
 shapeGreaterDepth( const Shape *s1, const Shape *s2 )
 {
@@ -107,6 +117,23 @@ Shape::moveCenter(Point p)
   return *this;
 }
 
+void
+Shape::enableLineWidthScaling()
+{
+  _lineWidthScaling = true;
+}
+
+void
+Shape::disableLineWidthScaling()
+{
+  _lineWidthScaling = false;
+}
+
+void Shape::setLineWidthScaling(bool on)
+{
+  _lineWidthScaling = on;
+}
+
 std::string
 Shape::svgProperties( const TransformSVG & transform ) const
 {
@@ -139,10 +166,10 @@ Shape::svgProperties( const TransformSVG & transform ) const
 }
 
 std::string
-Shape::postscriptProperties() const
+Shape::postscriptProperties( const TransformEPS & transform ) const
 {
   std::stringstream str;
-  str << _lineWidth << " slw ";
+  str << transform.mapWidth(_lineWidth) << " slw ";
   str << _lineCap << " slc ";
   str << _lineJoin << " slj";
   str << xFigDashStylesPS[ _lineStyle ];
@@ -178,6 +205,54 @@ Shape::shiftDepth( int shift )
 {
   _depth += shift;
 }
+
+void
+Shape::setDefaultLineWidth(double w)
+{ _defaultLineWidth = w; }
+
+void
+Shape::setDefaultPenColor(Color c)
+{  _defaultPenColor = c; }
+
+void
+Shape::setDefaultFillColor(Color c)
+{ _defaultFillColor = c; }
+
+void
+Shape::setDefaultLineStyle( Shape::LineStyle lineStyle )
+{ _defaultLineStyle = lineStyle; }
+
+void
+Shape::setDefaultLineCap( Shape::LineCap lineCap )
+{ _defaultLineCap = lineCap; }
+
+void
+Shape::setDefaultLineJoin( Shape::LineJoin lineJoin )
+{ _defaultLineJoin = lineJoin; }
+
+double
+Shape::defaultLineWidth()
+{ return _defaultLineWidth; }
+
+Color
+Shape::defaultPenColor()
+{ return _defaultPenColor; }
+
+Color
+Shape::defaultFillColor()
+{ return _defaultFillColor; }
+
+Shape::LineStyle
+Shape::defaultLineStyle()
+{ return _defaultLineStyle; }
+
+Shape::LineCap
+Shape::defaultLineCap()
+{ return _defaultLineCap; }
+
+Shape::LineJoin
+Shape::defaultLineJoin()
+{ return _defaultLineJoin; }
 
 /*
  * Dot
@@ -271,7 +346,7 @@ Dot::flushPostscript( std::ostream & stream,
                       const TransformEPS & transform ) const
 {
   stream << "\n% Dot\n";
-  stream << postscriptProperties() << " "
+  stream << postscriptProperties(transform) << " "
          << "n "
          << transform.mapX( _x ) << " "
          << transform.mapY( _y ) << " "
@@ -417,6 +492,7 @@ Line::scale( double sx, double sy )
   _y2 *= sy;
   Point delta = c - center();
   translate( delta.x, delta.y );
+  updateLineWidth(std::max(sx,sy));
   return *this;
 }
 
@@ -430,14 +506,7 @@ Line::scale( double s )
 Line
 Line::scaled( double sx, double sy ) const
 {
-  Line res(*this);
-  Point c = center();
-  res._x1 *= sx;
-  res._x2 *= sx;
-  res._y1 *= sy;
-  res._y2 *= sy;
-  Point delta = c - res.center();
-  return res.translate( delta.x, delta.y );
+  return Line(*this).scale(sx,sy);
 }
 
 Line
@@ -465,7 +534,7 @@ Line::flushPostscript( std::ostream & stream,
                        const TransformEPS & transform ) const
 {
   stream << "\n% Line\n";
-  stream << postscriptProperties() << " "
+  stream << postscriptProperties(transform) << " "
          << "n "
          << transform.mapX( _x1 ) << " "
          << transform.mapY( _y1 ) << " "
@@ -530,27 +599,14 @@ Line::flushTikZ( std::ostream & stream,
 Rect
 Line::boundingBox() const
 {
-  Rect rect;
-  if ( _x1 > _x2 ) {
-    rect.width = _x1 - _x2;
-    rect.left = _x2;
-  } else {
-    rect.width = _x2 - _x1;
-    rect.left = _x1;
-  }
-  if ( _y1 > _y2 ) {
-    rect.top = _y1;
-    rect.height = _y1 - _y2;
-  } else {
-    rect.top = _y2;
-    rect.height = _y2 - _y1;
-  }
-  return rect;
+  Path p;
+  p << Point(_x1,_y1) << Point(_x2,_y2);
+  return Tools::pathBoundingBox(p,_lineWidth,_lineCap,_lineJoin);
 }
 
 /*
-   * Arrow
-   */
+ * Arrow
+ */
 
 const std::string Arrow::_name("Arrow");
 
@@ -582,23 +638,13 @@ Arrow::rotated( double angle ) const
 Arrow
 Arrow::translated( double dx, double dy ) const
 {
-  Arrow res(*this);
-  res._x1 += dx; res._x2 += dx;
-  res._y1 += dy; res._y2 += dy;
-  return res;
+  return static_cast<Arrow&>(Arrow(*this).translate(dx,dy));
 }
 
 Arrow
 Arrow::scaled( double sx, double sy ) const
 {
-  Arrow res(*this);
-  Point c = center();
-  res._x1 *= sx;
-  res._x2 *= sx;
-  res._y1 *= sy;
-  res._y2 *= sy;
-  Point delta = c - res.center();
-  return static_cast<Arrow &>( res.translate( delta.x, delta.y ) );
+  return static_cast<Arrow&>(Arrow(*this).scale(sx,sy));
 }
 
 Arrow
@@ -634,7 +680,7 @@ Arrow::flushPostscript( std::ostream & stream,
 
   stream << "\n% Arrow\n";
   stream << _penColor.postscript() << " srgb "
-         << postscriptProperties() << " "
+         << postscriptProperties(transform) << " "
          << "n "
          << transform.mapX( _x1 ) << " "
          << transform.mapY( _y1 ) << " "
@@ -871,6 +917,7 @@ Ellipse::scale( double sx, double sy )
     _xRadius = _xRadius * sx;
     _yRadius = _yRadius * sy;
   }
+  updateLineWidth(std::max(sx,sy));
   return *this;
 }
 
@@ -883,13 +930,13 @@ Ellipse::scale( double s )
 Ellipse
 Ellipse::scaled( double sx, double sy ) const
 {
-  return static_cast<Ellipse &>( Ellipse(*this).scale( sx, sy ) );
+  return Ellipse(*this).scale( sx, sy );
 }
 
 Ellipse
 Ellipse::scaled( double s ) const
 {
-  return static_cast<Ellipse &>( Ellipse(*this).scale( s, s ) );
+  return Ellipse(*this).scale( s, s );
 }
 
 void
@@ -923,7 +970,7 @@ Ellipse::flushPostscript( std::ostream & stream,
   }
 
   if ( _penColor != Color::None ) {
-    stream << postscriptProperties() << "\n";
+    stream << postscriptProperties(transform) << "\n";
     stream << "gs " << transform.mapX( _center.x ) << " " << transform.mapY( _center.y ) << " tr";
     if ( _angle != 0.0 ) stream << " " << (_angle*180/M_PI) << " rot ";
     if ( ! _circle ) stream << " " << 1.0 << " " << yScale << " sc";
@@ -1000,8 +1047,10 @@ Rect
 Ellipse::boundingBox() const
 {
   if ( _angle == 0.0 )
-    return Rect( _center.x - _xRadius, _center.y + _yRadius,
-                 2 * _xRadius, 2 * _yRadius );
+    return Rect( _center.x - _xRadius,
+                 _center.y + _yRadius,
+                 2 * _xRadius,
+                 2 * _yRadius ).grow(0.5*_lineWidth);
 
   double angleXmax = -atan( (_yRadius/_xRadius)*(tan(_angle) ) );
   double angleXmin = -atan( (_yRadius/_xRadius)*(tan(_angle) ) ) + M_PI;
@@ -1012,13 +1061,13 @@ Ellipse::boundingBox() const
     angleYmax += M_PI;
     angleYmin -= M_PI;
   }
-
   return Rect( _center.x + _xRadius*cos(angleXmin)*cos(_angle) - _yRadius*sin(angleXmin)*sin(_angle),
                _center.y + _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle),
                ( _xRadius*cos(angleXmax)*cos(_angle) - _yRadius*sin(angleXmax)*sin(_angle) ) -
                ( _xRadius*cos(angleXmin)*cos(_angle) - _yRadius*sin(angleXmin)*sin(_angle) ),
                ( _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle) ) -
-               ( _xRadius*cos(angleYmin)*sin(_angle) + _yRadius*sin(angleYmin)*cos(_angle) ) );
+               ( _xRadius*cos(angleYmin)*sin(_angle) + _yRadius*sin(angleYmin)*cos(_angle) ) )
+      .grow(0.5*_lineWidth);
 }
 
 /*
@@ -1220,6 +1269,7 @@ Polyline &
 Polyline::scale( double sx, double sy )
 {
   _path.scale( sx, sy );
+  updateLineWidth(std::max(sx,sy));
   return *this;
 }
 
@@ -1233,13 +1283,13 @@ Polyline::scale( double s )
 Polyline
 Polyline::scaled( double sx, double sy ) const
 {
-  return static_cast<Polyline &>( Polyline(*this).scale( sx, sy ) );
+  return Polyline(*this).scale( sx, sy );
 }
 
 Polyline
 Polyline::scaled( double s) const
 {
-  return static_cast<Polyline &>( Polyline(*this).scale( s, s ) );
+  return Polyline(*this).scale( s, s );
 }
 
 void
@@ -1264,11 +1314,11 @@ Polyline::flushPostscript( std::ostream & stream,
     _path.flushPostscript( stream, transform );
     stream << " ";
     _fillColor.flushPostscript( stream );
-    stream << " " << postscriptProperties();
+    stream << " " << postscriptProperties(transform);
     stream << " fill" << std::endl;
   }
   if ( _penColor != Color::None ) {
-    stream << " " << postscriptProperties() << "\n";
+    stream << " " << postscriptProperties(transform) << "\n";
     stream << "n ";
     _path.flushPostscript( stream, transform );
     stream << " ";
@@ -1342,12 +1392,12 @@ Polyline::flushTikZ( std::ostream & stream,
 Rect
 Polyline::boundingBox() const
 {
-  return _path.boundingBox();
+  return Tools::pathBoundingBox(_path,_lineWidth,_lineCap,_lineJoin);
 }
 
 /*
-   * Rectangle
-   */
+ * Rectangle
+ */
 
 const std::string Rectangle::_name("Rectangle");
 
@@ -1776,6 +1826,46 @@ Triangle::clone() const {
 
 const std::string Text::_name("Text");
 
+
+Text::Text( double x, double y,
+            const std::string & text,
+            const Fonts::Font font,
+            double size,
+            Color color,
+            int depth )
+  : Shape( color, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
+    _text( text ), _font( font ),
+    _size( size ),
+    _xScale( 1.0 ), _yScale( 1.0 )
+{
+  const double width = text.length() * size * 0.71;   // Why 0.71? Well, give it a try!
+  _box << Point(x,y);
+  _box << _box[0] + Point(width,0);
+  _box << _box[0] + Point(width,size);
+  _box << _box[0] + Point(0,size);
+  _box.setClosed(true);
+}
+
+Text::Text( double x, double y,
+            const std::string & text,
+            const Fonts::Font font,
+            const std::string & svgFont,
+            double size,
+            Color color,
+            int depth )
+  : Shape( color, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
+    _text( text ), _font( font ), _svgFont( svgFont ),
+    _size( size ),
+    _xScale( 1.0 ), _yScale( 1.0 )
+{
+  const double width = text.length() * size * 0.71;   // Why 0.71? Well, give it a try!
+  _box << Point(x,y);
+  _box << _box[0] + Point(width,0);
+  _box << _box[0] + Point(width,size);
+  _box << _box[0] + Point(0,size);
+  _box.setClosed(true);
+}
+
 const std::string &
 Text::name() const
 {
@@ -1784,20 +1874,21 @@ Text::name() const
 
 Point
 Text::center() const {
-  return _position;
+  return _box.center();
 }
 
 Text &
 Text::rotate( double angle, const Point & center )
 {
-  Point endPos = _position + Point( 10000 * cos( _angle ), 10000 * sin( _angle ) );
-  _position.rotate( angle, center );
-  endPos.rotate( angle, center );
-  Point v = endPos - _position;
-  v /= v.norm();
-  if ( v.x >= 0 ) _angle = asin( v.y );
-  else if ( v.y > 0 ) _angle = (M_PI/2.0) + acos( v.y );
-  else _angle = (-M_PI/2.0) - acos( -v.y );
+  _box.rotate(angle,center);
+  //  Point endPos = _position + Point( 10000 * cos( _angle ), 10000 * sin( _angle ) );
+  //  _position.rotate( angle, center );
+  //  endPos.rotate( angle, center );
+  //  Point v = endPos - _position;
+  //  v /= v.norm();
+  //  if ( v.x >= 0 ) _angle = asin( v.y );
+  //  else if ( v.y > 0 ) _angle = (M_PI/2.0) + acos( v.y );
+  //  else _angle = (-M_PI/2.0) - acos( -v.y );
   return *this;
 }
 
@@ -1810,11 +1901,14 @@ Text::rotated( double angle, const Point & center ) const
 Text &
 Text::rotate( double angle )
 {
-  _angle += angle;
-  if ( _angle < 0 )
-    while ( _angle < M_PI ) _angle += 2 * M_PI;
-  if ( _angle > 0 )
-    while ( _angle > M_PI ) _angle -= 2 * M_PI;
+  _box.rotate(angle);
+  //  _angle += angle;
+  //  while ( _angle < -M_PI ) {
+  //    _angle += 2 * M_PI;
+  //  }
+  //  while ( _angle > M_PI ) {
+  //    _angle -= 2 * M_PI;
+  //  }
   return *this;
 }
 
@@ -1827,7 +1921,7 @@ Text::rotated( double angle ) const
 Text &
 Text::translate( double dx, double dy )
 {
-  _position += Point( dx, dy );
+  _box.translate(dx,dy);
   return *this;
 }
 
@@ -1840,34 +1934,38 @@ Text::translated( double dx, double dy ) const
 Text &
 Text::scale( double sx, double sy )
 {
-  _xScale = sx;
-  _yScale = sy;
+  // TODO Actually handle scaling.
+  _xScale *= sx;
+  _yScale *= sy;
+  _box.scale(sx,sy);
   return *this;
 }
 
 Text &
 Text::scale( double s )
 {
-  _xScale = _yScale = s;
+  _xScale *= s;
+  _yScale *= s;
+  _box.scale(s);
   return *this;
 }
 
 Text
 Text::scaled( double sx, double sy ) const
 {
-  return static_cast<Text &>( Text(*this).scale( sx, sy ) );
+  return Text(*this).scale( sx, sy );
 }
 
 Text
 Text::scaled( double s ) const
 {
-  return static_cast<Text &>( Text(*this).scale( s, s ) );
+  return Text(*this).scale( s, s );
 }
 
 void
 Text::scaleAll( double s )
 {
-  _position *= s;
+  _box.scaleAll(s);
 }
 
 Text *
@@ -1875,14 +1973,47 @@ Text::clone() const {
   return new Text(*this);
 }
 
+double Text::boxHeight(const Transform & transform) const
+{
+  Point baseline = (_box[1] - _box[0]);
+  Point leftSide = (_box[3] - _box[0]);
+  Point transformedLeftSide( transform.map(_box[3]) - transform.map(_box[0]));
+  double angle = std::acos(baseline.normalised() * leftSide.normalised());
+  if ( std::fabs(2*angle - M_PI) < std::numeric_limits<float>::epsilon() ) {
+    return transformedLeftSide.norm();
+  }
+  return std::sin(angle) * transformedLeftSide.norm();
+}
+
+double Text::boxLength(const Transform & transform) const
+{
+  Point transformedBaseline( transform.map(_box[1]) - transform.map(_box[0]));
+  return transformedBaseline.norm();
+}
+
+double
+Text::angle() const
+{
+  Point v = (_box[1] - _box[0]).normalise();
+  return std::atan2(v.y,v.x);
+}
+
+Point
+Text::position() const
+{
+  return _box[0];
+}
+
 void
 Text::flushPostscript( std::ostream & stream,
                        const TransformEPS & transform ) const
 {
   stream << "\n% Text\n";
-  stream << "gs /" << PSFontNames[ _font ] << " ff " << _size << " scf sf";
-  stream << " " << transform.mapX( _position.x ) << " " << transform.mapY( _position.y ) << " m";
-  if ( _angle != 0.0 ) stream << " " << (_angle/M_PI)*180.0 << " rot ";
+  stream << "gs /" << PSFontNames[ _font ] << " ff " << boxHeight(transform) << " scf sf";
+  stream << " " << transform.mapX( position().x ) << " " << transform.mapY( position().y ) << " m";
+  if ( angle() != 0.0 ) {
+    stream << " " << (angle()*180.0/M_PI) << " rot ";
+  }
   stream << " (" << _text << ")"
          << " " << _penColor.postscript() << " srgb"
          << " sh gr" << std::endl;
@@ -1893,18 +2024,22 @@ Text::flushFIG( std::ostream & stream,
                 const TransformFIG & transform,
                 std::map<Color,int> & colormap ) const
 {
+  const float ppmm = 720.0f / 254.0f;
+  const float fig_ppmm = 45.0f;
+
+
   stream << "4 0 " ;
   // Color, depth, unused, Font
   stream << colormap[ _penColor ] <<  " " << transform.mapDepth( _depth ) << " -1 " << _font << " ";
   // Font size, Angle, Font flags
-  stream << _size << " " << _angle << " 4 ";
+  stream << (ppmm * boxHeight(transform) / fig_ppmm) << " " << angle() << " 4 ";
   // Height
-  stream << static_cast<int>(  _size * 135 / 12.0 ) << " ";
+  stream << static_cast<int>( boxHeight(transform) /* * 135 / 12.0 */ ) << " ";
   // Width
-  stream << static_cast<int>( _text.size() * _size * 135 / 12.0 ) << " ";
+  stream << static_cast<int>( boxLength(transform) /* * 135 / 12.0 */ ) << " ";
   // x y
-  stream << static_cast<int>( transform.mapX( _position.x ) ) << " "
-         << static_cast<int>( transform.mapY( _position.y ) ) << " ";
+  stream << static_cast<int>( transform.mapX( position().x ) ) << " "
+         << static_cast<int>( transform.mapY( position().y ) ) << " ";
   stream << _text << "\\001\n";
 }
 
@@ -1912,14 +2047,14 @@ void
 Text::flushSVG( std::ostream & stream,
                 const TransformSVG & transform ) const
 {
-  if ( _angle != 0.0f ) {
+  if ( angle() != 0.0f ) {
     stream << "<g transform=\"translate("
-           << transform.mapX( _position.x ) << ","
-           << transform.mapY( _position.y ) << ")\" >"
-           << "<g transform=\"rotate(" << (-_angle*180.0/M_PI) << ")\" >"
+           << transform.mapX( position().x ) << ","
+           << transform.mapY( position().y ) << ")\" >"
+           << "<g transform=\"rotate(" << (-angle()*180.0/M_PI) << ")\" >"
            << "<text x=\"0\" y=\"0\""
            << " font-family=\"" << ( _svgFont.length() ? _svgFont : PSFontNames[ _font ] ) << "\""
-           << " font-size=\"" << _size << "\""
+           << " font-size=\"" << boxHeight(transform) << "\""
            << " fill=\"" << _penColor.svg() << "\""
            << _fillColor.svgAlpha( " fill" )
            << _penColor.svgAlpha( " stroke" )
@@ -1927,10 +2062,10 @@ Text::flushSVG( std::ostream & stream,
            << _text
            << "</text></g></g>" << std::endl;
   } else {
-    stream << "<text x=\"" << transform.mapX( _position.x )
-           << "\" y=\"" << transform.mapY( _position.y ) << "\" "
+    stream << "<text x=\"" << transform.mapX( position().x )
+           << "\" y=\"" << transform.mapY( position().y ) << "\" "
            << " font-family=\"" << ( _svgFont.length() ? _svgFont : PSFontNames[ _font ] ) << "\""
-           << " font-size=\"" << _size << "\""
+           << " font-size=\"" << boxHeight(transform) << "\""
            << " fill=\"" << _penColor.svg() << "\""
            << _fillColor.svgAlpha( " fill" )
            << _penColor.svgAlpha( " stroke" )
@@ -1938,6 +2073,8 @@ Text::flushSVG( std::ostream & stream,
            << _text
            << "</text>" << std::endl;
   }
+  // DEBUG
+  // Polyline(_box,Color::Black,Color::None,0.5).flushSVG(stream,transform);
 }
 
 void
@@ -1988,7 +2125,7 @@ Text::flushTikZ( std::ostream & stream,
   };
 
   stream << "\\path[" << tikzProperties(transform) << "] ("
-         << transform.mapX( _position.x ) << ',' << transform.mapY( _position.y )
+         << transform.mapX( position().x ) << ',' << transform.mapY( position().y )
          << ") node {"
          << (fontTraits[ _font ] & ITALIC_FONT ? "\\itshape " : "")
          << (fontTraits[ _font ] & BOLD_FONT ? "\\bfseries " : "")
@@ -2001,7 +2138,8 @@ Text::flushTikZ( std::ostream & stream,
 Rect
 Text::boundingBox() const
 {
-  return Rect( _position.x, _position.y, 0, 0 );
+  // TODO Get correct values!
+  return _box.boundingBox();
 }
 
 } // namespace LibBoard

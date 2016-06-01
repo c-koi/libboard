@@ -68,7 +68,8 @@ struct ShapeList : public Shape {
    */
   ShapeList( const Shape & shape,
              unsigned int times,
-             double dx, double dy, double scale );
+             double dx, double dy,
+             double scale );
 
   /**
    * Create a ShapeList by repeating a shape (translation, scaling & rotation)
@@ -175,11 +176,13 @@ struct ShapeList : public Shape {
    * @param shape A shape.
    * @param direction The direction where the shape should be appended.
    * @param alignment The alignement with the current shapelist.
+   * @param margin A margin between the shapelist and the shape.
    * @return The shapelist itself, after the shape has been appended.
    */
   ShapeList & append( const Shape & shape,
                       Direction direction,
-                      Alignment alignment );
+                      Alignment alignment,
+                      double margin = 0.0 );
 
 
   /**
@@ -196,6 +199,23 @@ struct ShapeList : public Shape {
   Group & addTiling( const Shape & shape, Point topLeftCorner,
                      std::size_t columns, std::size_t rows,
                      double spacing = 0.0 );
+
+  /**
+   * A a repeated shape (with translation, scaling & rotation)
+   * @param shape The shape to be repeated.
+   * @param times The number of repetitions.
+   * @param dx The x shift between two repetitions.
+   * @param dy The y shift between two repetitions.
+   * @param scaleX The x scaling factor between two repetitions.
+   * @param scaleY The y scaling factor between two repetitions.
+   * @param angle The rotation angle between two repetitions.
+   */
+  void repeat( const Shape & shape,
+               unsigned int times,
+               double dx, double dy,
+               double scaleX = 1.0, double scaleY = 1.0,
+               double angle = 0.0 );
+
 
   /**
    * Insert the shape at a given depth. If the shape is ShapeList or a Board,

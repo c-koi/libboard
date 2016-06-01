@@ -44,10 +44,10 @@ struct ShapeList;
 struct Transform {
 public:
   inline Transform();
-  virtual ~Transform() { };
+  virtual ~Transform() { }
   virtual double mapX( double x ) const;
   virtual double mapY( double y ) const = 0;
-  Point map( const Point & ) const;
+  virtual Point map( const Point & ) const;
   virtual void apply( double & x, double & y ) const;
   virtual double scale( double x ) const;
   virtual double rounded( double x ) const;
@@ -55,7 +55,6 @@ public:
                                const double pageWidth,
                                const double pageHeight,
                                const double margin ) = 0;
-
   static inline double round( const double & x );
 
 protected:
@@ -72,6 +71,7 @@ protected:
  */
 struct TransformEPS : public Transform {
 public:
+  double mapWidth( double w ) const;
   double mapY( double y ) const;
   void setBoundingBox( const Rect & rect,
                        const double pageWidth,
@@ -99,6 +99,7 @@ public:
 private:
   int _maxDepth;
   int _minDepth;
+  double _postscriptScale;
 };
 
 /**

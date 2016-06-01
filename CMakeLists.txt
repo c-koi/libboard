@@ -113,7 +113,9 @@ SET(lib_src
   src/Transforms.cpp
   src/TransformMatrix.cpp
   src/Tools.cpp
+  src/PathBoundaries.cpp
   src/PSFonts.cpp
+  src/Point.cpp
 
   include/Board.h
   include/board/Color.h
@@ -125,6 +127,7 @@ SET(lib_src
   include/board/ShapeList.h
   include/board/Shapes.h
   include/board/Tools.h
+  include/board/PathBoundaries.h
   include/board/TransformMatrix.h
   include/board/Transforms.h
   )
@@ -138,7 +141,7 @@ SET_TARGET_PROPERTIES(board-dynamic PROPERTIES PREFIX "lib")
 
 FOREACH( EXAMPLE logo example1 example2 example3 example4
     arithmetic ellipse graph arrows  ruler koch clipping
-    flag scale_ellipse line_style images line_segment tilings )
+    flag scale_ellipse line_style images line_segment tilings stroke_path )
   ADD_EXECUTABLE(
     ${EXAMPLE}
     examples/${EXAMPLE}.cpp

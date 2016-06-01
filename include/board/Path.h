@@ -45,7 +45,7 @@ struct Path {
   Path( const std::vector<Point> & points, bool closed )
     : _points( points ), _closed( closed ) { }
 
-  Path( bool closed ) : _closed( closed ) { }
+  explicit Path( bool closed ) : _closed( closed ) { }
 
   inline void clear();
 
@@ -71,6 +71,15 @@ struct Path {
    * @return The path itself.
    */
   Path & operator<<( const Point & p );
+
+  /**
+   * Add a vector of points at the end of the path.
+   *
+   * @param v A vector of points.
+   *
+   * @return The path itself.
+   */
+  Path & operator<<( const std::vector<Point> & v );
 
   /**
    * Remove the last point of the path.
@@ -108,6 +117,17 @@ struct Path {
   Path & rotate( double angle, const Point & center );
 
   /**
+   * Rotate the path by a given angle, in degrees, and according to a rotation
+   * center.
+   *
+   * @param angle The rotation angle (in degrees).
+   * @param center The rotation center.
+   *
+   * @return The path itself.
+   */
+  Path & rotateDeg( double angle, const Point & center );
+
+  /**
    * Return a rotated copy of the path, thanks to an angle and a rotation
    * center.
    *
@@ -119,6 +139,17 @@ struct Path {
   Path rotated( double angle, const Point & center ) const;
 
   /**
+   * Return a rotated copy of the path, thanks to an angle and a rotation
+   * center.
+   *
+   * @param angle The rotation angle (in degrees).
+   * @param center The rotation center.
+   *
+   * @return A rotated copy of the path.
+   */
+  Path rotatedDeg( double angle, const Point & center ) const;
+
+  /**
    * Rotate the path by a given angle around the center of its bounding box.
    *
    * @param angle The rotation angle (in radians).
@@ -128,6 +159,15 @@ struct Path {
   Path & rotate( double angle );
 
   /**
+   * Rotate the path by a given angle around the center of its bounding box.
+   *
+   * @param angle The rotation angle (in degrees).
+   *
+   * @return The path itself.
+   */
+  Path & rotateDeg( double angle );
+
+  /**
    * Return a rotated copy of the path, around the center of its bounding box.
    *
    * @param angle The rotation angle (in radians).
@@ -135,6 +175,15 @@ struct Path {
    * @return A rotated copy of the point.
    */
   Path rotated( double angle ) const;
+
+  /**
+   * Return a rotated copy of the path, around the center of its bounding box.
+   *
+   * @param angle The rotation angle (in degrees).
+   *
+   * @return A rotated copy of the point.
+   */
+  Path rotatedDeg( double angle ) const;
 
   /**
    * Translate the path.
@@ -224,6 +273,8 @@ struct Path {
    * @return The bounding box of the path.
    */
   Rect boundingBox() const;
+
+  const std::vector<Point> points() const;
 
 protected:
   std::vector<Point> _points;
