@@ -85,7 +85,9 @@ int main( int argc, char *argv[] )
 
   board.save( "arithmetic_A4.eps", Board::A4, 0.5, Board::UCentimeter  );
   board.save( "arithmetic.eps", Board::BoundingBox, 0.5, Board::UCentimeter  );
-  board.save( "arithmetic.svg", Board::BoundingBox, 2, Board::UCentimeter );
   board.save( "arithmetic_A4.svg", Board::A4, 2, Board::UCentimeter );
   board.save( "arithmetic.fig", Board::A4 );
+
+  board.scaleAll(10);
+  board.save( "arithmetic.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }
