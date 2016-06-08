@@ -18,29 +18,31 @@ For now, LibBoard can handle primitives like lines, rectangles, triangles, polyl
 
  * [Sample codes](EXAMPLES.md) with their output.
 
-
 ## Licence
 
 Starting with version 0.9.0, LibBoard is distributed under the term of the [GNU Lesser General Public License](https://github.com/c-koi/libboard/blob/master/LICENSE).
 
 ### Citing LibBoard
 
-LibBoard: A vector graphics C++ library (Version 0.9.0). GREYC laboratory. [Software]. https://github.com/c-koi/libboard. [accessed Sept. 2015].
+LibBoard: A vector graphics C++ library (Version 0.9.4). GREYC laboratory. [Software]. https://github.com/c-koi/libboard. [accessed Sept. 2015].
 ```
    @misc{LibBoard,
       key = {{LibBoard}},
-      title = {{LibBoard: A vector graphics C++ library (Version 0.9.0). [Software]. GREYC Laboratory}},
+      title = {{LibBoard: A vector graphics C++ library (Version 0.9.4). [Software]. GREYC Laboratory}},
       howpublished = {{https://github.com/c-koi/libboard}},
-      note = {{[accessed Sept. 2014]}},
-      year = {2014},
+      note = {{[accessed June 2016]}},
+      year = {2016},
     }
 ```
 ## Download
 
-   You may get the lastest source code from the Git repository with the command below:
+  * You may get the lastest source code from the Git repository with the command below:
+
 ```
    git clone https://github.com/c-koi/libboard.git
 ```
+
+  * You may also consider [downloading an archive of the latest release](https://github.com/c-koi/libboard/releases/tag/v0.9.4).
 
 ## Author
 
