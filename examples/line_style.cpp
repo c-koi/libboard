@@ -45,8 +45,7 @@ int main( int , char *[] )
   board << Rectangle( 10, y, 200, 10, Color::Black, Color::Red, 0.1, Shape::SolidStyle );
   y+=20;
 
-  board.saveEPS( "line_style.eps" /*, Board::A4 */ );
+  board.saveEPS( "line_style.eps" );
   board.saveFIG( "line_style.fig" );
-  board.saveSVG( "line_style.svg" /*, Board::A4 */ );
-  exit(0);
+  board.saveSVG( "line_style.svg" );
 }

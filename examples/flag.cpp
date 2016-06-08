@@ -23,7 +23,7 @@ int main( int, char *[] )
 {
   Board board;
 
-  board << Circle( 0, 0, 40, Color::None, Color::Red, 0.0 );
+  board << Circle( 0, 0, 40, Color::Null, Color::Red, 0.0 );
 
   Line line( 0, 45, 0, 400, Color::Black, 1.0 );
   Line rline(line);
@@ -36,7 +36,6 @@ int main( int, char *[] )
   
   board.setClippingRectangle( -100, 100, 350, 250 );
   board.saveEPS( "flag.eps", 210, 297 );
-  board.saveSVG( "flag.svg" );                        // Viewport == BoundingBox
+  board.saveSVG( "flag.svg" );
   board.saveTikZ( "flag.tikz" );
-  exit(0);
 }

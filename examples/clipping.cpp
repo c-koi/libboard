@@ -57,7 +57,6 @@ int main( int, char *[] )
   Circle cropedC( 0, 0, 10, Color::Black, Color( 100, 255, 100 ), 1.0 );
   cross << cropedC;
   
-  //board << cross.translated( 30, -30 ).scaled( 1.2 );
   board << cross.scaled( 3 );
   board.addDuplicates( cross.translated( 0, -60 ).scaled( 2 ),
 		       18,
@@ -66,10 +65,13 @@ int main( int, char *[] )
 		       0.1 );
 
   board.saveEPS( "clipping.eps", 210, 297 );
-  board.saveSVG( "clipping.svg" );                   // Viewport == BoundingBox
-  board.saveSVG( "clipping_A4.svg", Board::A4, 50 ); // Centered on an A4 paper
-                                                     // with a 50mm margin.
-  board.scale(10);                                   // Scaled 10x
-  board.saveSVG( "clipping_x10.svg" );               // Saved with
-  exit(0);                                           // Viewport == BoundingBox
+
+  // Viewport == BoundingBox (default)
+  board.saveSVG( "clipping.svg" );
+
+  // Centered on an A4 paper with a 50mm margin.
+  board.saveSVG( "clipping_A4.svg", Board::A4, 50 );
+
+  board.scale(10);
+  board.saveSVG( "clipping_x10.svg" );
 }

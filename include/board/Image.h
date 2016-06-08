@@ -88,13 +88,6 @@ struct Image : public Shape {
   Image * clone() const;
 
   /**
-   * Returns the gravity center of the shape.
-   *
-   * @return The center of the shape.
-   */
-  Point center() const;
-
-  /**
    * Rotate the shape around a given center of rotation.
    *
    * @param angle The rotation angle in radian.
@@ -131,26 +124,6 @@ struct Image : public Shape {
     * @return A rotated copy of the image.
     */
   Image rotated(double angle, const Point & ) const;
-
-  /**
-   * Rotate the shape around a given center of rotation.
-   *
-   * @param angle The rotation angle in degree.
-   * @param center The center of rotation.
-   *
-   * @return A reference to the shape itself.
-   */
-  inline Shape & rotateDeg( double angle, const Point & center );
-
-  /**
-   * Rotate the shape around its center.
-   *
-   * @param angle The rotation angle in degree.
-   * @param center The center of rotation.
-   *
-   * @return A reference to the shape itself.
-   */
-  inline Shape & rotateDeg( double angle );
 
   /**
    * Translate the shape by a given offset.
@@ -204,9 +177,10 @@ struct Image : public Shape {
   /**
    * Returns the bounding box of the figure.
    *
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    * @return The rectangle of the bounding box.
    */
-  Rect boundingBox() const;
+  Rect boundingBox(LineWidthFlag lineWidthFlag) const;
 
   /**
    * Scales all the values (positions, dimensions, etc.) associated

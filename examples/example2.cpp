@@ -54,7 +54,7 @@ int main( int, char *[] )
   board.setPenColor( Color::Black ).setFont( Fonts::HelveticaBold, 12.0 );
   board.drawText( 0.0, 100.0, "Hello world!" );
 
-  Point p = board.last<Text>().boundingBox().bottomLeft();
+  Point p = board.last<Text>().boundingBox(Shape::IgnoreLineWidth).bottomLeft();
 
   board << board.last<Text>().rotated( 45 * Board::Degree, p );
   board << board.last<Text>().rotated( 45 * Board::Degree, p );
@@ -62,9 +62,8 @@ int main( int, char *[] )
   board << board.last<Text>().rotated( 45 * Board::Degree, p );
 
   board.disableLineWidthScaling();
-  board.saveEPS( "draw2_A4.eps", Board::A4 );
-  board.saveFIG( "draw2_A4.fig", Board::A4 );
-  board.saveSVG( "draw2_A4.svg", Board::A4 );
-
-  exit(0);
+  board.saveEPS( "example2_A4.eps", Board::A4 );
+  board.saveFIG( "example2_A4.fig", Board::A4 );
+  board.saveSVG( "example2_A4.svg", Board::A4 );
+  board.saveSVG( "example2.svg" );
 }

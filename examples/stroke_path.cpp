@@ -38,17 +38,17 @@ ShapeList strikeOut( const Path & path,
     list << Line(a-shift,b-shift,Color::Black,1.0).scale(s);
     list << Line(a,b,Color::Red,1.0);
     if ( (lineCap == Shape::RoundCap) || (lineJoin == Shape::RoundJoin)) {
-      list << Circle(a,strokeWidth*0.5,Color::Green,Color::None,0.5);
+      list << Circle(a,strokeWidth*0.5,Color::Green,Color::Null,0.5);
     }
   }
   if ( (!path.closed() && lineCap == Shape::RoundCap) || (lineJoin == Shape::RoundJoin) ) {
     Point a = path[path.size()-1];
-    list << Circle(a,strokeWidth*0.5,Color::Green,Color::None,0.5);
+    list << Circle(a,strokeWidth*0.5,Color::Green,Color::Null,0.5);
   }
 
   for ( size_t i = 0; i < e.size(); ++i ) {
     Point c = e[i];
-    list << Circle(c,10.0,Color::Blue,Color::None,0.5);
+    list << Circle(c,10.0,Color::Blue,Color::Null,0.5);
     list << Line(c-Point(10.0,0.0), c+Point(10.0,0),Color::Blue,0.5);
     list << Line(c-Point(0.0,10.0), c+Point(0,10.0),Color::Blue,0.5);
   }
@@ -60,7 +60,6 @@ int main( int , char *[] )
   Board board;
   Shape::enableLineWidthScaling();
   board.clear( Color::White);
-  board << Board::UPoint;
 
   // http://www.w3.org/TR/SVG/painting.html#StrokeProperties
 
@@ -124,18 +123,15 @@ int main( int , char *[] )
   //  board.append(l,ShapeList::Bottom,ShapeList::AlignLeft);
 
   ShapeList list;
-  Polyline poly(true,Color::Blue,Color::None,1.0,Shape::SolidStyle,Shape::ButtCap,Shape::MiterJoin);
+  Polyline poly(true,Color::Blue,Color::Null,1.0,Shape::SolidStyle,Shape::ButtCap,Shape::MiterJoin);
   poly << Point(0,0) << Point(30,-50) << Point(60,0) << Point(30,50);
   list.append(poly,ShapeList::Right,ShapeList::AlignCenter);
   list.append(poly,ShapeList::Right,ShapeList::AlignCenter);
   board.append(list,ShapeList::Right,ShapeList::AlignCenter);
 
-  std::cout << Line(Point(-10,0),Point(10,0),Color::Black,1.0).boundingBox().center() << std::endl;
-
   board.append( Rectangle(0,0,100,30).rotateDeg(40).scale(1.5,1.0),
                 ShapeList::Right,ShapeList::AlignCenter);
 
-  board.saveSVG( "stroke.svg" , Board::A4 );
-  board.saveEPS( "stroke.eps" , Board::A4 );
-  exit(0);
+  board.saveEPS( "stroke_path.eps" , Board::A4 );
+  board.saveSVG( "stroke_path.svg" );
 }

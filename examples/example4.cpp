@@ -31,9 +31,9 @@ int main( int , char *[] )
 
   Group g;
   g << Line( -5, 2, 5, 2, Color::Red, 1 )
-    << Rectangle( -5, 2, 1, 4, Color::None, Color::Blue, 1 )
-    << Rectangle( 4, 2, 1, 4, Color::None, Color::Blue, 1 )
-    << Ellipse( 0, 0, 5, 2, Color::Red, Color::None, 1 );
+    << Rectangle( -5, 2, 1, 4, Color::Null, Color::Blue, 1 )
+    << Rectangle( 4, 2, 1, 4, Color::Null, Color::Blue, 1 )
+    << Ellipse( 0, 0, 5, 2, Color::Red, Color::Null, 1 );
 
   Group g2(g);
   Group g3(g);
@@ -56,7 +56,7 @@ int main( int , char *[] )
 
   g.clear();
 
-  Rectangle r1( 2, 2, 3, 1, Color::Black, Color::None, 0.01 );
+  Rectangle r1( 2, 2, 3, 1, Color::Black, Color::Null, 0.01 );
   Rectangle r2 = r1.translated( -8, -8 );
   for ( double alpha = 0; alpha < 2*M_PI; alpha += 0.2 ) {
     g << r1.rotated( alpha );
@@ -64,9 +64,8 @@ int main( int , char *[] )
   }
   board << g.scale( 1.5, 1 );
   board.scale(10);
-  // board.disableLineWidthScaling();
-  board.saveEPS( "draw4.eps", Board::A4 );
-  board.saveFIG( "draw4.fig", Board::A4 );
-  board.saveSVG( "draw4.svg", Board::A4 );
-  exit(0);
+
+  board.saveEPS( "example4.eps", Board::A4 );
+  board.saveFIG( "example4.fig", Board::A4 );
+  board.saveSVG( "example4.svg", Board::A4 );
 }

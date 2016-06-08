@@ -120,7 +120,6 @@ int main( int, char *[] )
   // Slope > 1
   drawLine(board, 7.6, 1.2, 10.5, 12.1 );
 
-  board.saveSVG( "line_segment.svg" );
   board.saveEPS( "line_segment.eps" );
-  exit(0);
+  board.saveSVG( "line_segment.svg" );
 }

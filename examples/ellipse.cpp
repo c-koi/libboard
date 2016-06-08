@@ -23,16 +23,15 @@ int main( int, char *[] )
   double angle = M_PI * 110/180.0;
   Group g;
 
-  g << Rectangle( 0, 50, 100, 50, Color::Black, Color::None, 1 );
+  g << Rectangle( 0, 50, 100, 50, Color::Black, Color::Null, 1 );
   g << Line( 0, 25, 100, 25, Color(0,0,255), 1 );
-  g << Ellipse( 50, 25, 50, 25, Color::Red, Color::None, 1 );
+  g << Ellipse( 50, 25, 50, 25, Color::Red, Color::Null, 1 );
   g.translate( 30, 30 );
   g.rotate( angle );
   g.scale( 1.5, 2 );
   board << g;
-  std::cerr << board.boundingBox() << std::endl;
+  std::cerr << board.boundingBox(Shape::UseLineWidth) << std::endl;
   board.saveEPS( "ellipse.eps" );
   board.saveFIG( "ellipse.fig" );
   board.saveSVG( "ellipse.svg" );
-  exit(0);
 }

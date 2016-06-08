@@ -2,7 +2,7 @@
 /**
  * @file   Transforms.cpp
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief
  * \@copyright
@@ -64,6 +64,11 @@ Transform::scale( double x ) const
   return rounded( x * _scale );
 }
 
+Point Transform::scale(const Point & p) const
+{
+  return Point(p.x*_scale,p.y*_scale);
+}
+
 void
 Transform::apply( double & x, double & y ) const
 {
@@ -93,13 +98,20 @@ TransformEPS::setBoundingBox( const Rect & rect,
                               const double pageHeight,
                               const double margin )
 {
-  if ( pageWidth <= 0 || pageHeight <= 0 ) {
-    _scale = 1.0f;
-    // _deltaX = - rect.left;
-    _deltaX = 0.5 * 210 * ppmm - ( rect.left + 0.5 * rect.width );
-    // _deltaY = - ( rect.top - rect.height );
-    _deltaY = 0.5 * 297 * ppmm - ( rect.top - 0.5 * rect.height );
-    _height = rect.height;
+  Point c = rect.center();
+  if ( margin < 0.0 ) {
+    if ( ( rect.height / rect.width ) > ( pageHeight / pageWidth ) ) {
+      _scale = pageHeight * ppmm / rect.height;
+    } else {
+      _scale = pageWidth * ppmm / rect.width;
+    }
+    _deltaX = (0.5 * pageWidth + (-margin)) * ppmm - _scale * c.x ;
+    _deltaY = (0.5 * pageHeight + (-margin)) * ppmm - _scale * c.y;
+    _height = (pageHeight + 2 * (-margin)) * ppmm;
+    _pageBoundingBox = Rect( mapX(rect.left) - (-margin) * ppmm,
+                             mapY(rect.top) + (-margin) * ppmm,
+                             scale(rect.width) + 2 * (-margin) * ppmm,
+                             _height);
   } else {
     const double w = pageWidth - 2 * margin;
     const double h = pageHeight - 2 * margin;
@@ -108,11 +120,28 @@ TransformEPS::setBoundingBox( const Rect & rect,
     } else {
       _scale = w * ppmm / rect.width;
     }
-    _deltaX = 0.5 * pageWidth * ppmm - _scale * ( rect.left + 0.5 * rect.width );
-    _deltaY = 0.5 * pageHeight * ppmm - _scale * ( rect.top - 0.5 * rect.height );
+    _deltaX = 0.5 * pageWidth * ppmm - _scale * c.x;
+    _deltaY = 0.5 * pageHeight * ppmm - _scale * c.y;
     _height = pageHeight * ppmm;
+    _pageBoundingBox = Rect( 0,
+                             _height,
+                             pageWidth * ppmm,
+                             pageHeight * ppmm );
   }
 }
+
+double
+TransformEPS::scaleBackMM(double x)
+{
+  return x / _scale;
+}
+
+Rect
+TransformEPS::pageBoundingBox() const
+{
+  return _pageBoundingBox;
+}
+
 
 //
 // TransformFIG
@@ -147,17 +176,21 @@ TransformFIG::setBoundingBox( const Rect & rect,
                               const double pageHeight,
                               const double margin )
 {
-  if ( pageWidth <= 0.0 || pageHeight <= 0.0 ) { // Keep bounding box
-    _scale = fig_ppmm / ppmm;
-    _postscriptScale = 1.0;
-    _deltaX = 0.5 * 210 * fig_ppmm - _scale * ( rect.left + 0.5 * rect.width );
-    //_deltaX = - rect.left;
-    _deltaY = 0.5 * 297 * fig_ppmm - _scale * ( rect.top - 0.5 * rect.height );
-    // _deltaY = - rect.top;
-    // _deltaY = - ( rect.top - rect.height );
-    //_height = rect.height;
-    _height = 297 * fig_ppmm;
-  } else {                                   // Fit to pageWidth/pageHeight
+  Point c = rect.center();
+  if ( margin < 0.0 ) {
+    // Bounding box
+    if ( rect.height / rect.width > ( pageHeight / pageWidth ) ) {
+      _scale = pageHeight * fig_ppmm / rect.height;
+      _postscriptScale = pageHeight * ppmm / rect.height;
+    } else {
+      _scale = pageWidth * fig_ppmm / rect.width;
+      _postscriptScale = pageWidth * ppmm / rect.width;
+    }
+    _deltaX = (0.5 * pageWidth + (-margin)) * fig_ppmm - _scale * c.x;
+    _deltaY = (0.5 * pageHeight + (-margin)) * fig_ppmm - _scale * c.y;
+    _height = (pageHeight + 2 * (-margin)) * fig_ppmm;
+  } else {
+    // Fit to pageWidth/pageHeight
     const double w = pageWidth - 2 * margin;
     const double h = pageHeight - 2 * margin;
     if ( rect.height / rect.width > ( h / w ) ) {
@@ -167,8 +200,8 @@ TransformFIG::setBoundingBox( const Rect & rect,
       _scale = ( w * fig_ppmm ) / rect.width;
       _postscriptScale = w * ppmm / rect.width;
     }
-    _deltaX = 0.5 * pageWidth * fig_ppmm - _scale * ( rect.left + 0.5 * rect.width );
-    _deltaY = 0.5 * pageHeight * fig_ppmm - _scale * ( rect.top - 0.5 * rect.height );
+    _deltaX = 0.5 * pageWidth * fig_ppmm - _scale * c.x;
+    _deltaY = 0.5 * pageHeight * fig_ppmm - _scale * c.y;
     _height = pageHeight * fig_ppmm;
   }
   // float ppmm = (1200/25.4);
@@ -214,8 +247,7 @@ TransformSVG::mapY( double y ) const
 double
 TransformSVG::mapWidth( double width ) const
 {
-  // return Transform::round( 1000 * width / ppmm ) / 1000.0;
-  return Transform::round( _scale * 1000 * width  / ppmm  ) / 1000.0;
+  return Transform::round( _scale * 1000 * width / ppmm ) / 1000.0;
 }
 
 void
@@ -224,14 +256,16 @@ TransformSVG::setBoundingBox( const Rect & rect,
                               const double pageHeight,
                               const double margin )
 {
-  if ( pageWidth <= 0 || pageHeight <= 0 ) {
-    _scale = 1.0f;
-    // _deltaX = 0.5 * 210 * ppmm - ( rect.left + 0.5 * rect.width );
-    _deltaX = - rect.left;
-    // _deltaY = 0.5 * 297 * ppmm - ( rect.top - 0.5 * rect.height );
-    _deltaY = - ( rect.top - rect.height );
-    // _height = 297 * fig_ppmm;
-    _height = rect.height;
+  Point c = rect.center();
+  if ( margin < 0.0 ) {
+    if ( rect.height / rect.width > ( pageHeight / pageWidth ) ) {
+      _scale = pageHeight * ppmm / rect.height;
+    } else {
+      _scale = pageWidth * ppmm / rect.width;
+    }
+    _deltaX = (0.5 * pageWidth + (-margin)) * ppmm - _scale * c.x ;
+    _deltaY = (0.5 * pageHeight + (-margin)) * ppmm - _scale * c.y;
+    _height = (pageHeight + 2 * (-margin)) * ppmm;
   } else {
     const double w = pageWidth - 2 * margin;
     const double h = pageHeight - 2 * margin;
@@ -240,10 +274,16 @@ TransformSVG::setBoundingBox( const Rect & rect,
     } else {
       _scale = w * ppmm / rect.width;
     }
-    _deltaX = 0.5 * pageWidth * ppmm - _scale * ( rect.left + 0.5 * rect.width );
-    _deltaY = 0.5 * pageHeight * ppmm - _scale * ( rect.top - 0.5 * rect.height );
+    _deltaX = 0.5 * pageWidth * ppmm - _scale * c.x;
+    _deltaY = 0.5 * pageHeight * ppmm - _scale * c.y;
     _height = pageHeight * ppmm;
   }
+}
+
+double
+TransformSVG::scaleBackMM(double x)
+{
+  return x / _scale;
 }
 
 TransformMatrix

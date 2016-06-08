@@ -4,8 +4,6 @@
  *
  * @brief  Example that shows the usage of the Board library by
  *         illustating the arithmetic coding principle.
- *         <p>Files arithm.eps, arithm.fig and arithm.svg are created
- *         in the current directory.</p>
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -23,10 +21,9 @@ using namespace LibBoard;
 int main( int argc, char *argv[] )
 {
   Board board;
-  
   if ( argc == 2 && !strcmp(argv[1],"-h") ) {
     cout << "Usage:  arithmetic [word] \n\n"
-            "        Where word has letters in {a, b, c, d, e}\n\n";
+            "        Where letters of word are in {a, b, c, d, e}\n\n";
     exit(0);
   }
 
@@ -56,14 +53,13 @@ int main( int argc, char *argv[] )
   double n = 1;
   char str[20];
 
-  board.setLineWidth( 0.01 *thickness );
+  board.setLineWidth( 0.01 * thickness );
   board.setFontSize(0.7 * thickness);
   board.clear( Color( 230, 230, 230 ) );
   while ( *pc ) {
     int i = *pc - 'a';
     left += width * lefts[ i ];
     width *= proba[i];
-
     board.setPenColorRGBi( 100, 100, 100 );
     w /= 2.0;
     n *= 2;
@@ -87,8 +83,9 @@ int main( int argc, char *argv[] )
     //board.drawText( lefts[k] + proba[k]/2.0, 0.5*thickness, str );
   }
 
-  board.save( "arithm.eps", Board::A4 );
-  board.save( "arithm.fig", Board::A4 );
-  board.save( "arithm.svg", Board::A4 );
-  exit(0);
+  board.save( "arithmetic_A4.eps", Board::A4, 0.5, Board::UCentimeter  );
+  board.save( "arithmetic.eps", Board::BoundingBox, 0.5, Board::UCentimeter  );
+  board.save( "arithmetic.svg", Board::BoundingBox, 2, Board::UCentimeter );
+  board.save( "arithmetic_A4.svg", Board::A4, 2, Board::UCentimeter );
+  board.save( "arithmetic.fig", Board::A4 );
 }

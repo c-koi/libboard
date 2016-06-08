@@ -1,7 +1,7 @@
 /**
  * @file   arrows.cpp
  * @author Sebastien Fourey (GREYC)
- * 
+ *
  * @brief  Sample program to check that arrows are correctly drawn.
  *
  * This source code is part of the Board project, a C++ library whose
@@ -33,61 +33,51 @@ int main( int , char *[] )
   board.clear( Color(233,250,140) );
   board.setLineWidth(0.25);
   srand( static_cast<unsigned int>( time(0) ) );
-  double radius = 0.1;
   double angle = 0.0;
-  // board.setUnit( Board::Centimeter );  // Unit for "drawSomething()" functions is 1cm.
-  board << Board::UCentimeter;
 
-  board << Rectangle( -8, 12, 16, 24, Color::Black, Color::None, 0.1 );
+  board << Rectangle( -8, 12, 16, 24, Color::Black, Color::Null, 0.1 );
 
   //board.setLineStyle( Shape::DashStyle );
-  for ( int i = 0; i < 45; ++i, radius += 0.1 ) {
-    angle = i * (2*M_PI/45);
-    board.setPenColorRGBf( random_gray(), random_gray(), random_gray() );
-    board.drawArrow( 0, 0, radius * cos( angle ), radius * sin( angle ),
-		     false, -1 );
-  }
-  
-  //board.setLineStyle( Shape::SolidStyle );
-  board.setPenColorRGBi( 255, 0, 0);
-  board.setLineWidth( 2 );
-  board.setFont( Fonts::CourierBold, 12 );
-  radius *= 1.2;
+  double radius = 10;
+
+  board.setFont( Fonts::CourierBold, 2 );
   for ( int i = 0; i < 45; ++i ) {
     angle = i * (2*M_PI/45);
-    board.drawDot( radius * cos( angle ), radius * sin( angle ) );    
-    std::stringstream ss;
-    ss << i;
-    board.drawText( radius * cos( angle ), radius * sin( angle ), ss.str() );
+
+    board.setPenColorRGBf( random_gray(), random_gray(), random_gray() );
+    board.setFillColor( board.penColor() );
+    board.drawArrow( 0, 0, radius * cos( angle ), radius * sin( angle ) );
+    radius += 0.4;
+
+    board.setLineWidth( 0.1 );
+    board.setPenColorRGBi( 255, 0, 0);
+    board.drawDot( radius * cos( angle ), radius * sin( angle ) );
+    std::stringstream s;
+    s << i;
+    board.drawText( radius * cos( angle ), radius * sin( angle ), s.str() );
   }
   
   board.setPenColorRGBi( 0, 0, 0 );
   board.setFont( Fonts::PalatinoRoman, 24 );
-  board.drawText( -5, 10, "Arrows" );
+  board.drawText( 0, 15, "Arrows" );
 
-  board.setLineWidth( 1 );
+  board << Rectangle(board.boundingBox(Shape::IgnoreLineWidth));
 
-  board.setLineStyle( Shape::DotStyle );
-  board.drawArrow( -7, 9, 5, 9 );  
+  Rect rect = board.last<Rectangle>().boundingBox(Shape::UseLineWidth);
+  board.setPenColor(Color::Red);
+  board.setFillColor(Color::Green);
+  board.setLineWidth(1);
+  board.drawArrow(rect.topLeft(),rect.bottomRight());
 
-  board.setLineStyle( Shape::SolidStyle );
-  board.setPenColorRGBi( 255, 0, 0 );
-  board.drawArrow( -6, -9, -6, 9 );  
-  
-  Group g;
-  for ( int y = 1; y < 10; ++y) 
-    g << Rectangle( 0, y * 10 - 1, 10, 9,
-		    Color::Black, Color::None, 0.2, Shape::DashStyle );
-  
-  // Change the unit and add the group.
-  board << Board::UMillimeter << g;
 
-  // Restore the unit in centimeters.
-  board.setUnit( Board::UCentimeter );
+  Rect rect2(10,90,40,40);
+  board.drawArrow(rect2.topLeft(),rect2.topRight());
+  board.drawArrow(rect2.topRight(),rect2.bottomRight());
+  board.drawArrow(rect2.bottomRight(),rect2.bottomLeft());
+  board.drawArrow(rect2.bottomLeft(),rect2.topLeft());
 
-  board.scale( 1.0 );
-  board.saveEPS( "arrows.eps" /*, Board::A4 */ );
-  board.saveFIG( "arrows.fig" );
-  board.saveSVG( "arrows.svg" /*, Board::A4 */ );
-  exit(0);
+  // board.saveEPS( "arrows_A4.eps", Board::A4, 2.0, Board::UCentimeter );
+  // board.saveSVG( "arrows_A4.svg", Board::A4 );
+  // board.saveFIG( "arrows.fig" );
+  board.saveSVG( "arrows.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
 }

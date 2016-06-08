@@ -2,7 +2,7 @@
 /**
  * @file   PSFonts.h
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief  The Point structure.
  * \@copyright

@@ -21,37 +21,30 @@ using namespace LibBoard;
 int main( int , char *[] )
 {
   Board board;
-  board.clear( Color::Navy );
 
-  board.setLineWidth(1);
-  board << Board::UCentimeter;  //  Or: board.setUnit(Board::UCentimeter);
-
+  Image michel("../resources/saint_michel.jpg",0,0,200);
+  Rectangle rectangle( michel.boundingBox(Shape::IgnoreLineWidth), Color::Red, Color::Silver,1);
   Group g;
-  Image michel("../resources/saint_michel.jpg",0,0,5);
-  Rectangle rectangle( michel.boundingBox(), Color::Red, Color::Silver,2);
   g << rectangle;
   g << michel;
 
-  board << g;
+  ShapeList tiling;
+  tiling.addTiling(g,Point(0,0),5,4,0.0,Board::UseLineWidth);
+  board << tiling;
 
-  //  ShapeList row;
-  //  row.repeat(g,4,g.boundingBox().width*1.1,0);
-  //  ShapeList page;
-  //  page.repeat(row,4,0,g.boundingBox().height);
-  //  board << page;
+  ShapeList avatars;
+  Image avatar("../resources/avatar.png",0,0,80);
+  avatar.rotateDeg(45);
+  avatars.addTiling(avatar,Point(0,0),4,4,10.0,Board::UseLineWidth);
+  avatars.moveCenter(board.center());
+  board << avatars;
 
-  //  Point c = page.boundingBox().center();
-  //  Image avatar("../resources/avatar.png",c.x,c.y,3);
-  //  board << avatar;
-  //  board << avatar.rotated(M_PI_2,c);
-  //  board << avatar.rotated(M_PI,c);
-  //  board << avatar.rotated(3*M_PI_2,c);
+  //board.saveEPS( "images.eps", 0.0, 0.0, 2.0, Board::UInche );
+  board.saveEPS( "images.eps", 20.0, 30.0, 2.0, Board::UInche );
+  //board.saveEPS( "images.eps", Board::BoundingBox, 10.0, Board::UInche );
+  board.saveSVG( "images_40x60cm.svg", 40.0, 60.0, 10.0, Board::UCentimeter );
+  board.saveFIG( "images.fig", 20.0, 20.0, 2.0, Board::UCentimeter );
+  // board.saveFIG( "images.fig", Board::BoundingBox, 10.0, Board::UCentimeter );
 
-
-
-  board.saveEPS( "images.eps" /*, Board::A4 */ );
-  board.saveFIG( "images.fig" /*, Board::A4 */ );
-  board.saveSVG( "images.svg" , Board::A4  );
-
-  exit(0);
+  board.saveSVG( "images.svg" );
 }

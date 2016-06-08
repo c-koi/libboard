@@ -2,7 +2,7 @@
 /**
  * @file   ShapeList.cpp
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief  Definition of the ShapeList and Group classes.
  *
@@ -52,7 +52,7 @@ ShapeList::ShapeList( const Shape & shape,
                       unsigned int times,
                       double dx, double dy,
                       double scale )
-  : Shape( Color::None, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, -1 ),
+  : Shape( Color::Null, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, -1 ),
     _nextDepth( std::numeric_limits<int>::max() - 1 )
 {
   Shape * s = shape.clone();
@@ -70,7 +70,7 @@ ShapeList::ShapeList( const Shape & shape,
                       double dx, double dy,
                       double scaleX, double scaleY,
                       double angle )
-  : Shape( Color::None, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, -1 ),
+  : Shape( Color::Null, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, -1 ),
     _nextDepth( std::numeric_limits<int>::max() - 1 )
 {
   Shape * s = shape.clone();
@@ -255,15 +255,17 @@ ShapeList::operator+=( const Shape & shape )
 }
 
 Group &
-ShapeList::addTiling( const Shape & shape,
-                      Point topLeftCorner,
-                      std::size_t columns,
-                      std::size_t rows, double spacing )
+ShapeList::addTiling(const Shape & shape,
+                     Point topLeftCorner,
+                     std::size_t columns,
+                     std::size_t rows,
+                     double spacing,
+                     LineWidthFlag lineWidthFlag)
 {
   Group group;
   if ( columns && rows ) {
     Shape * s = shape.clone();
-    Rect box = shape.boundingBox();
+    Rect box = shape.boundingBox(lineWidthFlag);
     s->translate(topLeftCorner.x-box.left,topLeftCorner.y-box.top);
     for ( std::size_t r = 0; r < rows; ++r ) {
       group << (*s);
@@ -296,15 +298,16 @@ ShapeList &
 ShapeList::append(const Shape & shape,
                   ShapeList::Direction direction,
                   ShapeList::Alignment alignment,
-                  double margin )
+                  double margin,
+                  LineWidthFlag lineWidthFlag)
 {
   if ( _shapes.size() == 0 ) {
     (*this) << shape;
     return *this;
   }
-  Rect box = boundingBox();
+  Rect box = boundingBox(lineWidthFlag);
   Point c = box.center();
-  Rect shapeBox = shape.boundingBox();
+  Rect shapeBox = shape.boundingBox(lineWidthFlag);
   const double shapeHalfWidth = shapeBox.width / 2.0;
   const double shapeHalfHeight = shapeBox.height / 2.0;
   double x,y;
@@ -505,16 +508,16 @@ ShapeList::flushTikZ( std::ostream & stream,
 }
 
 Rect
-ShapeList::boundingBox() const
+ShapeList::boundingBox(LineWidthFlag flag) const
 {
   Rect r;
   std::vector< Shape* >::const_iterator i = _shapes.begin();
   std::vector< Shape* >::const_iterator end = _shapes.end();
   if ( i == end ) return r;
-  r = (*i)->boundingBox();
+  r = (*i)->boundingBox(flag);
   ++i;
   while ( i != end ) {
-    r = r || (*i)->boundingBox();
+    r = r || (*i)->boundingBox(flag);
     ++i;
   }
   return r;
@@ -740,7 +743,7 @@ Group::flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
                  std::map<Color,int> & colormap ) const
 {
-  Rect bbox = boundingBox();
+  Rect bbox = boundingBox(UseLineWidth);
   stream << "# Begin group\n";
   stream << "6 "
          << transform.mapX( bbox.left ) << " "
@@ -786,12 +789,12 @@ Group::flushTikZ( std::ostream & stream,
 }
 
 Rect
-Group::boundingBox() const
+Group::boundingBox(LineWidthFlag lineWidthFlag) const
 {
   if ( _clippingPath.size() > 2 )
-    return ShapeList::boundingBox() && _clippingPath.boundingBox();
+    return ShapeList::boundingBox(lineWidthFlag) && _clippingPath.boundingBox();
   else
-    return ShapeList::boundingBox();
+    return ShapeList::boundingBox(lineWidthFlag);
 }
 
 

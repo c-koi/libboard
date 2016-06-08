@@ -2,7 +2,7 @@
 /**
  * @file   Board.h
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief  Declaration of the Board class.
  *
@@ -55,12 +55,14 @@ public:
   enum Unit { UPoint, UInche, UCentimeter, UMillimeter };
   static const double Degree;
   
+  enum AspectRatioFlag { IgnoreAspectRatio, KeepAspectRatio };
+
   /**
    * Constructs a new board and sets the background color, if any.
    *
    * @param backgroundColor A color for the drawing's background.
    */
-  Board( const Color & backgroundColor = Color::None );
+  Board( const Color & backgroundColor = Color::Null );
 
   /**
    * Copy constructor.
@@ -89,22 +91,13 @@ public:
    * @return The board itself, as a ShapeList.
    */
   Board & operator<<( const Shape & shape );
-
-  /**
-   * Overloaded operator to set the current unit.
-   *
-   * @param unit The unit to be used in next drawing functions and shape insertions.
-   *
-   * @return The board itself, as a ShapeList.
-   */
-  Board & operator<<( Unit unit );
   
   /**
    * Clears the board with a given background color.
    *
    * @param color The board background color (may be Color::None).
    */
-  void clear( const Color & color = Color::None );
+  void clear( const Color & color = Color::Null );
 
   /**
    * Clears the board and set the background color from an RGB triple.
@@ -134,7 +127,6 @@ public:
   Board scaled( double sx, double sy );
 
   Board scaled( double s );
-
 
 
   /**
@@ -190,22 +182,18 @@ public:
    * @param y1 Second coordinate of the first extremity.
    * @param x2 First coordinate of the second extremity.
    * @param y2 Second coordinate of the second extremity.
-   * @param filled Whether or not the arrow is filled.
    * @param depth Depth of the line.
    */
-  void drawArrow( double x1, double y1, double x2, double y2,
-                  bool filled = true,
-                  int depth = -1 );
+  void drawArrow( double x1, double y1, double x2, double y2, int depth = -1 );
 
   /**
    * Draws a line from p to q with an arrow at (x2,y2).
    *
    * @param p First extremity.
    * @param q Second extremity.
-   * @param filled Whether or not the arrow is filled.
    * @param depth Depth of the line.
    */
-  void drawArrow( Point p, Point q, bool filled = true, int depth = -1 );
+  void drawArrow( Point p, Point q, int depth = -1 );
 
   /**
    * Draws a triangle.
@@ -481,8 +469,16 @@ public:
    * @param text The text.
    * @param depth The depth of the text.
    */
-  void drawText( double x, double y, const char * text,
-                 int depth = -1 );
+  void drawText( double x, double y, const char * text, int depth = -1 );
+
+  /**
+   * Draws a string of text.
+   *
+   * @param p Position of the bottom-left corner.
+   * @param text The text.
+   * @param depth The depth of the text.
+   */
+  void drawText( Point p, const char * text, int depth = -1 );
 
   /**
    * Draws a string of text.
@@ -492,8 +488,16 @@ public:
    * @param text The text.
    * @param depth The depth of the text.
    */
-  void drawText( double x, double y, const std::string & str,
-                 int depth = -1 );
+  void drawText( double x, double y, const std::string & str, int depth = -1 );
+
+  /**
+   * Draws a string of text.
+   *
+   * @param p Position of the bottom-left corner.
+   * @param str The text.
+   * @param depth The depth of the text.
+   */
+  void drawText( Point p, const std::string & str, int depth = -1 );
 
   /**
    * Changes the current font and font size.
@@ -630,8 +634,9 @@ public:
    * Draws the current drawing's bounding box as a rectangle.
    *
    * @param depth The depth of the rectangle.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    */
-  void drawBoundingBox( int depth = -1 );
+  void drawBoundingBox( LineWidthFlag lineWidthFlag, int depth = -1 );
 
   /**
    * Define a clipping rectangle for the whole drawing.
@@ -641,8 +646,14 @@ public:
    * @param width
    * @param height
    */
-  void setClippingRectangle(  double x, double y,
-                              double width, double height );
+  void setClippingRectangle(  double x, double y, double width, double height );
+
+  /**
+   * Define a clipping rectangle for the whole drawing.
+   *
+   * @param rect The clipping rectangle.
+   */
+  void setClippingRectangle(const Rect & rect );
 
   /**
    * Define a clipping path for the whole drawing.
@@ -699,9 +710,10 @@ public:
    *
    * @param filename Path of the file to be created.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void save( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+  void save( const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter ) const;
   
   /**
    * Save the drawing in an EPS, XFIG of SVG file depending
@@ -709,11 +721,12 @@ public:
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename Path of the file to be created.
-   * @param pageWidth Width of the page in millimeters.
-   * @param pageHeight Height of the page in millimeters.
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param pageWidth Width of the page.
+   * @param pageHeight Height of the page.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void save( const char * filename, double pageWidth, double pageHeight, double margin = 10.0 ) const;
+  void save(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter ) const;
 
   /**
    * Writes the drawing in a stream as an EPS file. When a size is given (not BoundingBox), the drawing is
@@ -721,10 +734,11 @@ public:
    *
    * @param out The output stream.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    * @param title Document title (Postscript comment).
    */
-  void saveEPS( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 10.0, const std::string & title = std::string() ) const ;
+  void saveEPS( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter, const std::string & title = std::string() ) const ;
 
   /**
    * Saves the drawing in an EPS file. When a size is given (not BoundingBox), the drawing is
@@ -732,9 +746,11 @@ public:
    *
    * @param filename The EPS file name.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
+   * @param title Document title (Postscript comment).
    */
-  void saveEPS( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0, const std::string & title = std::string() ) const ;
+  void saveEPS( const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter, const std::string & title = std::string() ) const ;
 
   /**
    * Writes the drawing in a stream as an EPS file. The drawing is scaled (up or
@@ -742,23 +758,26 @@ public:
    *
    * @param out The output stream.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param pageWidth Width of the page in millimeters.
-   * @param pageHeight Height of the page in millimeters.
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param pageWidth Width of the page.
+   * @param pageHeight Height of the page.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the previous length parameters (default value is millimeter).
+   * @param title Document title (Postscript comment).
    */
-  void saveEPS( std::ostream & out, double pageWidth, double pageHeight, double margin = 10.0, const std::string & title = std::string() ) const ;
+  void saveEPS( std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter, const std::string & title = std::string() ) const ;
 
   /**
    * Saves the drawing in an EPS file. The drawing is scaled (up or down) so
    * that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The EPS file name.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param pageWidth Width of the page in millimeters.
-   * @param pageHeight Height of the page in millimeters.
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param pageWidth Width of the page.
+   * @param pageHeight Height of the page.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the previous length parameters (default value is millimeter).
+   * @param title Document title (Postscript comment).
    */
-  void saveEPS( const char * filename, double pageWidth, double pageHeight, double margin = 10.0, const std::string & title = std::string()  ) const ;
+  void saveEPS( const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter, const std::string & title = std::string()  ) const ;
 
   /**
    * Saves the drawing in an XFig file. When a size is given (not BoundingBox), the drawing is
@@ -766,9 +785,10 @@ public:
    *
    * @param filename The name of the FIG file.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveFIG( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+  void saveFIG( const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter ) const;
 
   /**
    * Saves the drawing in a stream as an XFig file. When a size is given (not BoundingBox), the drawing is
@@ -776,9 +796,10 @@ public:
    *
    * @param out The output stream.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveFIG( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+  void saveFIG( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter ) const;
 
   /**
    * Saves the drawing in an XFig file. When a size is given (not BoundingBox), the drawing is
@@ -786,11 +807,12 @@ public:
    *
    * @param filename The XFig file name.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param pageWidth Width of the page in millimeters.
-   * @param pageHeight Height of the page in millimeters.
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param pageWidth Width of the page.
+   * @param pageHeight Height of the page.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void saveFIG( const char * filename, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+  void saveFIG( const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter ) const ;
 
   /**
    * Saves the drawing in a stream as an XFig file. The drawing is scaled (up or
@@ -798,11 +820,12 @@ public:
    *
    * @param out The output stream.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param pageWidth Width of the page in millimeters.
-   * @param pageHeight Height of the page in millimeters.
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param pageWidth Width of the page.
+   * @param pageHeight Height of the page.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void saveFIG( std::ostream & out, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+  void saveFIG( std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter ) const ;
 
   /**
    * Save the drawing in an SVG file. When a size is given (not BoundingBox), the drawing is
@@ -810,9 +833,10 @@ public:
    *
    * @param filename The name of the file.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveSVG( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+  void saveSVG( const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter ) const;
 
   /**
    * Saves the drawing in a stream as an SVG file. When a size is given (not BoundingBox), the drawing is
@@ -820,9 +844,10 @@ public:
    *
    * @param out The output stream.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveSVG( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+  void saveSVG( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter ) const;
 
   /**
    * Saves the drawing in an SVG file. When a size is given (not BoundingBox), the drawing is
@@ -830,11 +855,12 @@ public:
    *
    * @param filename The SVG file name.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param pageWidth Width of the page in millimeters.
-   * @param pageHeight Height of the page in millimeters.
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param pageWidth Width of the page.
+   * @param pageHeight Height of the page.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void saveSVG( const char * filename, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+  void saveSVG( const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter ) const ;
 
   /**
    * Saves the drawing in a stream as an SVG file. The drawing is scaled (up or down) so
@@ -842,11 +868,12 @@ public:
    *
    * @param out The output stream.
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
-   * @param pageWidth Width of the page in millimeters.
-   * @param pageHeight Height of the page in millimeters.
-   * @param margin Minimal margin around the figure in the page, in millimeters.
+   * @param pageWidth Width of the page.
+   * @param pageHeight Height of the page.
+   * @param margin Minimal margin around the figure in the page.
+   * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void saveSVG( std::ostream & out, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+  void saveSVG( std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter) const ;
 
   /**
    * Save the drawing in an TikZ file. When a size is given (not BoundingBox), the drawing is
@@ -856,7 +883,7 @@ public:
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
-  void saveTikZ( const char * filename, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+  void saveTikZ( const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0 ) const;
 
   /**
    * Save the drawing in a stream as TikZ file. When a size is given (not BoundingBox), the drawing is
@@ -866,7 +893,7 @@ public:
    * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
-  void saveTikZ( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 10.0 ) const;
+  void saveTikZ( std::ostream & out, PageSize size = Board::BoundingBox, double margin = 0.0 ) const;
 
   /**
    * Save the drawing in an TikZ file. When a size is given (not BoundingBox), the drawing is
@@ -878,7 +905,7 @@ public:
    * @param pageHeight Height of the page in millimeters.
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
-  void saveTikZ( const char * filename, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+  void saveTikZ( const char * filename, double pageWidth, double pageHeight, double margin = 0.0 ) const ;
 
   /**
    * Save the drawing in a stream as a TikZ file. The drawing is scaled (up or
@@ -890,36 +917,55 @@ public:
    * @param pageHeight Height of the page in millimeters.
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
-  void saveTikZ( std::ostream & out, double pageWidth, double pageHeight, double margin = 10.0 ) const ;
+  void saveTikZ( std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0 ) const ;
 
 
   /**
    * Build a grid with specified number of rows and columns and a given size.
    *
    * @param topLeft Coordinates of the top left point of the grid.
-   * @param columns
-   * @param rows
-   * @param width
-   * @param height
-   * @param penColor
-   * @param fillColor
-   * @param lineWidth
-   * @param style
-   * @param cap
-   * @param join
-   * @param depth
-   * @return The gris as a group.
+   * @param columns Number of columns of the grid.
+   * @param rows Number of rows of the grid.
+   * @param width Width of the grid.
+   * @param height Height of the grid.
+   * @param penColor Color of the lines.
+   * @param fillColor Background color.
+   * @param lineWidth Line width.
+   * @param style Line style (default is Board::SolidStyle).
+   * @param cap Line cap (default is Board::ButtCap).
+   * @param join Line join (default is Board::MiterJoin).
+   * @param depth Depth of the grid (default is -1 (auto)).
+   *
+   * @return The grid as a group.
    */
-  static Group makeGrid(Point topLeft, size_t columns, size_t rows,
+  static Group makeGrid(Point topLeft,
+                        size_t columns, size_t rows,
                         double width, double height,
-                        Color penColor, Color fillColor,
+                        Color penColor,
+                        Color fillColor,
                         double lineWidth,
                         const LineStyle style = SolidStyle,
                         const LineCap cap = ButtCap,
                         const LineJoin join = MiterJoin,
                         int depth = -1 );
+  /**
+   * @brief penColor
+   *
+   * @return The current pen color.
+   */
+  Color penColor() const;
+
+  /**
+   * @brief fillColor
+   *
+   * @return The current fill color.
+   */
+  Color fillColor() const;
 
 protected:
+
+  static double toMillimeter( double x, Unit unit);
+
   
   /**
    * Current graphical state for drawings made by the drawSomething() methods.
@@ -934,11 +980,7 @@ protected:
     Shape::LineJoin lineJoin;   /**< The type of line junction. */
     Fonts::Font font;           /**< The font. */
     double fontSize;            /**< The font size. */
-    double unitFactor;          /**< The factor to be applied to arguments of the drawSomething() family. */
     State();
-    double unit( const double & x ) { return x * unitFactor; }
-    Point unit( const Point & p ) { return Point( p.x * unitFactor, p.y * unitFactor); }
-    void unit( Shape & shape ) {  shape.scaleAll( unitFactor ); }
   };
   State _state;                 /**< The current state. */
   Color _backgroundColor;       /**< The color of the background. */

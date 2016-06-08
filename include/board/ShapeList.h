@@ -2,7 +2,7 @@
 /**
  * @file   ShapeList.h
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief  Classes ShapeList and Group
  *
@@ -139,7 +139,7 @@ struct ShapeList : public Shape {
   void flushTikZ( std::ostream & stream,
                   const TransformTikZ & transform ) const;
 
-  Rect boundingBox() const;
+  Rect boundingBox(LineWidthFlag) const;
   
   virtual int minDepth() const;
 
@@ -177,12 +177,14 @@ struct ShapeList : public Shape {
    * @param direction The direction where the shape should be appended.
    * @param alignment The alignement with the current shapelist.
    * @param margin A margin between the shapelist and the shape.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    * @return The shapelist itself, after the shape has been appended.
    */
   ShapeList & append( const Shape & shape,
                       Direction direction,
                       Alignment alignment,
-                      double margin = 0.0 );
+                      double margin = 0.0,
+                      LineWidthFlag lineWidthFlag = UseLineWidth );
 
 
   /**
@@ -194,11 +196,15 @@ struct ShapeList : public Shape {
    * @param columns Number of columns of the tiling.
    * @param rows Number of rows of the tiling.
    * @param spacing Spacing between rows and columns.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    * @return A reference to the tiling that has been added, as a Group.
    */
-  Group & addTiling( const Shape & shape, Point topLeftCorner,
-                     std::size_t columns, std::size_t rows,
-                     double spacing = 0.0 );
+  Group & addTiling( const Shape & shape,
+                     Point topLeftCorner,
+                     std::size_t columns,
+                     std::size_t rows,
+                     double spacing = 0.0,
+                     LineWidthFlag lineWidthFlag = UseLineWidth );
 
   /**
    * A a repeated shape (with translation, scaling & rotation)
@@ -356,7 +362,7 @@ struct Group : public ShapeList {
 
   Group * clone() const;
 
-  Rect boundingBox() const;
+  Rect boundingBox(LineWidthFlag) const;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */

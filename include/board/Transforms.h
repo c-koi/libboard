@@ -2,7 +2,7 @@
 /**
  * @file   Transforms.h
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief
  * \@copyright
@@ -50,6 +50,7 @@ public:
   virtual Point map( const Point & ) const;
   virtual void apply( double & x, double & y ) const;
   virtual double scale( double x ) const;
+  virtual Point scale( const Point & ) const;
   virtual double rounded( double x ) const;
   virtual void setBoundingBox( const Rect & rect,
                                const double pageWidth,
@@ -77,6 +78,11 @@ public:
                        const double pageWidth,
                        const double pageHeight,
                        const double margin );
+  double scaleBackMM(double);
+  Rect pageBoundingBox() const;
+
+private:
+  Rect _pageBoundingBox;
 };
 
 /**
@@ -116,11 +122,11 @@ public:
                        const double pageWidth,
                        const double pageHeight,
                        const double margin );
+  double scaleBackMM(double);
   TransformMatrix matrix() const;
   Point translation() const;
   double deltaX() const;
   double deltaY() const;
-
 };
 
 /**

@@ -2,7 +2,7 @@
 /**
  * @file   Color.h
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief  The Color structure.
  * \@copyright
@@ -104,11 +104,11 @@ public:
   std::string tikz() const;
 
 
-  inline bool valid() const { return (*this) != Color::None; }
+  inline bool valid() const { return (*this) != Color::Null; }
 
 
 public:
-  static const Color None;
+  static const Color Null;
   static const Color Black;
   static const Color Gray;
   static const Color White;

@@ -2,7 +2,7 @@
 /**
  * @file   Rect.h
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief
  * \@copyright
@@ -71,7 +71,7 @@ struct Rect {
    * @param bottomRight The bottom-right point of the rectangle.
    */
   Rect( Point topLeft, Point bottomRight )
-    :left( topLeft.x ),
+    : left( topLeft.x ),
       top( topLeft.y ),
       width( bottomRight.x - topLeft.x ),
       height( topLeft.y - bottomRight.y ) { }

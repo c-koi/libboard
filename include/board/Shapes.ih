@@ -25,7 +25,6 @@
  */
 
 namespace LibBoard {
-
 Shape::Shape( Color penColor, Color fillColor,
               double lineWidth,
               LineStyle style,
@@ -42,11 +41,10 @@ Shape::Shape( Color penColor, Color fillColor,
 {
 }
 
-
 Rect
-Shape::bbox() const
+Shape::bbox(LineWidthFlag flag) const
 {
-  return this->boundingBox();
+  return boundingBox(flag);
 }
 
 Shape &
@@ -108,7 +106,7 @@ Dot::Dot( double x, double y,
           double lineWidth,
           int depth )
    : Shape( color,
-            Color::None,
+            Color::Null,
             lineWidth, SolidStyle, RoundCap, MiterJoin, depth ),
      _x( x ), _y( y )
 {
@@ -121,7 +119,7 @@ Line::Line( double x1, double y1, double x2, double y2,
             const LineCap cap,
             const LineJoin join,
             int depth )
-   : Shape( color, Color::None, lineWidth, style, cap, join, depth ),
+   : Shape( color, Color::Null, lineWidth, style, cap, join, depth ),
      _x1( x1 ), _y1( y1 ), _x2( x2 ), _y2( y2 )
 {
 }
@@ -133,7 +131,7 @@ Line::Line( Point a, Point b,
             const LineCap cap,
             const LineJoin join,
             int depth )
-   : Shape( color, Color::None, lineWidth, style, cap, join, depth ),
+   : Shape( color, Color::Null, lineWidth, style, cap, join, depth ),
      _x1( a.x ), _y1( a.y ), _x2( b.x ), _y2( b.y )
 {
 }

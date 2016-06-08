@@ -41,6 +41,8 @@ namespace LibBoard {
 
 namespace Tools {
 
+enum CaseSensitivity { CaseSensitive, CaseInsensitive };
+
 /**
   * A "prefixable" message stream
   */
@@ -84,7 +86,7 @@ inline void secured_ctime( char * str, const time_t * t, size_t count );
 
 bool base64encode(std::istream & in, std::ostream & , int linesize = 80);
 
-bool stringEndsWith( const char * str, const char * end );
+bool stringEndsWith( const char * str, const char * end, CaseSensitivity sensitivity = CaseSensitive );
 
 void flushFile( const char * filename, std::ostream & out );
 

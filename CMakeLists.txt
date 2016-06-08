@@ -2,7 +2,11 @@
 #  Contribution of Jason Gauci, University of Central Florida, http://eplex.cs.ucf.edu/
 #  Modified by Guillaume Nee, GREYC, http://www.greyc.fr
 
-Project(LibBoard)
+if(POLICY CMP0048)
+  cmake_policy(SET CMP0048 NEW)
+endif()
+
+Project(LibBoard VERSION 0.9.4)
 
 ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
 

@@ -2,7 +2,7 @@
 /**
  * @file   Shapes.cpp
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief
  * \@copyright
@@ -23,11 +23,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Rect.h"
 #include "board/Shapes.h"
+#include "board/Rect.h"
 #include "board/Tools.h"
 #include "board/PathBoundaries.h"
 #include "board/PSFonts.h"
+#include "board/Transforms.h"
 #include <cmath>
 #include <cstring>
 #include <vector>
@@ -75,7 +76,7 @@ extern const char * XFigPostscriptFontnames[];
 bool Shape::_lineWidthScaling = false;
 double Shape::_defaultLineWidth = 1.0;
 Color Shape::_defaultPenColor = Color::Black;
-Color Shape::_defaultFillColor = Color::None;
+Color Shape::_defaultFillColor = Color::Null;
 Shape::LineStyle Shape::_defaultLineStyle = Shape::SolidStyle;
 Shape::LineCap Shape::_defaultLineCap = Shape::ButtCap;
 Shape::LineJoin Shape::_defaultLineJoin = Shape::MiterJoin;
@@ -95,24 +96,24 @@ Shape::name() const
 }
 
 Point
-Shape::center() const
+Shape::center(LineWidthFlag lineWidthFlag) const
 {
-  return boundingBox().center();
+  return boundingBox(lineWidthFlag).center();
 }
 
 
 Shape &
-Shape::moveCenter(double x, double y)
+Shape::moveCenter(double x, double y, LineWidthFlag lineWidthFlag)
 {
-  Point c = center();
+  Point c = center(lineWidthFlag);
   translate(x-c.x,y-c.y);
   return *this;
 }
 
 Shape &
-Shape::moveCenter(Point p)
+Shape::moveCenter(Point p, LineWidthFlag lineWidthFlag)
 {
-  Point c = center();
+  Point c = center(lineWidthFlag);
   translate(p.x-c.x,p.y-c.y);
   return *this;
 }
@@ -140,7 +141,7 @@ Shape::svgProperties( const TransformSVG & transform ) const
   static const char * capStrings[3] = { "butt", "round", "square" };
   static const char * joinStrings[3] = { "miter", "round", "bevel" };
   std::stringstream str;
-  if ( _penColor != Color::None ) {
+  if ( _penColor != Color::Null ) {
     str << " fill=\"" << _fillColor.svg() << '"'
         << " stroke=\"" << _penColor.svg() << '"'
         << " stroke-width=\"" << transform.mapWidth( _lineWidth ) << "mm\""
@@ -267,7 +268,7 @@ Dot::name() const
 }
 
 Point
-Dot::center() const {
+Dot::center(LineWidthFlag) const {
   return Point( _x, _y );
 }
 
@@ -405,9 +406,20 @@ Dot::flushTikZ( std::ostream & stream,
 }
 
 Rect
-Dot::boundingBox() const
+Dot::boundingBox(LineWidthFlag lineWidthFlag) const
 {
-  return Rect( _x, _y, 0.0, 0.0 );
+  switch (lineWidthFlag) {
+  case IgnoreLineWidth:
+    return Rect( _x, _y, 0.0, 0.0 );
+    break;
+  case UseLineWidth:
+    return Rect( _x-0.5*_lineWidth, _y+0.5*_lineWidth, _lineWidth, _lineWidth );
+    break;
+  default:
+    Tools::error << "LineWidthFlag incorrect value (" << lineWidthFlag << ")\n";
+    return Rect();
+    break;
+  }
 }
 
 Dot *
@@ -425,11 +437,6 @@ const std::string &
 Line::name() const
 {
   return _name;
-}
-
-Point
-Line::center() const {
-  return Point( (_x1 + _x2) / 2.0, (_y1 + _y2) / 2.0 );
 }
 
 Line &
@@ -597,11 +604,22 @@ Line::flushTikZ( std::ostream & stream,
 }
 
 Rect
-Line::boundingBox() const
+Line::boundingBox(LineWidthFlag lineWidthFlag) const
 {
   Path p;
   p << Point(_x1,_y1) << Point(_x2,_y2);
-  return Tools::pathBoundingBox(p,_lineWidth,_lineCap,_lineJoin);
+  switch (lineWidthFlag) {
+  case UseLineWidth:
+    return Tools::pathBoundingBox(p,_lineWidth,_lineCap,_lineJoin);
+    break;
+  case IgnoreLineWidth:
+    return p.boundingBox();
+    break;
+  default:
+    Tools::error << "LineWidthFlag incorrect value (" << lineWidthFlag << ")\n";
+    return Rect();
+    break;
+  }
 }
 
 /*
@@ -653,6 +671,33 @@ Arrow::scaled( double s ) const
   return Arrow::scaled( s, s );
 }
 
+Rect Arrow::boundingBox(Shape::LineWidthFlag) const
+{
+  double dx = _x1 - _x2;
+  double dy = _y1 - _y2;
+  double norm = sqrt( dx*dx + dy*dy );
+  dx /= norm;
+  dy /= norm;
+  dx *= 10*_lineWidth;
+  dy *= 10*_lineWidth;
+
+  double ndx1 = dx*cos(0.3)-dy*sin(0.3);
+  double ndy1 = dx*sin(0.3)+dy*cos(0.3);
+  double ndx2 = dx*cos(-0.3)-dy*sin(-0.3);
+  double ndy2 = dx*sin(-0.3)+dy*cos(-0.3);
+
+  Path pLine;
+  pLine << Point(_x1,_y1);
+  pLine << Point(_x2+(dx*cos(0.3)), _y2+(dy*cos(0.3)));
+
+  Path pArrow;
+  pArrow << Point(_x2+ndx1,_y2+ndy1)
+         << Point(_x2,_y2 )
+         << Point(_x2+ndx2,_y2+ndy2);
+
+  return Tools::pathBoundingBox(pLine,_lineWidth,_lineCap,_lineJoin) || pArrow.boundingBox();
+}
+
 Arrow *
 Arrow::clone() const {
   return new Arrow(*this);
@@ -669,10 +714,6 @@ Arrow::flushPostscript( std::ostream & stream,
   dy /= norm;
   dx *= 10*_lineWidth;
   dy *= 10*_lineWidth;
-
-  //   double back_x = 0.8 * dx + _x2;
-  //   double back_y = 0.8 * dy + _y2;
-
   double ndx1 = dx*cos(0.3)-dy*sin(0.3);
   double ndy1 = dx*sin(0.3)+dy*cos(0.3);
   double ndx2 = dx*cos(-0.3)-dy*sin(-0.3);
@@ -698,18 +739,8 @@ Arrow::flushPostscript( std::ostream & stream,
            << transform.mapY( _y2 ) << " l "
            << transform.mapX( _x2 ) + transform.scale( ndx2 ) << " "
            << transform.mapY( _y2 ) + transform.scale( ndy2 ) << " ";
-    stream  << "l cp " << _penColor.postscript() << " srgb  fill" << std::endl;
+    stream  << "l cp " << _fillColor.postscript() << " srgb  fill" << std::endl;
   }
-
-  stream << "n "
-         << transform.mapX( _x2 ) + transform.scale( ndx1 ) << " "
-         << transform.mapY( _y2 ) + transform.scale( ndy1 ) << " "
-         << "m "
-         << transform.mapX( _x2 ) << " "
-         << transform.mapY( _y2 ) << " l "
-         << transform.mapX( _x2 ) + transform.scale( ndx2 ) << " "
-         << transform.mapY( _y2 ) + transform.scale( ndy2 ) << " l"
-         << " " << _penColor.postscript() << " srgb cp [] 0 sd stroke" << std::endl;
 }
 
 void
@@ -725,7 +756,7 @@ Arrow::flushFIG( std::ostream & stream,
   // Pen color
   stream << colormap[ _penColor ] << " ";
   // Fill color
-  stream << colormap[ _penColor ] << " ";
+  stream << colormap[ _fillColor ] << " ";
   // Depth
   stream << transform.mapDepth( _depth ) << " ";
   // Pen style
@@ -756,10 +787,6 @@ Arrow::flushSVG( std::ostream & stream,
   dy /= norm;
   dx *= 10 * _lineWidth;
   dy *= 10 * _lineWidth;
-
-  //   double back_x = 0.8 * dx + _x2;
-  //   double back_y = 0.8 * dy + _y2;
-
   double ndx1 = dx*cos(0.3)-dy*sin(0.3);
   double ndy1 = dx*sin(0.3)+dy*cos(0.3);
   double ndx2 = dx*cos(-0.3)-dy*sin(-0.3);
@@ -773,15 +800,17 @@ Arrow::flushSVG( std::ostream & stream,
          << " " << transform.mapY( _y2 + ( dy * cos(0.3) ) ) << " z\""
          << " fill=\"none\" stroke=\"" << _penColor.svg() << "\""
          << _penColor.svgAlpha( " stroke" );
-  if ( _lineStyle != SolidStyle )
+
+  if ( _lineStyle != SolidStyle ) {
     stream << " style=\"" <<   xFigDashStylesSVG[ _lineStyle ] << '"';
+  }
   stream << " stroke-width=\"" << transform.mapWidth( _lineWidth ) << "mm\" />";
 
   // The arrow
   stream << " <polygon";
   stream << " fill=\"" << _fillColor.svg() << "\"";
-  stream << " stroke=\"" << _penColor.svg() << "\""
-         << " stroke-width=\"" << transform.mapWidth( /* 0.33 * */ _lineWidth ) << "mm\""
+  stream << " stroke=\"none\""
+         << " stroke-width=\"0mm\""
          << " style=\"stroke-linecap:butt;stroke-linejoin:miter\""
          << _fillColor.svgAlpha( " fill" )
          << _penColor.svgAlpha( " stroke" )
@@ -822,7 +851,7 @@ Ellipse::name() const
 }
 
 Point
-Ellipse::center() const {
+Ellipse::center(LineWidthFlag ) const {
   return _center;
 }
 
@@ -969,7 +998,7 @@ Ellipse::flushPostscript( std::ostream & stream,
     stream << " fill gr" << std::endl;
   }
 
-  if ( _penColor != Color::None ) {
+  if ( _penColor != Color::Null ) {
     stream << postscriptProperties(transform) << "\n";
     stream << "gs " << transform.mapX( _center.x ) << " " << transform.mapY( _center.y ) << " tr";
     if ( _angle != 0.0 ) stream << " " << (_angle*180/M_PI) << " rot ";
@@ -1044,30 +1073,31 @@ Ellipse::flushTikZ( std::ostream & stream,
 }
 
 Rect
-Ellipse::boundingBox() const
+Ellipse::boundingBox( LineWidthFlag lineWidthFlag ) const
 {
-  if ( _angle == 0.0 )
-    return Rect( _center.x - _xRadius,
-                 _center.y + _yRadius,
-                 2 * _xRadius,
-                 2 * _yRadius ).grow(0.5*_lineWidth);
-
-  double angleXmax = -atan( (_yRadius/_xRadius)*(tan(_angle) ) );
-  double angleXmin = -atan( (_yRadius/_xRadius)*(tan(_angle) ) ) + M_PI;
-  double angleYmax =  atan( (_yRadius/_xRadius)*(1/tan(_angle) ) );
-  double angleYmin =  M_PI + atan( (_yRadius/_xRadius)*(1/tan(_angle) ) );
-
-  if ( _angle < 0.0 ) {
-    angleYmax += M_PI;
-    angleYmin -= M_PI;
+  Rect box;
+  if ( _angle == 0.0 ) {
+    box = Rect( _center.x - _xRadius, _center.y + _yRadius, 2 * _xRadius, 2 * _yRadius );
+  } else {
+    double angleXmax = -atan( (_yRadius/_xRadius)*(tan(_angle) ) );
+    double angleXmin = -atan( (_yRadius/_xRadius)*(tan(_angle) ) ) + M_PI;
+    double angleYmax =  atan( (_yRadius/_xRadius)*(1/tan(_angle) ) );
+    double angleYmin =  M_PI + atan( (_yRadius/_xRadius)*(1/tan(_angle) ) );
+    if ( _angle < 0.0 ) {
+      angleYmax += M_PI;
+      angleYmin -= M_PI;
+    }
+    box = Rect( _center.x + _xRadius*cos(angleXmin)*cos(_angle) - _yRadius*sin(angleXmin)*sin(_angle),
+                _center.y + _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle),
+                ( _xRadius*cos(angleXmax)*cos(_angle) - _yRadius*sin(angleXmax)*sin(_angle) ) -
+                ( _xRadius*cos(angleXmin)*cos(_angle) - _yRadius*sin(angleXmin)*sin(_angle) ),
+                ( _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle) ) -
+                ( _xRadius*cos(angleYmin)*sin(_angle) + _yRadius*sin(angleYmin)*cos(_angle) ) );
   }
-  return Rect( _center.x + _xRadius*cos(angleXmin)*cos(_angle) - _yRadius*sin(angleXmin)*sin(_angle),
-               _center.y + _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle),
-               ( _xRadius*cos(angleXmax)*cos(_angle) - _yRadius*sin(angleXmax)*sin(_angle) ) -
-               ( _xRadius*cos(angleXmin)*cos(_angle) - _yRadius*sin(angleXmin)*sin(_angle) ),
-               ( _xRadius*cos(angleYmax)*sin(_angle) + _yRadius*sin(angleYmax)*cos(_angle) ) -
-               ( _xRadius*cos(angleYmin)*sin(_angle) + _yRadius*sin(angleYmin)*cos(_angle) ) )
-      .grow(0.5*_lineWidth);
+  if ( lineWidthFlag == UseLineWidth ) {
+    box.grow(0.5*_lineWidth);
+  }
+  return box;
 }
 
 /*
@@ -1083,7 +1113,7 @@ Circle::name() const
 }
 
 Point
-Circle::center() const {
+Circle::center(LineWidthFlag ) const {
   return _center;
 }
 
@@ -1221,11 +1251,6 @@ Polyline::operator<<( const Point & p )
   return *this;
 }
 
-Point
-Polyline::center() const {
-  return _path.center();
-}
-
 Polyline &
 Polyline::rotate( double angle, const Point & center )
 {
@@ -1317,7 +1342,7 @@ Polyline::flushPostscript( std::ostream & stream,
     stream << " " << postscriptProperties(transform);
     stream << " fill" << std::endl;
   }
-  if ( _penColor != Color::None ) {
+  if ( _penColor != Color::Null ) {
     stream << " " << postscriptProperties(transform) << "\n";
     stream << "n ";
     _path.flushPostscript( stream, transform );
@@ -1390,9 +1415,20 @@ Polyline::flushTikZ( std::ostream & stream,
 }
 
 Rect
-Polyline::boundingBox() const
+Polyline::boundingBox(LineWidthFlag lineWidthFlag) const
 {
-  return Tools::pathBoundingBox(_path,_lineWidth,_lineCap,_lineJoin);
+  switch (lineWidthFlag) {
+  case UseLineWidth:
+    return Tools::pathBoundingBox(_path,_lineWidth,_lineCap,_lineJoin);
+    break;
+  case IgnoreLineWidth:
+    return _path.boundingBox();
+    break;
+  default:
+    Tools::error << "LineWidthFlag incorrect value (" << lineWidthFlag << ")\n";
+    return Rect();
+    break;
+  }
 }
 
 /*
@@ -1573,7 +1609,7 @@ GouraudTriangle::GouraudTriangle( const Point & p0, const Color & color0,
                                   const Point & p2, const Color & color2,
                                   int subdivisions,
                                   int depth )
-  : Polyline( std::vector<Point>(), true, Color::None, Color::None,
+  : Polyline( std::vector<Point>(), true, Color::Null, Color::Null,
               0.0f, SolidStyle, ButtCap, MiterJoin, depth ),
     _color0( color0 ), _color1( color1 ), _color2( color2 ), _subdivisions( subdivisions ) {
   _path << p0;
@@ -1591,7 +1627,7 @@ GouraudTriangle::GouraudTriangle( const Point & p0, float brightness0,
                                   const Color & _fillColor,
                                   int subdivisions,
                                   int depth )
-  : Polyline( std::vector<Point>(), true, Color::None, Color::None,
+  : Polyline( std::vector<Point>(), true, Color::Null, Color::Null,
               0.0f, SolidStyle, ButtCap, MiterJoin, depth ),
     _color0( _fillColor ), _color1( _fillColor ), _color2( _fillColor ), _subdivisions( subdivisions )
 {
@@ -1611,11 +1647,6 @@ GouraudTriangle::GouraudTriangle( const Point & p0, float brightness0,
   Shape::_fillColor.red( ( _color0.red() + _color1.red() + _color2.red() ) / 3 );
   Shape::_fillColor.green( ( _color0.green() + _color1.green() + _color2.green() ) / 3 );
   Shape::_fillColor.blue( ( _color0.blue() + _color1.blue() + _color2.blue() ) / 3 );
-}
-
-Point
-GouraudTriangle::center() const {
-  return _path.center();
 }
 
 GouraudTriangle &
@@ -1710,7 +1741,7 @@ GouraudTriangle::flushFIG( std::ostream & stream,
   Color c( static_cast<unsigned char>((_color0.red() + _color1.red() + _color2.red() )/3.0),
            static_cast<unsigned char>((_color0.green() + _color1.green() + _color2.green())/3.0),
            static_cast<unsigned char>((_color0.blue() + _color1.blue() + _color2.blue())/3.0 ));
-  Polyline( _path, Color::None, c, 0.0f ).flushFIG( stream, transform, colormap );
+  Polyline( _path, Color::Null, c, 0.0f ).flushFIG( stream, transform, colormap );
 
   // if ( ! _subdivisions ) {
   // Polyline::flushFIG( stream, transform, colormap );
@@ -1833,13 +1864,32 @@ Text::Text( double x, double y,
             double size,
             Color color,
             int depth )
-  : Shape( color, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
+  : Shape( color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
     _text( text ), _font( font ),
     _size( size ),
     _xScale( 1.0 ), _yScale( 1.0 )
 {
   const double width = text.length() * size * 0.71;   // Why 0.71? Well, give it a try!
   _box << Point(x,y);
+  _box << _box[0] + Point(width,0);
+  _box << _box[0] + Point(width,size);
+  _box << _box[0] + Point(0,size);
+  _box.setClosed(true);
+}
+
+Text::Text(Point p,
+           const std::__cxx11::string & text,
+           const Fonts::Font font,
+           double size,
+           Color color,
+           int depth)
+  : Shape( color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
+    _text( text ), _font( font ),
+    _size( size ),
+    _xScale( 1.0 ), _yScale( 1.0 )
+{
+  const double width = text.length() * size * 0.71;   // Why 0.71? Well, give it a try!
+  _box << p;
   _box << _box[0] + Point(width,0);
   _box << _box[0] + Point(width,size);
   _box << _box[0] + Point(0,size);
@@ -1853,13 +1903,33 @@ Text::Text( double x, double y,
             double size,
             Color color,
             int depth )
-  : Shape( color, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
+  : Shape( color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
     _text( text ), _font( font ), _svgFont( svgFont ),
     _size( size ),
     _xScale( 1.0 ), _yScale( 1.0 )
 {
   const double width = text.length() * size * 0.71;   // Why 0.71? Well, give it a try!
   _box << Point(x,y);
+  _box << _box[0] + Point(width,0);
+  _box << _box[0] + Point(width,size);
+  _box << _box[0] + Point(0,size);
+  _box.setClosed(true);
+}
+
+Text::Text(Point p,
+           const std::string & text,
+           const Fonts::Font font,
+           const std::string & svgFont,
+           double size,
+           Color color,
+           int depth)
+  : Shape( color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
+    _text( text ), _font( font ), _svgFont( svgFont ),
+    _size( size ),
+    _xScale( 1.0 ), _yScale( 1.0 )
+{
+  const double width = text.length() * size * 0.71;   // Why 0.71? Well, give it a try!
+  _box << p;
   _box << _box[0] + Point(width,0);
   _box << _box[0] + Point(width,size);
   _box << _box[0] + Point(0,size);
@@ -1873,7 +1943,7 @@ Text::name() const
 }
 
 Point
-Text::center() const {
+Text::center(LineWidthFlag ) const {
   return _box.center();
 }
 
@@ -2136,7 +2206,7 @@ Text::flushTikZ( std::ostream & stream,
 }
 
 Rect
-Text::boundingBox() const
+Text::boundingBox( LineWidthFlag ) const
 {
   // TODO Get correct values!
   return _box.boundingBox();

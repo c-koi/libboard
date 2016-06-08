@@ -27,15 +27,17 @@ int main( int, char *[] )
                              0, 100, Color( 0, 255, 0 ),
                              -30, 130, Color( 0, 120, 255 ) );
   
-  board.saveEPS( "draw3.eps", 210, 297 );
-  board.saveEPS( "draw3_15x10.eps", 210, 297, 25 );
-  board.saveFIG( "draw3.fig" );
-  board.saveFIG( "draw3_A4.fig", Board::A4 );
-  board.saveSVG( "draw3.svg" );                   // Viewport == BoundingBox
-  board.saveSVG( "draw3_A4.svg", Board::A4, 50 ); // Centered on an A4 paper,
-                                                  // with a 50mm margin.
-  board.scale(10);                                // Scaled 10 times
-  board.saveSVG( "draw3_x10.svg" );               // Viewport == BoundingBox
+  board.saveEPS( "example3.eps", 210, 297 );
+  board.saveEPS( "example3_15x10.eps", 210, 297, 25 );
+  board.saveFIG( "example3.fig" );
+  board.saveFIG( "example3_A4.fig", Board::A4 );
 
-  exit(0);
+  // Viewport == BoundingBox
+  board.saveSVG( "example3.svg" );
+
+  // Centered on an A4 paper, with a 50mm margin.
+  board.saveSVG( "example3_A4.svg", Board::A4, 50 );
+
+  board.scale(10);
+  board.saveSVG( "example3_x10.svg" );
 }

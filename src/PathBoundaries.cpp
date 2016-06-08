@@ -242,6 +242,9 @@ pathBoundaryPoints(const Path & path,
                    Shape::LineJoin lineJoin,
                    double miterLimit)
 {
+  if ( strokeWidth == 0.0 ) {
+    return path.points();
+  }
   std::vector<Point> result;
   Path simplePath = path;
   if ( path.closed() ) {
@@ -352,6 +355,9 @@ pathBoundaryPoints(const Path & path,
 Rect
 pathBoundingBox(const Path & path, double strokeWidth, Shape::LineCap lineCap, Shape::LineJoin lineJoin, double miterLimit)
 {
+  if ( strokeWidth == 0.0 ) {
+    return path.boundingBox();
+  }
   std::vector<Point> v = pathBoundaryPoints(path,strokeWidth,lineCap,lineJoin,miterLimit);
   std::vector<Point>::iterator it = v.begin();
   if ( it == v.end() )

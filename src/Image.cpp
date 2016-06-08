@@ -42,9 +42,9 @@ const std::string LibBoard::Image::_name("Image");
 
 Image::Image(const char * filename,
              double left, double top, double width, double height, int depth)
-  : Shape(Color::None, Color::None, 0.0, SolidStyle, ButtCap, MiterJoin, depth),
-    _rectangle(left, top, width, height, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth ),
-    _originalRectangle(left, top, width, height, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth ),
+  : Shape(Color::Null, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth),
+    _rectangle(left, top, width, height, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth ),
+    _originalRectangle(left, top, width, height, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth ),
     _filename( filename )
 {
   if ( height == 0.0 ) {
@@ -53,7 +53,7 @@ Image::Image(const char * filename,
       Magick::Image image;
       image.read(_filename);
       height = width * (image.rows() / (double) image.columns());
-      _rectangle = _originalRectangle = Rectangle(left, top, width, height, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth);
+      _rectangle = _originalRectangle = Rectangle(left, top, width, height, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth);
     } catch (std::exception & e) {
       Tools::error << "Image::Image(): ";
       std::cerr << e.what() << std::endl;
@@ -66,9 +66,9 @@ Image::Image(const char * filename,
 
 Image::Image(const char * filename,
              const Rect & rect, int depth)
-  : Shape(Color::None, Color::None, 0.0, SolidStyle, ButtCap, MiterJoin, depth),
-    _rectangle(rect, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth ),
-    _originalRectangle(rect, Color::Black, Color::None, 0.1, SolidStyle, ButtCap, MiterJoin, depth ),
+  : Shape(Color::Null, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth),
+    _rectangle(rect, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth ),
+    _originalRectangle(rect, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth ),
     _filename( filename )
 {
 }
@@ -83,12 +83,6 @@ Image *
 Image::clone() const
 {
   return new Image(*this);
-}
-
-Point
-Image::center() const
-{
-  return _rectangle.center();
 }
 
 Shape &
@@ -140,6 +134,7 @@ Shape &
 Image::scale(double sx, double sy)
 {
   _rectangle.scale(sx,sy);
+
   Point currentCenter = _transformMatrixSVG * _originalRectangle.center();
   _transformMatrixSVG = TransformMatrix::scaling(sx,sy) * _transformMatrixSVG;
   Point newCenter = _transformMatrixSVG * _originalRectangle.center();
@@ -165,9 +160,9 @@ Image Image::scaled(double sx, double sy)
 }
 
 Rect
-Image::boundingBox() const
+Image::boundingBox(LineWidthFlag lineWidthFlag) const
 {
-  return _rectangle.boundingBox();
+  return _rectangle.boundingBox(IgnoreLineWidth);
 }
 
 void
@@ -187,21 +182,26 @@ Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) co
   const char * tmpFilename = Tools::temporaryFilename(".eps");
   image.write(tmpFilename);
   Rect rect = Tools::getEPSBoundingBox(tmpFilename);
-  double scaleX = (_originalRectangle.width() / rect.width);
-  double scaleY = (_originalRectangle.height() / rect.height);
-  TransformMatrix scaling = TransformMatrix::scaling(scaleX,scaleY);
-  Point scaledCenter = scaling * rect.center();
-  Point shift = _originalRectangle.center() - scaledCenter;
-  scaling += shift;
-  TransformMatrix fullTransform = _transformMatrixEPS * scaling;
+
+
+  double scaleX = transform.scale(_originalRectangle.width()) / rect.width;
+  double scaleY = transform.scale(_originalRectangle.height()) / rect.height;
+
+  TransformMatrix originalMoveAndScale = TransformMatrix::scaling(scaleX,scaleY) + _originalRectangle.bottomLeft();
 
   stream << "%\n";
   stream << "% Bitmap Image\n";
   stream << "%\n";
   stream <<  "%%BeginDocument: board_temporary.eps\n";
   stream << "gs\n";
-  Point tmShift = transform.map(_rectangle.topLeft()) - (_transformMatrixEPS*_originalRectangle.topLeft());
-  (fullTransform+tmShift).flushEPS(stream);
+
+  // TODO
+  //  stream << transform.mapX(_originalRectangle[0].x) << " " << transform.mapY(_originalRectangle[0].y) << " m\n";
+  //  stream << scaleX << " " << scaleY << " sc\n";
+
+  Point shift = transform.map(_rectangle.bottomLeft()) - (_transformMatrixEPS*_originalRectangle.bottomLeft());
+  ((_transformMatrixEPS+shift)*originalMoveAndScale).flushEPS(stream);
+
   stream << "\n";
   Tools::flushFile(tmpFilename,stream);
   std::remove(tmpFilename);
@@ -216,8 +216,8 @@ void
 Image::flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const
 {
   _rectangle.flushFIG( stream, transform, colormap );
-  Rect bbox = _rectangle.boundingBox();
-  Rectangle rectangle(bbox,Color::None,Color::None,0.0);
+  Rect bbox = _rectangle.boundingBox(UseLineWidth);
+  Rectangle rectangle(bbox,Color::Null,Color::Null,0.0);
   stream << "2 5 0 1 0 -1 " << transform.mapDepth(_depth) << " -1 -1 0.000 0 0 -1 0 0 5\n";
   stream << "\t0 " << _filename << "\n";
   stream << "\t";
@@ -236,12 +236,13 @@ Image::flushSVG(std::ostream & stream, const TransformSVG & transform) const
   static unsigned int imageId = 0;
   stream << "<image x=\"" << _originalRectangle[0].x << "\"";
   stream << " y=\"" << _originalRectangle[0].y << "\" ";
-  stream << " width=\"" << (_originalRectangle[1].x - _originalRectangle[0].x) << "\"";
-  stream << " height=\"" << ( _originalRectangle[0].y - _originalRectangle[3].y) << "\"";
+  stream << " width=\"" << transform.scale(_originalRectangle[1].x - _originalRectangle[0].x) << "\"";
+  stream << " height=\"" << transform.scale(_originalRectangle[0].y - _originalRectangle[3].y) << "\"";
+  stream << " preserveAspectRatio=\"none\"";
   stream << " id=\"image" << imageId++ << "\"";
-  if ( Tools::stringEndsWith(_filename.c_str(),".png") )
+  if ( Tools::stringEndsWith(_filename.c_str(),".png",Tools::CaseInsensitive) )
     stream << "\n     xlink:href=\"data:image/png;base64,";
-  else if ( Tools::stringEndsWith(_filename.c_str(),".jpg") || Tools::stringEndsWith(_filename.c_str(),".jpeg") )
+  else if ( Tools::stringEndsWith(_filename.c_str(),".jpg",Tools::CaseInsensitive) || Tools::stringEndsWith(_filename.c_str(),".jpeg",Tools::CaseInsensitive) )
     stream << "\n     xlink:href=\"data:image/jpeg;base64,";
   else {
     Tools::error << "Only png and jpeg image files may be included. SVG file will be corrupted.\n";

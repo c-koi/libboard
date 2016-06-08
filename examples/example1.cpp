@@ -34,7 +34,7 @@ int main( int, char *[] )
   Polyline p = board.last<Polyline>();
 
   board.setPenColor(Color::Black);
-  board.drawArrow( board.center(), board.boundingBox().topRight(), true );
+  board.drawArrow( board.center(), board.boundingBox(Board::UseLineWidth).topRight(), true );
 
   board.fillGouraudTriangle( -50, 0, Color( 255, 0, 0 ),
                              0, 0, Color( 0, 255, 0 ),
@@ -52,11 +52,10 @@ int main( int, char *[] )
                              75, 50, 0.1f );
 
   Board::disableLineWidthScaling();
-  board.saveEPS( "draw1.eps" );
-  board.saveFIG( "draw1.fig" );
-  board.saveSVG( "draw1.svg" );
-  board.saveEPS( "draw1_Letter.eps", Board::Letter );
-  board.saveFIG( "draw1_Letter.fig", Board::Letter );
-  board.saveSVG( "draw1_Letter.svg", Board::Letter );
-  exit(0);
+  board.saveEPS( "example1.eps" );
+  board.saveFIG( "example1.fig" );
+  board.saveSVG( "example1.svg" );
+  board.saveEPS( "example1_Letter.eps", Board::Letter );
+  board.saveFIG( "example1_Letter.fig", Board::Letter );
+  board.saveSVG( "example1_Letter.svg", Board::Letter );
 }

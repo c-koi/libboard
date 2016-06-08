@@ -82,15 +82,22 @@ base64encode( std::istream & in, std::ostream & out, int linesize )
   return true;
 }
 
-bool stringEndsWith(const char * str, const char * end)
+bool stringEndsWith(const char * str, const char * end, CaseSensitivity sensitivity )
 {
   size_t nstr = strlen(str);
   size_t nend = strlen(end);
   if ( nstr < nend )
     return false;
-  for ( size_t i = 1; i <= nend; ++i ) {
-    if ( toupper(str[nstr-i]) != toupper(end[nend-i]) )
-      return false;
+  if ( sensitivity == CaseSensitive ) {
+    for ( size_t i = 1; i <= nend; ++i ) {
+      if ( str[nstr-i] != end[nend-i] )
+        return false;
+    }
+  } else {
+    for ( size_t i = 1; i <= nend; ++i ) {
+      if (toupper(str[nstr-i]) != toupper(end[nend-i]) )
+        return false;
+    }
   }
   return true;
 }

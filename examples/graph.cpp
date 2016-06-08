@@ -70,8 +70,7 @@ int main( int , char *[] )
     ++i1;
   }
 
-  board.saveEPS( "tree.eps", 100, 100 );
-  board.saveFIG( "tree.fig", 100, 100 );
-  board.saveSVG( "tree.svg", 100, 100 );
-  exit(0);
+  board.saveEPS( "graph.eps", 100, 100 );
+  board.saveFIG( "graph.fig", 100, 100 );
+  board.saveSVG( "graph.svg" );
 }

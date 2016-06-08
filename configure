@@ -2,13 +2,14 @@
 CXX=${CXX-g++}
 PREFIX=/usr
 STATIC_LIB_ONLY=no
-VERSION=0.9.2
+VERSION=0.9.4
 NUMBER=
 DEBUG=
 ECHO=echo
 [ -f /usr/ucb/echo ] && ECHO=/usr/ucb/echo
 DOXYGEN=doxygen
 SANITIZE=""
+
 
 ##
 ## 1. ARGS
@@ -219,7 +220,10 @@ esac
 ${ECHO} $PLATEFORM
 
 ${ECHO} -n "Creating include/BoardConfig.h..."
-sed -e 's/@Board_Have_MagickPlusPlus@/'${MAGICKPLUSPLUS}'/' -e 's/@Board_Win32@/'${WIN32}'/' include/BoardConfig.h.in > include/BoardConfig.h
+sed -e 's/@Board_Have_MagickPlusPlus@/'${MAGICKPLUSPLUS}'/' \
+    -e 's/@Board_Win32@/'${WIN32}'/' \
+    -e 's/@LibBoard_VERSION@/'${VERSION}'/' \
+    include/BoardConfig.h.in  > include/BoardConfig.h
 ${ECHO} "done."
 
 ${ECHO} -n "Creating Makefile..."

@@ -2,7 +2,7 @@
 /**
  * @file   Shapes.h
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief
  * \@copyright
@@ -30,9 +30,9 @@
 #include "board/Rect.h"
 #include "board/Path.h"
 #include "board/Color.h"
-#include "board/Transforms.h"
 #include "board/PSFonts.h"
 #include "board/Tools.h"
+#include "board/Transforms.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -45,6 +45,10 @@
 
 #ifndef M_PI_2
 #define M_PI_2         1.57079632679489661923
+#endif
+
+#if __cplusplus<201100
+#define override
 #endif
 
 namespace LibBoard {
@@ -63,6 +67,8 @@ struct Shape {
                    DashDotStyle,
                    DashDotDotStyle,
                    DashDotDotDotStyle };
+
+  enum LineWidthFlag { IgnoreLineWidth, UseLineWidth };
 
   /**
    * Shape constructor.
@@ -103,14 +109,15 @@ struct Shape {
    *
    * @return true if the shape is filled.
    */
-  inline bool filled() const { return _fillColor != Color::None; }
+  inline bool filled() const { return _fillColor != Color::Null; }
   
   /**
    * Returns the center of the shape.
    *
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    * @return The center of the shape, i.e. the center of its bounding box.
    */
-  virtual Point center() const;
+  virtual Point center(LineWidthFlag lineWidthFlag = IgnoreLineWidth) const;
   
   /**
    * Rotate the shape around a given center of rotation.
@@ -166,19 +173,21 @@ struct Shape {
    *
    * @param x The new x coordinate of the center.
    * @param y The new y coordinate of the center.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    *
    * @return A reference to the shape itself.
    */
-  Shape & moveCenter( double x, double y );
+  Shape & moveCenter( double x, double y, LineWidthFlag lineWidthFlag = IgnoreLineWidth);
 
   /**
    * Move the center of the shape.
    *
    * @param p The new center.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    *
    * @return A reference to the shape itself.
    */
-  Shape & moveCenter( Point p );
+  Shape & moveCenter( Point p, LineWidthFlag lineWidthFlag = IgnoreLineWidth );
 
   /**
    * Scale the shape along the x an y axis.
@@ -204,14 +213,14 @@ struct Shape {
    *
    * @return The rectangle of the bounding box.
    */
-  virtual Rect boundingBox() const = 0;
+  virtual Rect boundingBox( LineWidthFlag ) const = 0;
 
   /**
    * Compute the bounding box of the figure. (Convenience method to call
    * "boundingBox" with a short name.)
    *
    */
-  inline Rect bbox() const;
+  inline Rect bbox( LineWidthFlag ) const;
   
   /**
    * Decrement the depth of the shape. (Pull the shape toward the foreground.)
@@ -414,9 +423,9 @@ struct Dot : public Shape {
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
   
-  Point center() const;
+  Point center(LineWidthFlag flage = IgnoreLineWidth) const override;
 
   /**
    * Rotates the dot around a given center of rotation.
@@ -426,7 +435,7 @@ struct Dot : public Shape {
    *
    * @return A reference to the Dot itself.
    */
-  Dot & rotate( double angle, const Point & center );
+  Dot & rotate( double angle, const Point & center ) override;
 
   /**
    * Returns a rotated copy of the dot around a given rotation center.
@@ -445,7 +454,7 @@ struct Dot : public Shape {
    *
    * @return A reference to the Dot itself.
    */
-  Dot & rotate( double angle );
+  Dot & rotate( double angle ) override;
 
   /**
    * Returns a copy of the dot rotated around its center (i.e. left unchanged!)
@@ -464,7 +473,7 @@ struct Dot : public Shape {
    *
    * @return A reference to the dot itself.
    */
-  Dot & translate( double dx, double dy );
+  Dot & translate( double dx, double dy ) override;
 
   /**
    * Returns a translated copy of the dot.
@@ -484,7 +493,7 @@ struct Dot : public Shape {
    *
    * @return A reference to the dot itself, once scaled.
    */
-  Dot & scale( double sx, double sy );
+  Dot & scale( double sx, double sy ) override;
 
   /**
    * Scale the dot, given a scaling factor.
@@ -493,7 +502,7 @@ struct Dot : public Shape {
    *
    * @return A reference to the dot itself, once scaled.
    */
-  Dot & scale( double s );
+  Dot & scale( double s ) override;
 
   /**
    * Returns a scaled copy of the dot, i.e. the dot itself.
@@ -524,24 +533,29 @@ struct Dot : public Shape {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll( double s ) override;
 
   void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+                        const TransformEPS & transform ) const override;
   
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+                 std::map<Color,int> & colormap ) const override;
 
   void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+                 const TransformSVG & transform ) const override;
 
   void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+                  const TransformTikZ & transform ) const override;
   
-  Rect boundingBox() const;
+  /**
+   * Returns the bounding box of the dot.
+   *
+   * @return The rectangle of the bounding box.
+   */
+  Rect boundingBox( LineWidthFlag ) const override;
 
-  Dot * clone() const;
+  Dot * clone() const override;
 
 private:
 
@@ -600,11 +614,9 @@ struct Line : public Shape {
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
 
-  Point center() const;
-
-  Line & rotate( double angle, const Point & center );
+  Line & rotate( double angle, const Point & center ) override;
 
   /**
    * Returns a copy of the line, rotated around a given rotation center.
@@ -616,7 +628,7 @@ struct Line : public Shape {
    */
   Line rotated( double angle, const Point & center ) const;
 
-  Line & rotate( double angle );
+  Line & rotate( double angle ) override;
 
   /**
    * Returns a copy of the line, rotated around its center.
@@ -636,7 +648,7 @@ struct Line : public Shape {
    *
    * @return A reference to the line itself.
    */
-  Line & translate( double dx, double dy );
+  Line & translate( double dx, double dy ) override;
 
   /**
    * Returns a translated copy of the line.
@@ -656,7 +668,7 @@ struct Line : public Shape {
    *
    * @return A reference to the line itself, once scaled.
    */
-  Line & scale( double sx, double sy );
+  Line & scale( double sx, double sy ) override;
 
   /**
    * Scale the line, given a scaling factor.
@@ -665,7 +677,7 @@ struct Line : public Shape {
    *
    * @return A reference to the line itself, once scaled.
    */
-  Line & scale( double s );
+  Line & scale( double s ) override;
 
   /**
    * Returns a scaled copy of the line.
@@ -692,24 +704,29 @@ struct Line : public Shape {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll( double s ) override;
+
+  /**
+   * Returns the bounding box of the line.
+   *
+   * @return The rectangle of the bounding box.
+   */
+  Rect boundingBox( LineWidthFlag ) const override;
+
+  Line * clone() const override;
 
   void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+                        const TransformEPS & transform ) const override;
   
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+                 std::map<Color,int> & colormap ) const override;
 
   void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+                 const TransformSVG & transform ) const override;
 
   void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
-
-  Rect boundingBox() const;
-
-  Line * clone() const;
+                  const TransformTikZ & transform ) const override;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
@@ -753,7 +770,7 @@ struct Arrow : public Line {
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
   
   /**
    * Returns a copy of the arrow, rotated around a given rotation center.
@@ -803,20 +820,27 @@ struct Arrow : public Line {
    */
   Arrow scaled( double s ) const;
 
+  /**
+   * Computes the bounding box of the arrow.
+   *
+   * @return The rectangle of the bounding box.
+   */
+  Rect boundingBox( LineWidthFlag ) const override;
+
   void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+                        const TransformEPS & transform ) const override;
   
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+                 std::map<Color,int> & colormap ) const override;
 
   void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+                 const TransformSVG & transform ) const override;
 
   void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+                  const TransformTikZ & transform ) const override;
 
-  Arrow * clone() const;
+  Arrow * clone() const override;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
@@ -861,9 +885,7 @@ struct Polyline : public Shape {
    *
    * @return
    */
-  const std::string & name() const;
-
-  Point center() const;
+  const std::string & name() const override;
 
   /**
    * Add a point to the polyline.
@@ -896,7 +918,7 @@ struct Polyline : public Shape {
     return _path[ n ];
   }
 
-  Polyline & rotate( double angle, const Point & center );
+  Polyline & rotate( double angle, const Point & center ) override;
 
   /**
    *
@@ -908,7 +930,7 @@ struct Polyline : public Shape {
    */
   Polyline rotated( double angle, const Point & center ) const;
 
-  Polyline & rotate( double angle );
+  Polyline & rotate( double angle ) override;
   
   /**
    *
@@ -927,7 +949,7 @@ struct Polyline : public Shape {
    *
    * @return A reference to the polyline itself.
    */
-  Polyline & translate( double dx, double dy );
+  Polyline & translate( double dx, double dy ) override;
   
   /**
    * Returns a translated copy of the polyline.
@@ -947,7 +969,7 @@ struct Polyline : public Shape {
    *
    * @return A reference to the polyline itself, once scaled.
    */
-  Polyline & scale( double sx, double sy );
+  Polyline & scale( double sx, double sy ) override;
 
   /**
    * Scale the polyline, given a scaling factor.
@@ -956,7 +978,7 @@ struct Polyline : public Shape {
    *
    * @return A reference to the polyline itself, once scaled.
    */
-  Polyline & scale( double s );
+  Polyline & scale( double s ) override;
   
   /**
    * Returns a scaled copy of the line.
@@ -983,24 +1005,24 @@ struct Polyline : public Shape {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll( double s ) override;
 
   void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+                        const TransformEPS & transform ) const override;
 
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+                 std::map<Color,int> & colormap ) const override;
 
   void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+                 const TransformSVG & transform ) const override;
 
   void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+                  const TransformTikZ & transform ) const override;
 
-  Rect boundingBox() const;
+  Rect boundingBox( LineWidthFlag ) const override;
 
-  Polyline * clone() const;
+  Polyline * clone() const override;
 
   inline std::size_t vertexCount() const;
 
@@ -1042,7 +1064,7 @@ struct Rectangle : public Polyline {
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
   double x() const { return _path[0].x; }
   double y() const { return _path[0].y; }
   double width() const { return (_path[1] - _path[0]).norm(); }
@@ -1106,19 +1128,19 @@ struct Rectangle : public Polyline {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll( double s ) override;
 
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+                 std::map<Color,int> & colormap ) const override;
 
   void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+                 const TransformSVG & transform ) const override;
 
   void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+                  const TransformTikZ & transform ) const override;
 
-  Rectangle * clone() const;
+  Rectangle * clone() const override;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
@@ -1169,7 +1191,7 @@ struct Triangle : public Polyline {
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
 
   Triangle rotated( double angle ) const;
 
@@ -1202,7 +1224,7 @@ struct Triangle : public Polyline {
    */
   Triangle scaled( double s ) const;
 
-  Triangle * clone() const;
+  Triangle * clone() const override;
   
 private:
   static const std::string _name; /**< The generic name of the shape. */
@@ -1236,15 +1258,13 @@ struct GouraudTriangle : public Polyline {
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
 
-  Point center() const;
-
-  GouraudTriangle & rotate( double angle, const Point & center );
+  GouraudTriangle & rotate( double angle, const Point & center ) override;
 
   GouraudTriangle rotated( double angle, const Point & center ) const;
 
-  GouraudTriangle & rotate( double angle );
+  GouraudTriangle & rotate( double angle ) override;
 
   GouraudTriangle rotated( double angle ) const;
 
@@ -1284,7 +1304,7 @@ struct GouraudTriangle : public Polyline {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll( double s ) override;
 
   /**
    * Sends the triangle to a Postscript document.
@@ -1293,7 +1313,7 @@ struct GouraudTriangle : public Polyline {
    * @param transform
    */
   void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+                        const TransformEPS & transform ) const override;
 
   /**
    * Sends the Triangle to a FIG file format stream.
@@ -1309,15 +1329,15 @@ struct GouraudTriangle : public Polyline {
    */
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+                 std::map<Color,int> & colormap ) const override;
 
   void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+                 const TransformSVG & transform ) const override;
 
   void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+                  const TransformTikZ & transform ) const override;
 
-  GouraudTriangle * clone() const;
+  GouraudTriangle * clone() const override;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
@@ -1372,11 +1392,11 @@ struct Ellipse : public Shape {
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
 
-  Point center() const;
+  Point center(LineWidthFlag lineWidthFlag = IgnoreLineWidth) const override;
 
-  Ellipse & rotate( double angle, const Point & center );
+  Ellipse & rotate( double angle, const Point & center ) override;
 
   /**
    *
@@ -1388,7 +1408,7 @@ struct Ellipse : public Shape {
    */
   Ellipse rotated( double angle, const Point & center ) const;
 
-  Ellipse & rotate( double angle );
+  Ellipse & rotate( double angle ) override;
 
   /**
    *
@@ -1407,7 +1427,7 @@ struct Ellipse : public Shape {
    *
    * @return A reference to the ellipse itself.
    */
-  Ellipse & translate( double dx, double dy );
+  Ellipse & translate( double dx, double dy ) override;
 
   /**
    * Returns a translated copy of the ellipse.
@@ -1427,7 +1447,7 @@ struct Ellipse : public Shape {
    *
    * @return A reference to the polyline itself, once scaled.
    */
-  Ellipse & scale( double sx, double sy );
+  Ellipse & scale( double sx, double sy ) override;
 
   /**
    * Scale the ellipse, given a scaling factor.
@@ -1436,7 +1456,7 @@ struct Ellipse : public Shape {
    *
    * @return A reference to the ellipse itself, once scaled.
    */
-  Ellipse & scale( double s );
+  Ellipse & scale( double s ) override;
 
   /**
    * Returns a scaled copy of the ellipse.
@@ -1463,24 +1483,24 @@ struct Ellipse : public Shape {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll( double s ) override;
 
   void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+                        const TransformEPS & transform ) const override;
 
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+                 std::map<Color,int> & colormap ) const override;
 
   void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+                 const TransformSVG & transform ) const override;
 
   void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+                  const TransformTikZ & transform ) const override;
 
-  Rect boundingBox() const;
+  Rect boundingBox( LineWidthFlag ) const override;
 
-  Ellipse * clone() const;
+  Ellipse * clone() const override;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
@@ -1522,15 +1542,15 @@ struct Circle : public Ellipse {
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
 
-  Point center() const;
+  Point center(LineWidthFlag lineWidthFlag = IgnoreLineWidth) const override;
 
-  Circle & rotate( double angle, const Point & center );
+  Circle & rotate( double angle, const Point & center ) override;
 
   Circle rotated( double angle, const Point & center ) const;
 
-  Circle & rotate( double angle );
+  Circle & rotate( double angle ) override;
 
   Circle rotated( double angle ) const;
   
@@ -1542,7 +1562,7 @@ struct Circle : public Ellipse {
    *
    * @return A reference to the circle itself.
    */
-  Circle & translate( double dx, double dy );
+  Circle & translate( double dx, double dy ) override;
 
   /**
    * Returns a translated copy of the circle.
@@ -1562,7 +1582,7 @@ struct Circle : public Ellipse {
    *
    * @return A reference to the circle itself, once scaled.
    */
-  Circle & scale( double sx, double sy );
+  Circle & scale( double sx, double sy ) override;
 
   /**
    * Scale the circle, given a scaling factor.
@@ -1571,7 +1591,7 @@ struct Circle : public Ellipse {
    *
    * @return A reference to the circle itself, once scaled.
    */
-  Circle & scale( double s );
+  Circle & scale( double s ) override;
 
   /**
    * Returns a scaled copy of the circle.
@@ -1598,15 +1618,15 @@ struct Circle : public Ellipse {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll( double s ) override;
 
   void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+                 const TransformSVG & transform ) const override;
 
   void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+                  const TransformTikZ & transform ) const override;
 
-  Circle * clone() const;
+  Circle * clone() const override;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
@@ -1621,8 +1641,8 @@ struct Text : public Shape {
   /**
    * Create a Text sctucture.
    *
-   * @param x
-   * @param y
+   * @param x x-coordinate of the bottom-left corner.
+   * @param y y-coordinate of the bottom-left corner.
    * @param text
    * @param font
    * @param size The font size expressed in 1/72 inches.
@@ -1637,12 +1657,31 @@ struct Text : public Shape {
         double size,
         Color color = Color::Black,
         int depth = -1 );
-  
+
   /**
    * Create a Text sctucture.
    *
-   * @param x
-   * @param y
+   * @param p Position of the bottom-left corner.
+   * @param text
+   * @param font
+   * @param size The font size expressed in 1/72 inches.
+   * @param color
+   * @param depth
+   *
+   * @return
+   */
+  Text( Point p,
+        const std::string & text,
+        const Fonts::Font font,
+        double size,
+        Color color = Color::Black,
+        int depth = -1 );
+
+  /**
+   * Create a Text sctucture.
+   *
+   * @param x x-coordinate of the bottom-left corner.
+   * @param y y-coordinate of the bottom-left corner.
    * @param text
    * @param font
    * @param svgFont The font family for an SVG file. (E.g. "Verdana, Arial" or "'Time New Roman', Serif" )
@@ -1661,19 +1700,40 @@ struct Text : public Shape {
         int depth = -1 );
 
   /**
+   * Create a Text sctucture.
+   *
+   * @param p Position of the bottom-left corner.
+   * @param text
+   * @param font
+   * @param svgFont The font family for an SVG file. (E.g. "Verdana, Arial" or "'Time New Roman', Serif" )
+   * @param size The font size expressed in 1/72 inches.
+   * @param color
+   * @param depth
+   *
+   * @return
+   */
+  Text( Point p,
+        const std::string & text,
+        const Fonts::Font font,
+        const std::string & svgFont,
+        double size,
+        Color color = Color::Black,
+        int depth = -1 );
+
+  /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
 
-  Point center() const;
+  Point center(LineWidthFlag lineWidthFlag = IgnoreLineWidth) const override;
 
-  Text & rotate( double angle, const Point & center );
+  Text & rotate( double angle, const Point & center ) override;
 
   Text rotated( double angle, const Point & center ) const;
 
-  Text & rotate( double angle );
+  Text & rotate( double angle ) override;
 
   Text rotated( double angle ) const;
   
@@ -1685,7 +1745,7 @@ struct Text : public Shape {
    *
    * @return A reference to the text itself.
    */
-  Text & translate( double dx, double dy );
+  Text & translate( double dx, double dy ) override;
 
   /**
    * Returns a translated copy of the text.
@@ -1705,7 +1765,7 @@ struct Text : public Shape {
    *
    * @return A reference to the text itself, once scaled.
    */
-  Text & scale( double sx, double sy );
+  Text & scale( double sx, double sy ) override;
 
   /**
    * Scale the text, given a scaling factor.
@@ -1714,7 +1774,7 @@ struct Text : public Shape {
    *
    * @return A reference to the text itself, once scaled.
    */
-  Text & scale( double s );
+  Text & scale( double s ) override;
 
   /**
    * Returns a scaled copy of the text.
@@ -1741,24 +1801,24 @@ struct Text : public Shape {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll( double s ) override;
 
   void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+                        const TransformEPS & transform ) const override;
 
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+                 std::map<Color,int> & colormap ) const override;
 
   void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+                 const TransformSVG & transform ) const override;
 
   void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+                  const TransformTikZ & transform ) const override;
 
-  Rect boundingBox() const;
+  Rect boundingBox( LineWidthFlag ) const override;
 
-  Text * clone() const;
+  Text * clone() const override;
 
 private:
 
@@ -1798,6 +1858,11 @@ bool shapeGreaterDepth( const Shape *s1, const Shape *s2 );
  * Inline methods
  */
 #include "Shapes.ih"
+
+
+#if __cplusplus<201100
+#undef override
+#endif
 
 
 #endif /* _SHAPE_H_ */

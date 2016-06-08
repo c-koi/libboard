@@ -2,7 +2,7 @@
 /**
  * @file   Point.cpp
  * @author Sebastien Fourey (GREYC)
- * @date   Dec. 2015
+ * @date   Dec 2015
  *
  * @brief
  * \@copyright

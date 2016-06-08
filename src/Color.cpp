@@ -2,7 +2,7 @@
 /**
  * @file   Color.cpp
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
+ * @date   Aug 2007
  *
  * @brief
  * \@copyright
@@ -31,7 +31,7 @@ using std::string;
 
 namespace LibBoard {
 
-const Color Color::None(false);
+const Color Color::Null(false);
 const Color Color::Black((unsigned char)0,(unsigned char)0,(unsigned char)0);
 const Color Color::Gray((unsigned char)128,(unsigned char)128,(unsigned char)128);
 const Color Color::White((unsigned char)255,(unsigned char)255,(unsigned char)255);
@@ -43,7 +43,7 @@ const Color Color::Cyan((unsigned char)0,(unsigned char)255,(unsigned char)255);
 const Color Color::Magenta((unsigned char)255,(unsigned char)0,(unsigned char)255);
 const Color Color::Yellow((unsigned char)255,(unsigned char)255,(unsigned char)0);
 const Color Color::Silver((unsigned char)190,(unsigned char)190,(unsigned char)190);
-const Color Color::Purple((unsigned char)128,(unsigned char)128,(unsigned char)128);
+const Color Color::Purple((unsigned char)160,(unsigned char)32,(unsigned char)240);
 const Color Color::Navy((unsigned char)0,(unsigned char)0,(unsigned char)128);
 const Color Color::Aqua((unsigned char)0,(unsigned char)255,(unsigned char)255);
 
@@ -123,7 +123,7 @@ string
 Color::svg() const
 {
   char buffer[255];
-  if ( *this == Color::None ) return "none";
+  if ( *this == Color::Null ) return "none";
   secured_sprintf( buffer, 255, "rgb(%d,%d,%d)", _red, _green, _blue );
   return buffer;
 }
@@ -132,7 +132,7 @@ string
 Color::svgAlpha( const char * prefix ) const
 {
   char buffer[255];
-  if ( _alpha == 255 || *this == Color::None ) return "";
+  if ( _alpha == 255 || *this == Color::Null ) return "";
   secured_sprintf( buffer, 255, " %s-opacity=\"%f\"", prefix, _alpha/255.0f );
   return buffer;
 }
@@ -142,7 +142,7 @@ Color::tikz() const
 {
   // see tex/generic/pgf/utilities/pgfutil-plain.def for color definitions
   char buffer[255];
-  if ( *this == Color::None ) return "none";
+  if ( *this == Color::Null ) return "none";
   if ( *this == Color::Black ) return "black";
   if ( *this == Color::Gray ) return "gray";
   if ( *this == Color::White ) return "white";
@@ -151,7 +151,7 @@ Color::tikz() const
   if ( *this == Color::Lime ) return "green";
   if ( *this == Color::Blue ) return "blue";
   if ( *this == Color::Silver ) return "white!75!black";
-  if ( *this == Color::Purple ) return "gray"; // ???: Is Color::Purple meant to be equal to Color::Gray?
+  if ( *this == Color::Purple ) return "{rgb,255:red,160;green,32;blue,240}";
   if ( *this == Color::Navy ) return "blue!50!black";
   secured_sprintf( buffer, 255, "{rgb,255:red,%d;green,%d;blue,%d}", _red, _green, _blue );
   return buffer;

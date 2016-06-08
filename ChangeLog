@@ -1,15 +1,24 @@
-2015-02-23  Sebastien Fourey  <http://www.greyc.ensicaen.fr>
+2016-06-08  Sebastien Fourey  <http://foureys.users.greyc.fr>
+
+        * All: Linewidths are now expressed using the same unit as
+	other lengths or sizes (no longer as "points").
+
+2015-02-23  Sebastien Fourey  <http://foureys.users.greyc.fr>
+
         * All: Replaced "unsigned int" by "std::size_std" where relevant.
         * Board: saveXXX overloaded to accept ostreams as parameters.
 
 2014-07-01 Sebastien Fourey <http://www.greyc.fr>
+
 	* All: Added bitmap images inclusion in SVG and EPS files
 	(partially in FIG files).
-	
+
 2011-11-29  Sebastien Fourey  <http://www.greyc.ensicaen.fr>
+
         * All: Added partial TIKZ support thanks to Nicolas Normand.
 
 2010-06-23  Sebastien Fourey  <http://www.greyc.ensicaen.fr>
+
 	* CMakeLists.txt has been a bit simplified with a FOREACH for examples.
 	* src/Shapes.cpp: Thanks to a fix provided by Freddie Exall, the
 	Ellipse::scale() method is now working properly.
@@ -83,5 +92,3 @@
 	package.
 
 # Version 0.8.0 Released August 24, 2007 (First release)
-
-

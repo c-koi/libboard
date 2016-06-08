@@ -35,7 +35,7 @@ int main( int, char *[] )
   board.drawLine( -50, -27, 50, -27 );
   board.addDuplicates( board.last(), 10, 0, -2 );
 
-  Point p = board.last<Line>().boundingBox().centerLeft();
+  Point p = board.last<Line>().boundingBox(Shape::IgnoreLineWidth).centerLeft();
   int n = 20;
   double angle = -M_PI/(2*n);
   while ( n-- ) 
@@ -46,18 +46,15 @@ int main( int, char *[] )
   while ( n-- ) 
     board << board.last<Line>().scaled( 0.95 ).rotated( angle, p );
 
-  double textHeight = board.last<Line>().boundingBox().height;
+  double textHeight = board.last<Line>().boundingBox(Shape::UseLineWidth).height;
   board << Text( -45, -20, "LibBoard",
                  Fonts::Helvetica,
                  "'Bookman Old Style',Verdana",
-                 textHeight * 1.5,
+                 textHeight * 1.2,
                  Color::Green );
 
-  std::cout << textHeight << std::endl;
-
   Shape::enableLineWidthScaling();
-  //board.saveEPS( "logo_A4.eps", Board::A4 );
+  board.saveEPS( "logo_A4.eps", Board::A4 );
   board.saveFIG( "logo_A4.fig", Board::A4  );
-  //board.saveSVG( "logo_A4.svg" /* -1, -1, 10 */);
-  exit(0);
+  board.saveSVG( "logo.svg" );
 }

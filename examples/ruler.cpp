@@ -21,61 +21,34 @@ using namespace LibBoard;
 int main( int , char *[] )
 {
   Board board;
-  board.clear( Color(200,200,255) );
-  board.setLineWidth(1);
+  board.clear(Color::White);
+  board.setLineWidth(0.01);
 
-  board << Board::UCentimeter;
   // board << Rectangle( 0, 27.7, 19, 27.7, Color::Black, Color::None, 0.1 );
 
-  Line tiny( 0, 0, 0.2, 0, Color::Black, 0.1 );
-  Line small( 0, 0, 0.5, 0, Color::Black, 0.1 );
-  Line large( 0, 0, 1.5, 0, Color::Black, 0.1 );
+  Line tiny( 0, 0, 0.2, 0, Color::Black, 0.01 );
+  Line small( 0.2, 0, 0.7, 0, Color::Black, 0.01 );
+  Line large( 0.7, 0, 1.5, 0, Color::Black, 0.01 );
 
   // Centimeters
-  
-  board.addDuplicates( small, 200, 0, 0.1 );
+  board.addDuplicates( small, 201, 0, 0.1 );
   board.addDuplicates( large, 21, 0, 1  );
-
-  board.drawText( 0, 21, "Centimeters" );
+  board.setFontSize(2);
+  board.drawText( board.last<Line>().boundingBox(Board::UseLineWidth).topRight(),
+                  "Centimeters" );
 
   // Inches
-
-  tiny.translate( 2, 0 );
-  small.translate( 2, 0 );
-  large.translate( 2, 0 );
-  board.addDuplicates( tiny, 40, 0, 2.54/4  );
-  board.addDuplicates( small, 20, 0, 2.54/2  );
+  tiny.translate( 15, 0 );
+  small.translate( 15, 0 );
+  large.translate( 15, 0 );
+  board.addDuplicates( tiny, 41, 0, 2.54/4  );
+  board.addDuplicates( small, 21, 0, 2.54/2  );
   board.addDuplicates( large, 11, 0, 2.54  );
 
-  board << Text( 2, 24, "Inches", Fonts::CourierBold, 12, Color::Red );
-  // Or : board.drawText( 2, 26, "Inches" );
-  board << Board::UPoint
-	<< Rectangle( board.last<Text>().boundingBox(), Color::Black, Color::None, 0.1 );
-
-  // Inches with a change of units
-
-  tiny.translate( 0.5, 0 );   // 0.5 inch right.
-  small.translate( 0.5, 0 );
-  large.translate( 0.5, 0 );
-
-  board << Board::UInche;
-  // Equivalent to :   board.setUnit( Board::UInche );
-  // Equivalent to :   board.setUnit( 1.0, Board::UInche );
-  // Equivalent to :   board.setUnit( 2.54, Board::Centimeter );
-  // Equivalent to :   board.setUnit( 254, Board::Millimeter );
-  // Etc.
-
-  board.addDuplicates( tiny, 40, 0, 0.25  );
-  board.addDuplicates( small, 20, 0, 0.5  );
-  board.addDuplicates( large, 11, 0, 1.0  );
-  
-  board << Board::UCentimeter 
-	<< Text( 6.5, 24, "Inches again", Fonts::PalatinoBold, 14, Color::Red );
-  board << Board::UPoint
-	<< Rectangle( board.last<Text>().boundingBox(), Color::Black, Color::None, 0.1 );
+  board << Text( board.last<Line>().boundingBox(Board::UseLineWidth).topRight(),
+                 "Inches", Fonts::CourierBold, 2, Color::Red );
 
   board.saveEPS( "ruler.eps" /*, Board::A4 */ );
   board.saveFIG( "ruler.fig" /*, Board::A4 */ );
-  board.saveSVG( "ruler.svg" /*, Board::A4 */ );
-  exit(0);
+  board.saveSVG( "ruler.svg" );
 }

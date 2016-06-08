@@ -30,7 +30,7 @@
 #endif
 
 ShapeList::ShapeList( int depth )
-  : Shape( Color::None, Color::None, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
+  : Shape( Color::Null, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth ),
     _nextDepth( std::numeric_limits<int>::max() - 1 )
 { }
 
