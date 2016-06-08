@@ -53,6 +53,8 @@
 
 namespace LibBoard {
 
+struct ShapeVisitor;
+
 /**
  * Shape structure.
  * @brief Abstract structure for a 2D shape.
@@ -84,7 +86,7 @@ struct Shape {
                 const LineCap cap,
                 const LineJoin join,
                 int depth );
-  
+
   /**
    * Shape destructor.
    */
@@ -103,14 +105,14 @@ struct Shape {
    * @return A copy of the shape.
    */
   virtual Shape * clone() const = 0;
-  
+
   /**
    * Checks whether a shape is filled with a color or not.
    *
    * @return true if the shape is filled.
    */
   inline bool filled() const { return _fillColor != Color::Null; }
-  
+
   /**
    * Returns the center of the shape.
    *
@@ -118,7 +120,7 @@ struct Shape {
    * @return The center of the shape, i.e. the center of its bounding box.
    */
   virtual Point center(LineWidthFlag lineWidthFlag = IgnoreLineWidth) const;
-  
+
   /**
    * Rotate the shape around a given center of rotation.
    *
@@ -147,7 +149,7 @@ struct Shape {
    * @return A reference to the shape itself.
    */
   inline Shape & rotateDeg( double angle, const Point & center );
-  
+
   /**
    * Rotate the shape around its center.
    *
@@ -209,6 +211,26 @@ struct Shape {
   virtual Shape & scale( double s ) = 0;
 
   /**
+   * Scale the shape to a given width.
+   *
+   * @param w The requested new width.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   *
+   * @return The shape itself.
+   */
+  Shape & scaleToWidth( double w, LineWidthFlag lineWidthFlag );
+
+  /**
+   * Scale the shape to a given height.
+   *
+   * @param h The requested new height.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   *
+   * @return The shape itself.
+   */
+  Shape & scaleToHeight( double h, LineWidthFlag lineWidthFlag );
+
+  /**
    * Compute the bounding box of the figure.
    *
    * @return The rectangle of the bounding box.
@@ -221,7 +243,7 @@ struct Shape {
    *
    */
   inline Rect bbox( LineWidthFlag ) const;
-  
+
   /**
    * Decrement the depth of the shape. (Pull the shape toward the foreground.)
    *
@@ -304,7 +326,7 @@ struct Shape {
   virtual void depth( int );
 
   virtual void shiftDepth( int shift );
-  
+
   inline const Color & penColor() const;
 
   inline const Color & fillColor() const;
@@ -352,6 +374,22 @@ struct Shape {
    */
   static Shape::LineJoin defaultLineJoin();
 
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept( ShapeVisitor & visitor );
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept( const ShapeVisitor & visitor );
+
+
+
 private:
 
   static const std::string _name;       /**< The generic name of the shape. */
@@ -386,7 +424,7 @@ protected:
    */
   std::string svgProperties( const TransformSVG & transform ) const;
 
-  
+
   /**
    * Return a string of the properties lineWidth, penColor, lineCap, and lineJoin
    * as Postscript commands.
@@ -411,11 +449,11 @@ protected:
  *
  * @brief A line between two points.
  */
-struct Dot : public Shape { 
-  
+struct Dot : public Shape {
+
   inline Dot( double x, double y,
               Color color,
-              double lineWidth,
+              double lineWidth = Shape::defaultLineWidth(),
               int depth = -1 );
 
   /**
@@ -424,7 +462,7 @@ struct Dot : public Shape {
    * @return
    */
   const std::string & name() const override;
-  
+
   Point center(LineWidthFlag flage = IgnoreLineWidth) const override;
 
   /**
@@ -537,7 +575,7 @@ struct Dot : public Shape {
 
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const override;
-  
+
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
                  std::map<Color,int> & colormap ) const override;
@@ -547,7 +585,7 @@ struct Dot : public Shape {
 
   void flushTikZ( std::ostream & stream,
                   const TransformTikZ & transform ) const override;
-  
+
   /**
    * Returns the bounding box of the dot.
    *
@@ -570,8 +608,8 @@ protected:
  * The line structure.
  * @brief A line between two points.
  */
-struct Line : public Shape { 
-  
+struct Line : public Shape {
+
   /**
    * Constructs a line.
    *
@@ -697,7 +735,7 @@ struct Line : public Shape {
    * @return A scaled copy of the line.
    */
   Line scaled( double s ) const;
-  
+
   /**
    * Scales all the values (positions, dimensions, etc.) associated
    * with the shape.
@@ -717,7 +755,7 @@ struct Line : public Shape {
 
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const override;
-  
+
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
                  std::map<Color,int> & colormap ) const override;
@@ -742,7 +780,7 @@ protected:
  * The arrow structure.
  * @brief A line between two points with an arrow at one extremity.
  */
-struct Arrow : public Line { 
+struct Arrow : public Line {
 
   /**
    * Constructs an arrow.
@@ -771,7 +809,7 @@ struct Arrow : public Line {
    * @return
    */
   const std::string & name() const override;
-  
+
   /**
    * Returns a copy of the arrow, rotated around a given rotation center.
    *
@@ -781,7 +819,7 @@ struct Arrow : public Line {
    * @return The rotated copy of the line.
    */
   Arrow rotated( double angle, const Point & center ) const;
-  
+
   /**
    * Returns a copy of the arrow, rotated around its center.
    *
@@ -829,7 +867,7 @@ struct Arrow : public Line {
 
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const override;
-  
+
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
                  std::map<Color,int> & colormap ) const override;
@@ -931,7 +969,7 @@ struct Polyline : public Shape {
   Polyline rotated( double angle, const Point & center ) const;
 
   Polyline & rotate( double angle ) override;
-  
+
   /**
    *
    *
@@ -950,7 +988,7 @@ struct Polyline : public Shape {
    * @return A reference to the polyline itself.
    */
   Polyline & translate( double dx, double dy ) override;
-  
+
   /**
    * Returns a translated copy of the polyline.
    *
@@ -979,7 +1017,7 @@ struct Polyline : public Shape {
    * @return A reference to the polyline itself, once scaled.
    */
   Polyline & scale( double s ) override;
-  
+
   /**
    * Returns a scaled copy of the line.
    *
@@ -1083,7 +1121,7 @@ struct Rectangle : public Polyline {
    * @return The rotated copy of the line.
    */
   Rectangle rotated( double angle, const Point & center )  const;
-  
+
   /**
    * Returns a copy of the arrow, rotated around its center.
    *
@@ -1225,7 +1263,7 @@ struct Triangle : public Polyline {
   Triangle scaled( double s ) const;
 
   Triangle * clone() const override;
-  
+
 private:
   static const std::string _name; /**< The generic name of the shape. */
 
@@ -1354,7 +1392,7 @@ protected:
  * @brief An ellipse.
  */
 struct Ellipse : public Shape {
-  
+
   Ellipse( double x, double y,
            double xRadius, double yRadius,
            Color penColor = Shape::defaultPenColor(),
@@ -1418,7 +1456,7 @@ struct Ellipse : public Shape {
    * @return
    */
   Ellipse rotated( double angle ) const;
-  
+
   /**
    * Translate the ellipse by a given offset.
    *
@@ -1476,7 +1514,7 @@ struct Ellipse : public Shape {
    * @return A scaled copy of the ellipse.
    */
   Ellipse scaled( double s ) const;
-  
+
   /**
    * Scales all the values (positions, dimensions, etc.) associated
    * with the shape.
@@ -1553,7 +1591,7 @@ struct Circle : public Ellipse {
   Circle & rotate( double angle ) override;
 
   Circle rotated( double angle ) const;
-  
+
   /**
    * Translate the circle by a given offset.
    *
@@ -1637,7 +1675,7 @@ private:
  * @brief A piece of text.
  */
 struct Text : public Shape {
-  
+
   /**
    * Create a Text sctucture.
    *
@@ -1736,7 +1774,7 @@ struct Text : public Shape {
   Text & rotate( double angle ) override;
 
   Text rotated( double angle ) const;
-  
+
   /**
    * Translate the text by a given offset.
    *
@@ -1794,7 +1832,7 @@ struct Text : public Shape {
    * @return A scaled copy of the text.
    */
   Text scaled( double s ) const;
-  
+
   /**
    * Scales all the values (positions, dimensions, etc.) associated
    * with the shape.
@@ -1841,7 +1879,7 @@ protected:
   Path _box;           // Rectangle around the text
 };
 
-/** 
+/**
  * Compares two shapes according to their depths.
  *
  * @param s1 A pointer to a first shape.
@@ -1859,11 +1897,9 @@ bool shapeGreaterDepth( const Shape *s1, const Shape *s2 );
  */
 #include "Shapes.ih"
 
-
 #if __cplusplus<201100
 #undef override
 #endif
 
 
 #endif /* _SHAPE_H_ */
-

@@ -1,8 +1,8 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   Point.cpp
+ * @file   ShapeVisitor.h
  * @author Sebastien Fourey (GREYC)
- * @date   Dec 2015
+ * @date   June 2016
  *
  * @brief
  * \@copyright
@@ -23,23 +23,46 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Point.h"
-#include <limits>
+#ifndef _BOARD_SHAPE_VISITOR_H_
+#define _BOARD_SHAPE_VISITOR_H_
+
+#if __cplusplus<201100
+#define override
+#endif
+
 
 namespace LibBoard {
-Point Point::Infinity( std::numeric_limits<double>::infinity(),
-                       std::numeric_limits<double>::infinity());
 
-std::ostream &
-operator<<( std::ostream & out, const std::vector<Point> & v ) {
-  std::vector<Point>::const_iterator it = v.begin();
-  if ( it != v.end() ) {
-    out << (*it++);
-  }
-  while ( it != v.end() ) {
-    out << "," << (*it++);
-  }
-  return out;
+  struct Shape;
+  struct ShapeList;
+  struct Board;
+
+  struct ShapeVisitor {
+    virtual void visit( Shape & shape ) = 0;
+    virtual void visit( Shape & shape ) const = 0;
+  };
+
+  struct BoundingBoxExtractor : public ShapeVisitor {
+    BoundingBoxExtractor( ShapeList & );
+    void visit( Shape & ) override;
+    void visit( Shape & ) const override;
+    const ShapeList & shapeList() const;
+  private:
+    ShapeList & _shapeList;
+  };
+
+  struct BoundingBoxViewer : public ShapeVisitor {
+    void visit( Shape & ) override;
+    void visit( Shape & ) const override;
+  };
+
+
 }
 
-}
+
+#if __cplusplus<201100
+#undef override
+#endif
+
+
+#endif /* _BOARD_SHAPE_VISITOR_H_ */

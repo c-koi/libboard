@@ -145,7 +145,8 @@ exteriorRoundIntersection(Point p1, Point p2, Point p3,
 
   if ( ( angleFirst >=0 && angleSecond >= 0 && angleFirst >= angleSecond )
        || (angleFirst <= 0 && angleSecond <= 0 && angleFirst >= angleSecond)
-       || (angleFirst < 0 && angleSecond > 0 ) )
+       || (angleFirst < 0 && angleSecond >= 0 )
+       || (angleFirst <= 0 && angleSecond > 0 ))
   {
     result.push_back(p2 + Point(0.5*strokeWidth,0));
   }
@@ -156,7 +157,8 @@ exteriorRoundIntersection(Point p1, Point p2, Point p3,
   if ( angleSecond < -M_PI) angleSecond += 2 * M_PI;
   if ( (angleFirst >= 0 && angleSecond >= 0 && angleFirst >= angleSecond)
        || (angleFirst <= 0 && angleSecond <= 0 && angleFirst >= angleSecond)
-       || (angleFirst < 0 && angleSecond > 0 ) )
+       || (angleFirst < 0 && angleSecond >= 0 )
+       || (angleFirst <= 0 && angleSecond > 0 ))
   {
     result.push_back(p2 + Point(0,0.5*strokeWidth));
   }
@@ -167,7 +169,8 @@ exteriorRoundIntersection(Point p1, Point p2, Point p3,
   if ( angleSecond < -M_PI) angleSecond += 2 * M_PI;
   if ( (angleFirst >= 0 && angleSecond >= 0 && angleFirst >= angleSecond)
        || (angleFirst <= 0 && angleSecond <= 0 && angleFirst >= angleSecond)
-       || (angleFirst < 0 && angleSecond > 0 ) )
+       || (angleFirst < 0 && angleSecond >= 0 )
+       || (angleFirst <= 0 && angleSecond > 0 ))
   {
     result.push_back(p2 + Point(-0.5*strokeWidth,0));
   }
@@ -179,7 +182,8 @@ exteriorRoundIntersection(Point p1, Point p2, Point p3,
   if ( angleSecond < -M_PI) angleSecond += 2 * M_PI;
   if ( (angleFirst >= 0 && angleSecond >= 0 && angleFirst >= angleSecond)
        || (angleFirst <= 0 && angleSecond <= 0 && angleFirst >= angleSecond)
-       || (angleFirst < 0 && angleSecond > 0 ) )
+       || (angleFirst < 0 && angleSecond >= 0 )
+       || (angleFirst <= 0 && angleSecond > 0 ))
   {
     result.push_back(p2 + Point(0,-0.5*strokeWidth));
   }
@@ -256,7 +260,6 @@ pathBoundaryPoints(const Path & path,
     result.push_back(simplePath[0]);
     return result;
   }
-
   size_t limit = path.closed() ? simplePath.size() : (simplePath.size()-2);
   for ( size_t i = 0; i < limit; ++i ) {
     Point p0 = simplePath[i];
@@ -301,6 +304,7 @@ pathBoundaryPoints(const Path & path,
       break;
     }
   }
+
 
   // Extremities if not closed
   if ( ! path.closed() ) {
@@ -360,8 +364,9 @@ pathBoundingBox(const Path & path, double strokeWidth, Shape::LineCap lineCap, S
   }
   std::vector<Point> v = pathBoundaryPoints(path,strokeWidth,lineCap,lineJoin,miterLimit);
   std::vector<Point>::iterator it = v.begin();
-  if ( it == v.end() )
+  if ( it == v.end() ) {
     return Rect();
+  }
   Rect result(*it);
   while (it != v.end()) {
     result.growToContain(*it++);

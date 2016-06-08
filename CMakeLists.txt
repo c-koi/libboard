@@ -114,6 +114,7 @@ SET(lib_src
   src/Shapes.cpp
   src/Image.cpp
   src/ShapeList.cpp
+  src/ShapeVisitor.cpp
   src/Transforms.cpp
   src/TransformMatrix.cpp
   src/Tools.cpp
@@ -129,6 +130,7 @@ SET(lib_src
   include/board/Point.h
   include/board/Rect.h
   include/board/ShapeList.h
+  include/board/ShapeVisitor.h
   include/board/Shapes.h
   include/board/Tools.h
   include/board/PathBoundaries.h

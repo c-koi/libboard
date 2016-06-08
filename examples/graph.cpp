@@ -72,5 +72,7 @@ int main( int , char *[] )
 
   board.saveEPS( "graph.eps", 100, 100 );
   board.saveFIG( "graph.fig", 100, 100 );
-  board.saveSVG( "graph.svg" );
+
+  board.scaleToWidth(25,Board::UseLineWidth);
+  board.saveSVG( "graph.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

@@ -145,7 +145,12 @@ Arrow::Arrow( double x1, double y1, double x2, double y2,
               int depth )
    : Line( x1, y1, x2, y2, penColor, lineWidth, style, cap, join, depth )
 {
-   Shape::_fillColor = fillColor;
+
+   if ( fillColor == Color::Null ) {
+      Shape::_fillColor = penColor;
+   } else {
+      Shape::_fillColor = fillColor;
+   }
 }
 
 Polyline::Polyline( const std::vector<Point> & points, 
@@ -195,7 +200,6 @@ Polyline::path() const
 {
   return _path;
 }
-
 
 Rectangle::Rectangle( double left, double top, double width, double height,
                       Color penColor, Color fillColor,

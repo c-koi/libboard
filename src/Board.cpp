@@ -157,25 +157,33 @@ Board::translate( double dx, double dy )
 Board &
 Board::scale( double sx, double sy )
 {
-  Point delta = _clippingPath.center() - center();
-  delta.x *= sx;
-  delta.y *= sy;
-  _clippingPath.scale( sx, sy );
-  ShapeList::scale( sx, sy );
-  delta = ( center() + delta ) - _clippingPath.center();
-  _clippingPath.translate( delta.x, delta.y );
+  if ( _clippingPath.size() ) {
+    Point delta = _clippingPath.center() - center();
+    delta.x *= sx;
+    delta.y *= sy;
+    _clippingPath.scale( sx, sy );
+    ShapeList::scale( sx, sy );
+    delta = ( center() + delta ) - _clippingPath.center();
+    _clippingPath.translate( delta.x, delta.y );
+  } else {
+    ShapeList::scale( sx, sy );
+  }
   return (*this);
 }
 
 Board &
 Board::scale( double s )
 {
-  Point delta = _clippingPath.center() - center();
-  delta *= s;
-  _clippingPath.scale( s );
-  ShapeList::scale( s );
-  delta = ( center() + delta ) - _clippingPath.center();
-  _clippingPath.translate( delta.x, delta.y );
+  if ( _clippingPath.size() ) {
+    Point delta = _clippingPath.center() - center();
+    delta *= s;
+    _clippingPath.scale( s );
+    ShapeList::scale( s );
+    delta = ( center() + delta ) - _clippingPath.center();
+    _clippingPath.translate( delta.x, delta.y );
+  } else {
+    ShapeList::scale( s );
+  }
   return (*this);
 }
 
@@ -808,7 +816,6 @@ Board::saveEPS( std::ostream & out, double pageWidth, double pageHeight, double 
     Tools::secured_ctime( str_time, &t, 255 );
     out << "%%CreationDate: " << str_time;
   }
-
 
   Rect bbox = boundingBox(UseLineWidth);
   bool clipping = _clippingPath.size() > 2;

@@ -57,5 +57,7 @@ int main( int , char *[] )
 
   board.saveFIG( "koch.fig", 200, 200 );
   board.saveEPS( "koch.eps", Board::A4 );
-  board.saveSVG( "koch.svg" );
+
+  board.scaleToWidth(25,Board::UseLineWidth);
+  board.saveSVG( "koch.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

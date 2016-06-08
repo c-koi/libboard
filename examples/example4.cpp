@@ -21,19 +21,21 @@ int main( int , char *[] )
   Board board;
   board.clear( Color(200,255,200) );
 
+  board.setLineWidth(0.01);            // For Board drawing methods.
+  Shape::setDefaultLineWidth(0.02);    // For all Shapes constructors.
+
   for ( double x = -20.0; x <= 20; x+= 1.0 )
     for ( double y = -20.0; y <= 20; y+= 1.0 ) {
-      board << Dot(x,y,Color::Black,1.0);
+      board << Dot(x, y, Color::Black );
       board.setPenColorRGBf( 1.0, 0.0, 0.0 );
       board.drawDot( x+0.2, y+0.2 );
     }
   
-
   Group g;
-  g << Line( -5, 2, 5, 2, Color::Red, 1 )
-    << Rectangle( -5, 2, 1, 4, Color::Null, Color::Blue, 1 )
-    << Rectangle( 4, 2, 1, 4, Color::Null, Color::Blue, 1 )
-    << Ellipse( 0, 0, 5, 2, Color::Red, Color::Null, 1 );
+  g << Line( -5, 2, 5, 2, Color::Red )
+    << Rectangle( -5, 2, 1, 4, Color::Null, Color::Blue )
+    << Rectangle( 4, 2, 1, 4, Color::Null, Color::Blue )
+    << Ellipse( 0, 0, 5, 2, Color::Red, Color::Null );
 
   Group g2(g);
   Group g3(g);
@@ -42,11 +44,11 @@ int main( int , char *[] )
 
   Group f;
   f << g << g2 << g3;
-
-  board << f.rotateDeg( 45.0 );
+  f.rotateDeg( 45.0 );
+  board << f;
 
   ShapeList l;
-  Circle c( 2, 5, 1.8, Color::Red, Color::Green, 0.02 );
+  Circle c( 2, 5, 1.8, Color::Red, Color::Green );
   for ( int i = 0; i < 5; ++i ) {
     l << c.scale( 1, 0.5 );
   }
@@ -56,16 +58,16 @@ int main( int , char *[] )
 
   g.clear();
 
-  Rectangle r1( 2, 2, 3, 1, Color::Black, Color::Null, 0.01 );
+  Rectangle r1( 2, 2, 3, 1, Color::Black, Color::Null );
   Rectangle r2 = r1.translated( -8, -8 );
   for ( double alpha = 0; alpha < 2*M_PI; alpha += 0.2 ) {
     g << r1.rotated( alpha );
     board << r2.rotated( alpha, r2.topLeft() );
   }
-  board << g.scale( 1.5, 1 );
-  board.scale(10);
 
   board.saveEPS( "example4.eps", Board::A4 );
   board.saveFIG( "example4.fig", Board::A4 );
-  board.saveSVG( "example4.svg", Board::A4 );
+
+  board.scaleToWidth(10,Board::UseLineWidth);
+  board.saveSVG( "example4.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

@@ -79,5 +79,7 @@ int main( int , char *[] )
   // board.saveEPS( "arrows_A4.eps", Board::A4, 2.0, Board::UCentimeter );
   // board.saveSVG( "arrows_A4.svg", Board::A4 );
   // board.saveFIG( "arrows.fig" );
+
+  board.scaleToWidth(20,Board::UseLineWidth);
   board.saveSVG( "arrows.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
 }

@@ -30,6 +30,10 @@
 #include "board/Shapes.h"
 #include "board/Tools.h"
 
+#if __cplusplus<201100
+#define override
+#endif
+
 namespace LibBoard {
 
 struct Group;
@@ -261,6 +265,20 @@ struct ShapeList : public Shape {
    */
   Shape & top();
 
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept( ShapeVisitor & visitor );
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept( const ShapeVisitor & visitor );
+
 private:
 
   static const std::string _name; /**< The generic name of the shape. */
@@ -373,8 +391,13 @@ private:
 
 #include "ShapeList.ih"
 
-
 } // namespace LibBoard
+
+
+#if __cplusplus<201100
+#undef override
+#endif
+
 
 #endif /* _SHAPELIST_H_ */
 

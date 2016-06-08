@@ -593,6 +593,25 @@ ShapeList::top()
   return last<Shape>( 0 );
 }
 
+void
+ShapeList::accept(ShapeVisitor & visitor)
+{
+  std::vector< Shape* >::const_iterator i = _shapes.begin();
+  std::vector< Shape* >::const_iterator end = _shapes.end();
+  while ( i != end ) {
+    (*i++)->accept( visitor );
+  }
+}
+
+void
+ShapeList::accept(const ShapeVisitor & visitor)
+{
+  std::vector< Shape* >::const_iterator i = _shapes.begin();
+  std::vector< Shape* >::const_iterator end = _shapes.end();
+  while ( i != end ) {
+    (*i++)->accept( visitor );
+  }
+}
 
 //
 // Definition of the Group methods.

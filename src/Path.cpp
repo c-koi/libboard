@@ -308,4 +308,12 @@ std::vector<Point> Path::points() const
   return _points;
 }
 
+std::ostream &
+operator<<( std::ostream & out, const Path & path )
+{
+  return out << "Path(" << path.points() << ")";
+}
+
+
+
 } // namespace LibBoard

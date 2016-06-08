@@ -29,6 +29,7 @@
 #include "board/PathBoundaries.h"
 #include "board/PSFonts.h"
 #include "board/Transforms.h"
+#include "board/ShapeVisitor.h"
 #include <cmath>
 #include <cstring>
 #include <vector>
@@ -73,7 +74,7 @@ namespace LibBoard {
 
 extern const char * XFigPostscriptFontnames[];
 
-bool Shape::_lineWidthScaling = false;
+bool Shape::_lineWidthScaling = true;
 double Shape::_defaultLineWidth = 1.0;
 Color Shape::_defaultPenColor = Color::Black;
 Color Shape::_defaultFillColor = Color::Null;
@@ -115,6 +116,22 @@ Shape::moveCenter(Point p, LineWidthFlag lineWidthFlag)
 {
   Point c = center(lineWidthFlag);
   translate(p.x-c.x,p.y-c.y);
+  return *this;
+}
+
+Shape &
+Shape::scaleToWidth(double w, Shape::LineWidthFlag lineWidthFlag)
+{
+  double factor = w / boundingBox(lineWidthFlag).width;
+  scale(factor);
+  return *this;
+}
+
+Shape &
+Shape::scaleToHeight(double h, Shape::LineWidthFlag lineWidthFlag)
+{
+  double factor = h / boundingBox(lineWidthFlag).height;
+  scale(factor);
   return *this;
 }
 
@@ -254,6 +271,18 @@ Shape::defaultLineCap()
 Shape::LineJoin
 Shape::defaultLineJoin()
 { return _defaultLineJoin; }
+
+void
+Shape::accept(ShapeVisitor & visitor)
+{
+  visitor.visit(*this);
+}
+
+void
+Shape::accept(const ShapeVisitor & visitor)
+{
+  visitor.visit(*this);
+}
 
 /*
  * Dot

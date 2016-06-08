@@ -25,7 +25,6 @@ ShapeList strikeOut( const Path & path,
                      double miterLimit = 4.0 )
 {
   const double s = 1.0;
-
   ShapeList list;
   std::vector<Point> e = Tools::pathBoundaryPoints(path,strokeWidth,lineCap, lineJoin, miterLimit );
   size_t limit = (path.closed()?path.size():(path.size()-1));
@@ -34,23 +33,23 @@ ShapeList strikeOut( const Path & path,
     Point b = path[(i+1)%path.size()];
     Point v = b-a;
     Point shift  = 0.5 * strokeWidth * v.rotatedPI2().normalise();
-    list << Line(a+shift,b+shift,Color::Black,1.0).scale(s);
-    list << Line(a-shift,b-shift,Color::Black,1.0).scale(s);
-    list << Line(a,b,Color::Red,1.0);
+    list << Line(a+shift,b+shift,Color::Black,strokeWidth*0.01).scale(s);
+    list << Line(a-shift,b-shift,Color::Black,strokeWidth*0.01).scale(s);
+    list << Line(a,b,Color::Red,strokeWidth*0.01);
     if ( (lineCap == Shape::RoundCap) || (lineJoin == Shape::RoundJoin)) {
-      list << Circle(a,strokeWidth*0.5,Color::Green,Color::Null,0.5);
+      list << Circle(a,strokeWidth*0.5,Color::Green,Color::Null,strokeWidth*0.01);
     }
   }
   if ( (!path.closed() && lineCap == Shape::RoundCap) || (lineJoin == Shape::RoundJoin) ) {
     Point a = path[path.size()-1];
-    list << Circle(a,strokeWidth*0.5,Color::Green,Color::Null,0.5);
+    list << Circle(a,strokeWidth*0.5,Color::Green,Color::Null,strokeWidth*0.01);
   }
 
   for ( size_t i = 0; i < e.size(); ++i ) {
     Point c = e[i];
-    list << Circle(c,10.0,Color::Blue,Color::Null,0.5);
-    list << Line(c-Point(10.0,0.0), c+Point(10.0,0),Color::Blue,0.5);
-    list << Line(c-Point(0.0,10.0), c+Point(0,10.0),Color::Blue,0.5);
+    list << Circle(c,10.0,Color::Blue,Color::Null,strokeWidth*0.01);
+    list << Line(c-Point(10.0,0.0), c+Point(10.0,0),Color::Blue,strokeWidth*0.01);
+    list << Line(c-Point(0.0,10.0), c+Point(0,10.0),Color::Blue,strokeWidth*0.01);
   }
   return list;
 }
@@ -133,5 +132,7 @@ int main( int , char *[] )
                 ShapeList::Right,ShapeList::AlignCenter);
 
   board.saveEPS( "stroke_path.eps" , Board::A4 );
-  board.saveSVG( "stroke_path.svg" );
+
+  board.scaleToWidth(25,Board::UseLineWidth);
+  board.saveSVG( "stroke_path.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

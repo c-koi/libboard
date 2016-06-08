@@ -35,5 +35,7 @@ int main( int , char *[] )
   
   board.saveEPS( "scale_ellipse.eps", Board::A4 );
   board.saveFIG( "scale_ellipse.fig", Board::A4 );
-  board.saveSVG( "scale_ellipse.svg" );
+
+  board.scaleToWidth(25,Board::UseLineWidth);
+  board.saveSVG( "scale_ellipse.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

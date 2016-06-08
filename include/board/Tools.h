@@ -54,6 +54,8 @@ public:
   template<typename T>
   inline MessageStream operator<<( const T & v );
 
+  inline MessageStream operator<<( std::ostream & (*fun)(std::ostream &) );
+
 private:
   std::ostream & _out;
   const char * _prefix;
@@ -79,6 +81,17 @@ MessageStream MessageStream::operator<<( const T & v )
   }
   return MessageStream( _out, 0 );
 }
+
+MessageStream MessageStream::operator<<( std::ostream & (*fun)(std::ostream &) )
+{
+  if ( _prefix ) {
+    _out << _prefix << fun;
+  } else {
+    _out << fun;
+  }
+  return MessageStream( _out, 0 );
+}
+
 
 inline void secured_strncpy( char * dst, const char * src, size_t count );
 

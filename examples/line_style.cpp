@@ -47,5 +47,7 @@ int main( int , char *[] )
 
   board.saveEPS( "line_style.eps" );
   board.saveFIG( "line_style.fig" );
-  board.saveSVG( "line_style.svg" );
+
+  board.scaleToWidth(25,Board::UseLineWidth);
+  board.saveSVG( "line_style.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

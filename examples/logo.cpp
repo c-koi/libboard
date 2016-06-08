@@ -56,5 +56,7 @@ int main( int, char *[] )
   Shape::enableLineWidthScaling();
   board.saveEPS( "logo_A4.eps", Board::A4 );
   board.saveFIG( "logo_A4.fig", Board::A4  );
-  board.saveSVG( "logo.svg" );
+
+  board.scaleToWidth(25,Board::UseLineWidth);
+  board.saveSVG( "logo.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

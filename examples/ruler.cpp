@@ -50,5 +50,7 @@ int main( int , char *[] )
 
   board.saveEPS( "ruler.eps" /*, Board::A4 */ );
   board.saveFIG( "ruler.fig" /*, Board::A4 */ );
-  board.saveSVG( "ruler.svg" );
+
+  board.scaleToWidth(25,Board::UseLineWidth);
+  board.saveSVG( "ruler.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

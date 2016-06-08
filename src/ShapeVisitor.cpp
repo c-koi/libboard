@@ -1,8 +1,8 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   Point.cpp
+ * @file   ShapeVisitor.cpp
  * @author Sebastien Fourey (GREYC)
- * @date   Dec 2015
+ * @date   June 2016
  *
  * @brief
  * \@copyright
@@ -23,23 +23,42 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Point.h"
-#include <limits>
+#include "ShapeVisitor.h"
+
+#include "Board.h"
+#include "board/Shapes.h"
+#include <iostream>
 
 namespace LibBoard {
-Point Point::Infinity( std::numeric_limits<double>::infinity(),
-                       std::numeric_limits<double>::infinity());
 
-std::ostream &
-operator<<( std::ostream & out, const std::vector<Point> & v ) {
-  std::vector<Point>::const_iterator it = v.begin();
-  if ( it != v.end() ) {
-    out << (*it++);
-  }
-  while ( it != v.end() ) {
-    out << "," << (*it++);
-  }
-  return out;
+BoundingBoxExtractor::BoundingBoxExtractor( LibBoard::ShapeList & shapeList )
+  :_shapeList(shapeList)
+{
+}
+
+void BoundingBoxExtractor::visit(Shape & shape)
+{
+  _shapeList << Rectangle(shape.boundingBox(Board::UseLineWidth),Color::Black,Color::Null);
+}
+
+void BoundingBoxExtractor::visit(Shape &) const
+{
+  Tools::warning << "BoundingBoxExtractor(): Visiting using the const method does not make sense.\n";
+}
+
+const ShapeList & BoundingBoxExtractor::shapeList() const
+{
+  return _shapeList;
+}
+
+void BoundingBoxViewer::visit(Shape & shape)
+{
+  std::cout << shape.name() << " - " << shape.boundingBox(Board::UseLineWidth) << " " << std::endl;
+}
+
+void BoundingBoxViewer::visit(Shape & shape) const
+{
+  std::cout << shape.name() << " - " << shape.boundingBox(Board::UseLineWidth) << std::endl;
 }
 
 }

@@ -503,7 +503,7 @@ public:
    * Changes the current font and font size.
    *
    * @param font The name of the font.
-   * @param fontSize The new font size. (The unit is 1pt = 1/72 in).
+   * @param fontSize The new font size.
    * @return The board itself.
    */
   Board & setFont( const Fonts::Font font, double fontSize );
@@ -511,7 +511,7 @@ public:
   /**
    * Changes the font size.
    *
-   * @param fontSize The new font size.  (The unit is 1pt = 1/72 in).
+   * @param fontSize The new font size.
    * @return The board itself.
    */
   Board & setFontSize( double fontSize );
@@ -588,7 +588,7 @@ public:
   Board & setFillColor( const Color & color );
   
   /**
-   * Changes the current line thickness (1/72 inche unit).
+   * Changes the current line thickness.
    *
    * @param width The new line thickness.
    * @return The board itself.

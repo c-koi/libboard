@@ -46,5 +46,6 @@ int main( int , char *[] )
   board.saveFIG( "images.fig", 20.0, 20.0, 2.0, Board::UCentimeter );
   // board.saveFIG( "images.fig", Board::BoundingBox, 10.0, Board::UCentimeter );
 
-  board.saveSVG( "images.svg" );
+  board.scaleToWidth(25,Board::UseLineWidth);
+  board.saveSVG( "images.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

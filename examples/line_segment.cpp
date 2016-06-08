@@ -121,5 +121,7 @@ int main( int, char *[] )
   drawLine(board, 7.6, 1.2, 10.5, 12.1 );
 
   board.saveEPS( "line_segment.eps" );
-  board.saveSVG( "line_segment.svg" );
+
+  board.scaleToWidth(25,Board::UseLineWidth);
+  board.saveSVG( "line_segment.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

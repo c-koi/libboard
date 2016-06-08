@@ -322,7 +322,15 @@ Path::setClosed( bool closed )
   _closed = closed;
 }
 
+std::ostream &
+operator<<( std::ostream & out, const Path & path );
+
+
 } // namespace LibBoard  
+
+
+using LibBoard::operator<<;
+
 
 #endif /* _PATH_H_ */
 
