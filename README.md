@@ -16,6 +16,9 @@ For now, LibBoard can handle primitives like lines, rectangles, triangles, polyl
 
  * See the Doxygen-made [documentation](https://foureys.users.greyc.fr/board/doc/).
 
+ * [Sample codes](EXAMPLES.md) with their output.
+
+
 ## Licence
 
 Starting with version 0.9.0, LibBoard is distributed under the term of the [GNU Lesser General Public License](https://github.com/c-koi/libboard/blob/master/LICENSE).
