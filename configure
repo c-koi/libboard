@@ -2,7 +2,6 @@
 CXX=${CXX-g++}
 PREFIX=/usr
 STATIC_LIB_ONLY=no
-VERSION=0.9.4
 NUMBER=
 DEBUG=
 ECHO=echo
@@ -10,6 +9,13 @@ ECHO=echo
 DOXYGEN=doxygen
 SANITIZE=""
 
+#
+# Get version number from CMakeLists.txt
+#
+grep "^Project.LibBoard" CMakeLists.txt | sed -e 's/.*VERSION\s*//' -e 's/\s*)$//' > VERSION
+VERSION=`cat VERSION`
+
+echo "Configuring build of LibBoard version $VERSION"
 
 ##
 ## 1. ARGS
