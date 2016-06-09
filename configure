@@ -75,6 +75,8 @@ EOF
     esac
 done
 
+mkdir -p obj
+
 LDFLAGSLIB=-shared
 DYNLIB_EXTENSION=so
 ##
