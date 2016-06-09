@@ -20,8 +20,6 @@
 using namespace std;
 using namespace LibBoard;
 
-const double dy = 10;
-
 int coordinate( int width ) {
   return 1 + (int) (width * (rand() / (RAND_MAX + 1.0)));
 }
@@ -29,15 +27,15 @@ int coordinate( int width ) {
 int main( int , char *[] )
 {
   Board board;
-  board.clear( Color(200,255,200) );
+  board.clear( Color::White );
   srand( static_cast<unsigned int>( time( 0 ) ) );
 
-  vector< pair<int,int>  > points;
-  vector< pair<int,int>  >::iterator i1, i2, end;
+  vector<Point> points;
+  vector<Point>::iterator i1, i2, end;
 
   int n = 22;
   while ( n-- ) {
-    points.push_back( make_pair( coordinate(80), coordinate(60) ) );
+    points.push_back( Point( coordinate(40), coordinate(40) ) );
   }
 
   end = points.end();
@@ -46,18 +44,12 @@ int main( int , char *[] )
     i2 = i1;
     Color pen( coordinate(255), coordinate(255), coordinate(255) );
     while ( i2 != end ) {
-      if ( i1 != i2 ) {
-        board << Arrow( i1->first, i1->second, i2->first, i2->second,
-                        pen, pen, 0.1 );
-        double mod = sqrt( static_cast<double>( (i2->first-i1->first)
-                                                *(i2->first-i1->first)
-                                                +(i2->second-i1->second)
-                                                *(i2->second-i1->second) ) );
-        board << Arrow( i1->first,
-                        i1->second,
-                        i1->first + ((i2->first-i1->first)/mod)*((mod>8)?8:mod),
-                        i1->second  + ((i2->second-i1->second)/mod)*((mod>8)?8:mod),
-                        pen, pen, 0.1 ).translated(80,0);
+      if ( i1 != i2 && !(rand()%6) ) {
+        board << Arrow( *i1, *i2, pen, pen, 0.1 );
+        Point v = (*i2 - *i1);
+        Point vn = v.normalised();
+        double norm = v.norm();
+        board << Arrow( *i1, (*i1) + ((norm>8)?(vn*8.0):v), pen, pen, 0.1 ).translated(45,0);
       }
       ++i2;
     }
@@ -66,7 +58,8 @@ int main( int , char *[] )
 
   i1 = points.begin();
   while ( i1 != end ) {
-    board << Circle( i1->first, i1->second, 0.5, Color::Black, Color::Black, 0 );
+    board << Circle( *i1, 0.25, Color::Black, Color::Black, 0 );
+    board << Circle( *i1, 0.25, Color::Black, Color::Black, 0 ).translated(45,0);
     ++i1;
   }
 
@@ -74,5 +67,5 @@ int main( int , char *[] )
   board.saveFIG( "graph.fig", 100, 100 );
 
   board.scaleToWidth(25,Board::UseLineWidth);
-  board.saveSVG( "graph.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
+  board.saveSVG( "graph.svg", Board::BoundingBox, 2.0, Board::UCentimeter );
 }

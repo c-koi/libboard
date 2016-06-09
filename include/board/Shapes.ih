@@ -153,6 +153,25 @@ Arrow::Arrow( double x1, double y1, double x2, double y2,
    }
 }
 
+
+Arrow::Arrow( Point p1,
+              Point p2,
+              Color penColor, Color fillColor,
+              double lineWidth,
+              const LineStyle style,
+              const LineCap cap,
+              const LineJoin join,
+              int depth )
+   : Line( p1, p2, penColor, lineWidth, style, cap, join, depth )
+{
+   if ( fillColor == Color::Null ) {
+      Shape::_fillColor = penColor;
+   } else {
+      Shape::_fillColor = fillColor;
+   }
+}
+
+
 Polyline::Polyline( const std::vector<Point> & points, 
                     bool closed,
                     Color penColor, Color fillColor,

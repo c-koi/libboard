@@ -804,6 +804,25 @@ struct Arrow : public Line {
                 int depth = -1 );
 
   /**
+   * Constructs an arrow.
+   *
+   * @param p1 Start point.
+   * @param p2 End point.
+   * @param penColor The color of the line.
+   * @param fillColor The fill color of the sharp end.
+   * @param lineWidth The line thickness.
+   * @param depth The depth of the line.
+   */
+  inline Arrow( Point p1, Point p2,
+                Color penColor = Shape::defaultPenColor(),
+                Color fillColor = Shape::defaultFillColor(),
+                double lineWidth = Shape::defaultLineWidth(),
+                const LineStyle lineStyle = Shape::defaultLineStyle(),
+                const LineCap cap = Shape::defaultLineCap(),
+                const LineJoin join = Shape::defaultLineJoin(),
+                int depth = -1 );
+
+  /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
    *
    * @return

@@ -30,7 +30,7 @@
 
 #define _BOARD_WIN32_ 0
 
-#define _BOARD_VERSION_ 0.9.4
+#define _BOARD_VERSION_ 0.9.5
 
 #define BOARD_STRINGIFY( X ) # X
 #define BOARD_XSTRINGIFY( X ) BOARD_STRINGIFY( X )
