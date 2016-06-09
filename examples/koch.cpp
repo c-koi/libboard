@@ -8,16 +8,8 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
-#include <fstream>
-#include <cmath>
-#include <vector>
-#include <utility>
 #include "Board.h"
 #include "PathBoundaries.h"
-using namespace std;
 using namespace LibBoard;
 
 void Koch( Polyline & curve, Point p1, Point p2, int depth ) {
@@ -53,6 +45,8 @@ int main( int , char *[] )
   Koch( curve, b, c, recursions );
   Koch( curve, c, a, recursions );
   board << curve;
+
+  Tools::notice << curve.vertexCount() << " points in the curve after " << recursions << " recursions.\n";
 
   board.saveFIG( "koch.fig", 200, 200 );
   board.saveEPS( "koch.eps", Board::A4 );
