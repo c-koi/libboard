@@ -14,22 +14,22 @@ drawing graphics that involve a large (huge?) number of primitives. In the
 latter case, one can indeed use loops, variables, functions and all C++
 features. Produced files may afterwards be edited using dedicated tools.
 
-## Features
+### Features
 
 
 For now, LibBoard can handle primitives like lines, rectangles, triangles, polylines, circles, ellipses, bitmap images and text. See the [TODO](https://raw.githubusercontent.com/c-koi/libboard/master/TODO) file for a list of features that should be added in future releases.
 
-## Documentation
+### Documentation
 
  * See the Doxygen-made [documentation](https://foureys.users.greyc.fr/board/doc/0.9.4/).
 
  * [Sample codes](EXAMPLES.md) with their output.
 
-## Licence
+### Licence
 
 Starting with version 0.9.0, LibBoard is distributed under the term of the [GNU Lesser General Public License](https://github.com/c-koi/libboard/blob/master/LICENSE).
 
-### Citing LibBoard
+#### Citing LibBoard
 
 LibBoard: A vector graphics C++ library (Version 0.9.4). GREYC laboratory. [Software]. https://github.com/c-koi/libboard. [accessed Sept. 2015].
 ```
@@ -41,7 +41,7 @@ LibBoard: A vector graphics C++ library (Version 0.9.4). GREYC laboratory. [Soft
       year = {2016},
     }
 ```
-## Download
+### Download
 
   * You may get the lastest source code from the Git repository with the command below:
 
@@ -51,6 +51,6 @@ LibBoard: A vector graphics C++ library (Version 0.9.4). GREYC laboratory. [Soft
 
   * You may also consider [downloading an archive of the latest release](https://github.com/c-koi/libboard/releases/tag/v0.9.4).
 
-## Author
+### Author
 
   * Sébastien Fourey (foureys.users.greyc.fr).
