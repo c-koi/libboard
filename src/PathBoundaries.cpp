@@ -23,7 +23,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include "BoardConfig.h"
 #include "board/PathBoundaries.h"
 #include "board/Shapes.h"
 namespace LibBoard {

@@ -276,6 +276,8 @@ struct Path {
 
   const std::vector<Point> points() const;
 
+  std::ostream & flush( std::ostream & ) const;
+
 protected:
   std::vector<Point> _points;
   bool _closed;
@@ -322,15 +324,10 @@ Path::setClosed( bool closed )
   _closed = closed;
 }
 
-std::ostream &
-operator<<( std::ostream & out, const Path & path );
-
-
 } // namespace LibBoard  
 
 
-using LibBoard::operator<<;
-
+std::ostream & operator<<( std::ostream & out, const LibBoard::Path & path );
 
 #endif /* _PATH_H_ */
 

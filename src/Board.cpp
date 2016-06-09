@@ -25,7 +25,6 @@
  */
 
 #include "Board.h"
-#include "BoardConfig.h"
 #include "board/Point.h"
 #include "board/Rect.h"
 #include "board/Shapes.h"

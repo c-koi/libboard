@@ -16,7 +16,6 @@
 #include <vector>
 #include <utility>
 #include "Board.h"
-#include "PathBoundaries.h"
 using namespace std;
 using namespace LibBoard;
 

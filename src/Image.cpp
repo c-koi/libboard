@@ -23,12 +23,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "BoardConfig.h"
 #include "board/Image.h"
 #include <sstream>
 #include <fstream>
 #include <cstring>
 #include <cstdio>
-#include "BoardConfig.h"
 
 #if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1 )
 #define MAGICKCORE_QUANTUM_DEPTH 16
@@ -139,7 +139,7 @@ Image::scale(double sx, double sy)
   _transformMatrixSVG = TransformMatrix::scaling(sx,sy) * _transformMatrixSVG;
   Point newCenter = _transformMatrixSVG * _originalRectangle.center();
   _transformMatrixSVG = TransformMatrix::translation(currentCenter - newCenter) * _transformMatrixSVG;
-  
+
   currentCenter = _transformMatrixEPS * _originalRectangle.center();
   _transformMatrixEPS = TransformMatrix::scaling(sx,sy) * _transformMatrixEPS;
   newCenter = _transformMatrixEPS * _originalRectangle.center();
@@ -160,7 +160,7 @@ Image Image::scaled(double sx, double sy)
 }
 
 Rect
-Image::boundingBox(LineWidthFlag lineWidthFlag) const
+Image::boundingBox(LineWidthFlag ) const
 {
   return _rectangle.boundingBox(IgnoreLineWidth);
 }
@@ -195,10 +195,6 @@ Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) co
   stream <<  "%%BeginDocument: board_temporary.eps\n";
   stream << "gs\n";
 
-  // TODO
-  //  stream << transform.mapX(_originalRectangle[0].x) << " " << transform.mapY(_originalRectangle[0].y) << " m\n";
-  //  stream << scaleX << " " << scaleY << " sc\n";
-
   Point shift = transform.map(_rectangle.bottomLeft()) - (_transformMatrixEPS*_originalRectangle.bottomLeft());
   ((_transformMatrixEPS+shift)*originalMoveAndScale).flushEPS(stream);
 
@@ -208,7 +204,7 @@ Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) co
   stream <<  "%%EndDocument\n";
   stream << "gr\n";
 #else
-  error << "Image::flushPostscript(): requires ImageMagick's Magick++ lib. Aborted.\n";
+  Tools::error << "Image::flushPostscript(): requires ImageMagick's Magick++ lib. Aborted.\n";
 #endif
 }
 

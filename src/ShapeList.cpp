@@ -24,6 +24,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "BoardConfig.h"
 #include "board/ShapeList.h"
 #include <algorithm>
 #include <typeinfo>
@@ -310,7 +311,8 @@ ShapeList::append(const Shape & shape,
   Rect shapeBox = shape.boundingBox(lineWidthFlag);
   const double shapeHalfWidth = shapeBox.width / 2.0;
   const double shapeHalfHeight = shapeBox.height / 2.0;
-  double x,y;
+  double x = c.x;
+  double y = c.y;
   Shape * s = shape.clone();
   if ( direction == Right || direction == Left ) {
     x = (direction==Right) ? (box.right() + shapeHalfWidth + margin)

@@ -1,5 +1,5 @@
 /**
- * @file   ruler.cpp
+ * @file   images.cpp
  * @author Sebastien Fourey (GREYC)
  *
  * @brief  Sample program that draws a ruler.
@@ -22,6 +22,7 @@ int main( int , char *[] )
 {
   Board board;
 
+#if ( _BOARD_HAVE_MAGICKPLUSPLUS_ == 1)
   Image michel("../resources/saint_michel.jpg",0,0,200);
   Rectangle rectangle( michel.boundingBox(Shape::IgnoreLineWidth), Color::Red, Color::Silver,1);
   Group g;
@@ -38,6 +39,12 @@ int main( int , char *[] )
   avatars.addTiling(avatar,Point(0,0),4,4,10.0,Board::UseLineWidth);
   avatars.moveCenter(board.center());
   board << avatars;
+#else
+  Text text(10,-40,"Magick++ is required",Fonts::Helvetica,10);
+  board << Rectangle(text.boundingBox(Board::IgnoreLineWidth).grow(5),
+                     Color::Red,Color::White,1.0,Shape::SolidStyle,Shape::RoundCap,Shape::RoundJoin);
+  board << text;
+#endif
 
   //board.saveEPS( "images.eps", 0.0, 0.0, 2.0, Board::UInche );
   board.saveEPS( "images.eps", 20.0, 30.0, 2.0, Board::UInche );
@@ -48,4 +55,5 @@ int main( int , char *[] )
 
   board.scaleToWidth(25,Board::UseLineWidth);
   board.saveSVG( "images.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
+
 }

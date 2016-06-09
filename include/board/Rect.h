@@ -112,6 +112,8 @@ Rect operator||( const Rect & rectA, const Rect & rectB );
  */
 Rect operator&&( const Rect & rectA, const Rect & rectB );
 
+} // mamespace LibBoard
+
 /**
  * Stream output operator for Rect structure.
  *
@@ -121,9 +123,5 @@ Rect operator&&( const Rect & rectA, const Rect & rectB );
  * @return The output stream.
  */
 std::ostream & operator<<( std::ostream & out, const LibBoard::Rect & rect );
-
-} // mamespace LibBoard
-
-using LibBoard::operator<<;
 
 #endif // _RECT_H_

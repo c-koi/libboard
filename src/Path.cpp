@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "BoardConfig.h"
 #include "board/Path.h"
 #include "board/Transforms.h"
 #include <algorithm>
@@ -309,11 +310,24 @@ std::vector<Point> Path::points() const
 }
 
 std::ostream &
-operator<<( std::ostream & out, const Path & path )
+Path::flush(std::ostream & out) const
 {
-  return out << "Path(" << path.points() << ")";
+  out << "Path(";
+  std::vector<Point>::const_iterator it = _points.begin();
+  if ( it != _points.end() ) {
+    out << (*it++);
+  }
+  while ( it != _points.end() ) {
+    out << "," << (*it++);
+  }
+  out << ")";
+  return out;
 }
 
-
-
 } // namespace LibBoard
+
+std::ostream &
+operator<<( std::ostream & out, const LibBoard::Path & path )
+{
+  return path.flush(out);
+}

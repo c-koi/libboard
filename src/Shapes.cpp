@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "BoardConfig.h"
 #include "board/Shapes.h"
 #include "board/Rect.h"
 #include "board/Tools.h"
@@ -369,7 +370,7 @@ Dot::scaleAll( double s )
 {
   _x *= s;
   _y *= s;
-} 
+}
 
 void
 Dot::flushPostscript( std::ostream & stream,
@@ -558,7 +559,7 @@ Line::scaleAll( double s )
   _y1 *= s;
   _x2 *= s;
   _y2 *= s;
-} 
+}
 
 Line *
 Line::clone() const {
@@ -886,7 +887,7 @@ Ellipse::center(LineWidthFlag ) const {
 
 Ellipse &
 Ellipse::rotate( double angle, const Point & center )
-{ 
+{
   Point c( _center );
   Point e = (c + Point( _xRadius, 0 )).rotate( _angle, c );
   Point rc = c.rotated( angle, center );
@@ -1857,7 +1858,7 @@ Triangle::rotated( double angle ) const
   return static_cast<Triangle &>( Triangle( *this ).rotate( angle ) );
 }
 
-Triangle 
+Triangle
 Triangle::translated( double dx, double dy ) const
 {
   return static_cast<Triangle &>( Triangle( *this ).translate( dx, dy ) );
