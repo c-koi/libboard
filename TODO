@@ -5,15 +5,14 @@
 * The Bounding box of an empty Polyline should be a special (invalid) one.
 
 * FIG export
-    Handle figures having more than 512 color used when exporting FIG
-    files, through color quantization.
+    Handle figures having more than 512 color used when exporting FIG files,
+    through color quantization.
 
-* Text bounding box
-  Text bounding box is only roughly  handled yet. Take care of it!
+* Text bounding box (Text bounding box is only roughly  handled yet. Take care
+  of it!)
 
 * SVG gzipped file support
 
-* Handle arrow ends properly in SVG
-   (using markers, see http://www.w3.org/TR/SVG11/painting.html)
+* Handle arrow ends in SVG using markers (http://www.w3.org/TR/SVG11/painting.html)
 
 * 64 Bit archs in Configure
