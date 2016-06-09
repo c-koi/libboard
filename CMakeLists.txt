@@ -145,6 +145,13 @@ ADD_LIBRARY(board-dynamic SHARED ${lib_src})
 SET_TARGET_PROPERTIES(board-dynamic PROPERTIES OUTPUT_NAME "board")
 SET_TARGET_PROPERTIES(board-dynamic PROPERTIES PREFIX "lib")
 
+install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY include/board/ DESTINATION include/board FILES_MATCHING PATTERN "*.h")
+install(TARGETS board DESTINATION lib)
+install(TARGETS board-dynamic DESTINATION lib)
+install(DIRECTORY examples/ DESTINATION share/libboard/examples FILES_MATCHING PATTERN "*.cpp")
+install(FILES README.md LICENSE AUTHORS DESTINATION share/libboard )
+
 FOREACH( EXAMPLE logo example1 example2 example3 example4
     arithmetic ellipse graph arrows  ruler koch clipping
     flag scale_ellipse line_style images line_segment tilings stroke_path )
