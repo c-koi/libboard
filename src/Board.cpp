@@ -1351,7 +1351,7 @@ Board::save(const char * filename, PageSize size, double margin , Unit unit) con
  *
  * <ul>
  * <li>See the "Examples" tab above or visit
- *     <a href="https://github.com/c-koi/libboard/blob/v0.9.4/EXAMPLES.md">dedicated page on GitHub</a>.
+ *     <a href="https://github.com/c-koi/libboard/blob/v0.9.5/EXAMPLES.md">dedicated page on GitHub</a>.
  * </ul>
  *
  * @section links_sec Links
