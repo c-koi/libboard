@@ -4,11 +4,18 @@
 
 ## The LibBoard C++ library
 
-(Motivation for this piece of code) There are more people on this planet who are fluent in, or at least know as beginners, the C++ language than there are people who know all together the Postscript, SVG, and FIG (XFig) file formats. Actually Postscript is also a programming language, but that's part of another story.
+### Purpose
 
-The next point is: how can one draw a vector graphic with his favorite drawing software when this graphic involves a lot, say a huge amount of primitives, especially when the graphic would be easy to build using loops, variables, functions. Eventually, one may enjoy being able to code the drawing in C++ and then export it as an EPS file for inclusion in a LaTeX document, as an XFig file for further editing with Xfig, or as an SVG file that may be augmented/edited with any SVG drawing tool.
+The LibBoard C++ library allows the drawing of Postscript, SVG, and FIG (XFig)
+vector graphics using the C++ programming language.
+
+It is suitable for adding SVG/EPS/FIG output support to a program; but also for
+drawing graphics that involve a large (huge?) number of primitives. In the
+latter case, one can indeed use loops, variables, functions and all C++
+features. Produced files may afterwards be edited using dedicated tools.
 
 ## Features
+
 
 For now, LibBoard can handle primitives like lines, rectangles, triangles, polylines, circles, ellipses, bitmap images and text. See the [TODO](https://raw.githubusercontent.com/c-koi/libboard/master/TODO) file for a list of features that should be added in future releases.
 
