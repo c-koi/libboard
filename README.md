@@ -17,7 +17,7 @@ features. Produced files may afterwards be edited using dedicated tools.
 ### Features
 
 
-For now, LibBoard can handle primitives like lines, rectangles, triangles, polylines, circles, ellipses, bitmap images and text. See the [TODO](https://raw.githubusercontent.com/c-koi/libboard/master/TODO) file for a list of features that should be added in future releases.
+For now, LibBoard can handle primitives like lines, rectangles, triangles, polylines, circles, ellipses, bitmap images and text. See the [TODO](TODO) file for a list of features that should be added in future releases.
 
 ### Documentation
 
@@ -27,7 +27,7 @@ For now, LibBoard can handle primitives like lines, rectangles, triangles, polyl
 
 ### Licence
 
-Starting with version 0.9.0, LibBoard is distributed under the term of the [GNU Lesser General Public License](https://github.com/c-koi/libboard/blob/master/LICENSE).
+Starting with version 0.9.0, LibBoard is distributed under the term of the [GNU Lesser General Public License](LICENSE).
 
 #### Citing LibBoard
 
