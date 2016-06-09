@@ -204,6 +204,8 @@ Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) co
   stream <<  "%%EndDocument\n";
   stream << "gr\n";
 #else
+  (void) stream;
+  (void) transform;
   Tools::error << "Image::flushPostscript(): requires ImageMagick's Magick++ lib. Aborted.\n";
 #endif
 }
