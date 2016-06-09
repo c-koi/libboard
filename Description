@@ -1,20 +1,16 @@
-The board library is expected to allow the drawing of simple (and not
-so simple, see below) vector graphics using the C++ language,
-eventually exporting them as Encapsulated Postscript, SVG, or Xfig
-files. Other file formats such as OpenDocument drawings may be nice in
-future releases.
+The board library is expected to allow the drawing of simple (and not so simple,
+see below) vector graphics using the C++ language, eventually exporting them as
+Encapsulated Postscript, SVG, or Xfig files.
 
 The main goal of the lib is to help two kind of users:
 
- - Programmers who want to include vector graphics exporting in some
-applications, using a simple library with functions like drawLine()
-drawRectangle() drawPolyline(), etc. without having to bother about
-the SVG format or Postscript language. EPS, Xfig, and SVG are all
-bundled in a self-sufficient lib.
+ - Programmers who want to add vector graphics export to their applications,
+using a simple library with functions like drawLine() drawRectangle()
+drawPolyline(), etc. without having to bother about the SVG format or Postscript
+language. EPS, Xfig, and SVG are all bundled in a self-sufficient lib.
 
- - Any user (beginner or not) who has basic C++ skills and wants do
-draw complex figures which would be very difficult do build by hand
-using a software like XFig or Inkscape, because they require lot of
-primitives. In this case, the graphic may be C++-coded, with loops,
-variables and so on, then maybe edited using a classical soft like the
-ones previously mentioned.
+ - Any user (beginner or not) who has basic C++ skills and wants do draw complex
+figures which would be very difficult do build by hand using a software like
+XFig or Inkscape, because they require lot of primitives. In this case, the
+graphic may be C++-coded, with loops, variables and so on, then maybe edited
+using a classical software like the ones previously mentioned.

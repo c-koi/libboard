@@ -204,7 +204,7 @@ LN=ln -s
 CXXFLAGSOBJ=-O3 -ansi -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include ${CXX64FLAGS}
 CXXFLAGSEXEC=-O3 -ansi  -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include
 
-.PHONY: all clean install examples lib doc
+.PHONY: all clean distclean install examples lib doc
 
 OBJS=obj/Board.o obj/Transforms.o obj/Path.o obj/Shapes.o obj/ShapeList.o obj/Rect.o obj/Color.o obj/Tools.o obj/PSFonts.o obj/TransformMatrix.o obj/Image.o
 
@@ -260,6 +260,9 @@ bin/%: examples/%.cpp \$(STATICLIB)
 
 clean:
 	rm -f obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ *~
+
+distclean: clean
+	rm -rf obj lib bin
 
 install: all
 	install -d \$(PREFIX)/lib
