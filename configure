@@ -12,8 +12,7 @@ SANITIZE=""
 #
 # Get version number from CMakeLists.txt
 #
-grep "^Project.LibBoard" CMakeLists.txt | sed -e 's/.*VERSION\s*//' -e 's/\s*)$//' > VERSION
-VERSION=`cat VERSION`
+VERSION=`grep "^Project.LibBoard" CMakeLists.txt | sed -e 's/.*VERSION\s*//' -e 's/\s*)$//'`
 
 echo "Configuring build of LibBoard version $VERSION"
 
