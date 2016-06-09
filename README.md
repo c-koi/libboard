@@ -4,7 +4,7 @@
 
 ## The LibBoard C++ library
 
-### Purpose
+#### Purpose
 
 The LibBoard C++ library allows the drawing of Postscript, SVG, and FIG (XFig)
 vector graphics using the C++ programming language.
