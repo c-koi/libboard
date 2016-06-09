@@ -14,7 +14,7 @@ For now, LibBoard can handle primitives like lines, rectangles, triangles, polyl
 
 ## Documentation
 
- * See the Doxygen-made [documentation](https://foureys.users.greyc.fr/board/doc/).
+ * See the Doxygen-made [documentation](https://foureys.users.greyc.fr/board/doc/0.9.4/).
 
  * [Sample codes](EXAMPLES.md) with their output.
 
