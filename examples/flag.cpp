@@ -9,12 +9,8 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <cmath>
 #include "Board.h"
-#include <vector>
+#include <cmath>
 using namespace LibBoard;
 
 const int RAYS = 40;

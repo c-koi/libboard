@@ -13,7 +13,6 @@
 #include <fstream>
 #include <cmath>
 #include "Board.h"
-#include "PathBoundaries.h"
 using namespace LibBoard;
 
 int main( int, char *[] )

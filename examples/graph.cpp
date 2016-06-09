@@ -10,11 +10,8 @@
  */
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
-#include <fstream>
 #include <cmath>
 #include <vector>
-#include <utility>
 #include "Board.h"
 
 using namespace std;

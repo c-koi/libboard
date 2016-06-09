@@ -139,7 +139,7 @@ Image::scale(double sx, double sy)
   _transformMatrixSVG = TransformMatrix::scaling(sx,sy) * _transformMatrixSVG;
   Point newCenter = _transformMatrixSVG * _originalRectangle.center();
   _transformMatrixSVG = TransformMatrix::translation(currentCenter - newCenter) * _transformMatrixSVG;
-  
+
   currentCenter = _transformMatrixEPS * _originalRectangle.center();
   _transformMatrixEPS = TransformMatrix::scaling(sx,sy) * _transformMatrixEPS;
   newCenter = _transformMatrixEPS * _originalRectangle.center();
@@ -160,7 +160,7 @@ Image Image::scaled(double sx, double sy)
 }
 
 Rect
-Image::boundingBox(LineWidthFlag lineWidthFlag) const
+Image::boundingBox(LineWidthFlag ) const
 {
   return _rectangle.boundingBox(IgnoreLineWidth);
 }

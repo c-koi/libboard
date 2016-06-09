@@ -10,9 +10,9 @@
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
 #include "Board.h"
+#include "board/Tools.h"
 #include <cstdlib>
-#include <iostream>
-#include <fstream>
+#include <cstdio>
 #include <cmath>
 #include <cstring>
 using namespace std;
@@ -31,7 +31,7 @@ int main( int argc, char *argv[] )
   if ( argc == 2 ) {
     Tools::secured_strncpy( the_string, argv[1], 1024 );
   }
-  
+
   double proba[100] = { 0.2, 0.1, 0.6, 0.05, 0.05 };
   double lefts[100] = { 0, 0.2, 0.3, 0.9, 0.95  };
   Color colors[5] = { Color( 0, 0, 255 ),

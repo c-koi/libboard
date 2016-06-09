@@ -9,16 +9,9 @@
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  *
  */
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <cmath>
 #include "Board.h"
+#include <cmath>
 using namespace LibBoard;
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 int main( int, char *[] )
 {

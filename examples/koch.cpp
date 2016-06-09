@@ -9,7 +9,6 @@
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
 #include "Board.h"
-#include "PathBoundaries.h"
 using namespace LibBoard;
 
 void Koch( Polyline & curve, Point p1, Point p2, int depth ) {

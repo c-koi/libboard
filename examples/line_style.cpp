@@ -9,8 +9,6 @@
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  *
  */
-#include <cstdlib>
-#include <iostream>
 #include "Board.h"
 using namespace LibBoard;
 
