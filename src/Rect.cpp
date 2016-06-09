@@ -23,6 +23,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "BoardConfig.h"
 #include "board/Rect.h"
 
 namespace LibBoard {
@@ -98,14 +99,12 @@ Rect::grow(double margin)
   return *this;
 }
 
+} // namespace LibBoard
+
 std::ostream &
 operator<<( std::ostream & out, const LibBoard::Rect & rect )
 {
-  out << "Rect("
-      << rect.left << "," << rect.top
+  out << "Rect(" << rect.left << "," << rect.top
       << "+" << rect.width << "x" << rect.height << ")";
   return out;
 }
-
-} // namespace LibBoard
-

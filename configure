@@ -119,6 +119,7 @@ if [ $? = 0 ]; then
     MAGICKPLUSPLUS=1
     IMAGE_EXAMPLES="bin/images"
     IMAGE_CXXFLAGS=$(Magick++-config --cxxflags)
+    IMAGE_CXXFLAGS="${IMAGE_CXXFLAGS} -Wno-long-long"
     IMAGE_LDFLAGS=$(Magick++-config --ldflags)
     echo "Found"
 else
@@ -180,6 +181,17 @@ echo no
 fi
 rm -f is64 is64.c
 
+
+#
+# SAMPLE CODE TARGETS
+#
+EXAMPLE_TARGETS=""
+for f in examples/*.cpp; do
+    name=`basename $f .cpp`
+    EXAMPLE_TARGETS="${EXAMPLE_TARGETS} bin/${name}"
+done
+
+
 cat > Makefile <<EOF
 
 CXX = ${CXX}
@@ -206,7 +218,7 @@ CXXFLAGSEXEC=-O3 -ansi  -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include
 
 .PHONY: all clean distclean install examples lib doc
 
-OBJS=obj/Board.o obj/Transforms.o obj/Path.o obj/Shapes.o obj/ShapeList.o obj/Rect.o obj/Color.o obj/Tools.o obj/PSFonts.o obj/TransformMatrix.o obj/Image.o
+OBJS=obj/Board.o obj/Transforms.o obj/Point.o obj/Path.o obj/PathBoundaries.o obj/Shapes.o obj/ShapeList.o obj/Rect.o obj/Color.o obj/Tools.o obj/PSFonts.o obj/TransformMatrix.o obj/Image.o
 
 all: lib examples ${DOXYGEN_TARGET}
 
@@ -237,7 +249,7 @@ ${ECHO} -n "Creating Makefile..."
 cat >> Makefile <<EOF
 $LIBDEP
 
-examples: lib bin/example1 bin/example2 bin/example3 bin/example4 bin/arithmetic bin/arrows bin/ellipse bin/koch bin/logo bin/graph bin/ruler bin/clipping bin/flag bin/scale_ellipse bin/line_style ${IMAGE_EXAMPLES} bin/line_segment bin/tilings
+examples: lib ${EXAMPLE_TARGETS}
 
 \$(DYNLIB): \$(OBJS)
 	\$(RM) \$@

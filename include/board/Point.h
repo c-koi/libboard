@@ -362,19 +362,8 @@ Point::operator-() const
   return Point( -x, -y );
 }
 
-inline
-std::ostream &
-operator<<( std::ostream & out, const Point & p )
-{
-  return out << "Point(" << p.x << "," << p.y << ")";
-}
-
-std::ostream &
-operator<<( std::ostream & out, const std::vector<Point> & v );
-
-
 } // mamespace LibBoard
 
-using LibBoard::operator<<;
+std::ostream & operator<<( std::ostream & out, const LibBoard::Point & p );
 
 #endif // _POINT_H_

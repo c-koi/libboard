@@ -24,6 +24,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "BoardConfig.h"
 #include "board/Rect.h"
 #include "board/Shapes.h"
 #include "board/ShapeList.h"
@@ -39,13 +40,13 @@ namespace LibBoard {
 
 //
 // Transform
-// 
+//
 
 double
 Transform::rounded( double x ) const
 {
   return Transform::round( 1000000*x ) / 1000000;
-} 
+}
 
 double
 Transform::mapX( double x ) const
@@ -78,7 +79,7 @@ Transform::apply( double & x, double & y ) const
 
 //
 // TransformEPS
-// 
+//
 
 double
 TransformEPS::mapY( double y ) const
@@ -145,7 +146,7 @@ TransformEPS::pageBoundingBox() const
 
 //
 // TransformFIG
-// 
+//
 
 double
 TransformFIG::rounded( double x ) const
@@ -230,13 +231,13 @@ TransformFIG::mapDepth( int depth ) const
 
 //
 // TransformSVG
-// 
+//
 
 double
 TransformSVG::rounded( double x ) const
 {
   return Transform::round( 100*x ) / 100.0f;
-} 
+}
 
 double
 TransformSVG::mapY( double y ) const

@@ -31,6 +31,7 @@
 #include <string>
 #include <vector>
 
+#include "BoardConfig.h"
 #include "board/Point.h"
 #include "board/Path.h"
 #include "board/Shapes.h"
@@ -39,13 +40,13 @@
 
 namespace LibBoard {
 
-/** 
+/**
  * The Board class.
  * @brief Class for EPS, FIG or SVG drawings.
  * @version 0.5
  */
 class Board : public ShapeList {
-  
+
 public:
 
   enum PageSize { BoundingBox = 0,
@@ -54,7 +55,7 @@ public:
 
   enum Unit { UPoint, UInche, UCentimeter, UMillimeter };
   static const double Degree;
-  
+
   enum AspectRatioFlag { IgnoreAspectRatio, KeepAspectRatio };
 
   /**
@@ -91,7 +92,7 @@ public:
    * @return The board itself, as a ShapeList.
    */
   Board & operator<<( const Shape & shape );
-  
+
   /**
    * Clears the board with a given background color.
    *
@@ -344,7 +345,7 @@ public:
                      const Point & p2,
                      const Point & p3,
                      int depth = -1 );
-  
+
   /**
    * Draws a rectangle.
    *
@@ -442,7 +443,7 @@ public:
    */
   void drawPolyline( const std::vector<Point> & points,
                      int depth = -1 );
-  
+
   /**
    * Draws a closed polygonal line.
    *
@@ -507,7 +508,7 @@ public:
    * @return The board itself.
    */
   Board & setFont( const Fonts::Font font, double fontSize );
-  
+
   /**
    * Changes the font size.
    *
@@ -551,7 +552,7 @@ public:
    * @return The board itself.
    */
   Board & setPenColor( const Color & color );
-  
+
 
   /**
    * Changes the current fill color.
@@ -566,7 +567,7 @@ public:
                             unsigned char green,
                             unsigned char blue,
                             unsigned char alpha = 255 );
-  
+
   /**
    * Changes the current fill color.
    *
@@ -586,7 +587,7 @@ public:
    * @return The board itself.
    */
   Board & setFillColor( const Color & color );
-  
+
   /**
    * Changes the current line thickness.
    *
@@ -602,7 +603,7 @@ public:
    * @return The board itself.
    */
   Board & setLineStyle( Shape::LineStyle style );
-  
+
   /**
    * Set the line cap style.
    *
@@ -714,7 +715,7 @@ public:
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
   void save( const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter ) const;
-  
+
   /**
    * Save the drawing in an EPS, XFIG of SVG file depending
    * on the filename extension. When a size is given (not BoundingBox), the drawing is
@@ -966,7 +967,7 @@ protected:
 
   static double toMillimeter( double x, Unit unit);
 
-  
+
   /**
    * Current graphical state for drawings made by the drawSomething() methods.
    *
