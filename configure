@@ -75,7 +75,7 @@ EOF
     esac
 done
 
-mkdir -p obj
+mkdir -p obj bin lib
 
 LDFLAGSLIB=-shared
 DYNLIB_EXTENSION=so
