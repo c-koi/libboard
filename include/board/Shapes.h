@@ -1683,7 +1683,7 @@ struct Text : public Shape {
    * @param y y-coordinate of the bottom-left corner.
    * @param text
    * @param font
-   * @param size The font size expressed in 1/72 inches.
+   * @param size
    * @param color
    * @param depth
    *
@@ -1702,7 +1702,7 @@ struct Text : public Shape {
    * @param p Position of the bottom-left corner.
    * @param text
    * @param font
-   * @param size The font size expressed in 1/72 inches.
+   * @param size
    * @param color
    * @param depth
    *
@@ -1723,7 +1723,7 @@ struct Text : public Shape {
    * @param text
    * @param font
    * @param svgFont The font family for an SVG file. (E.g. "Verdana, Arial" or "'Time New Roman', Serif" )
-   * @param size The font size expressed in 1/72 inches.
+   * @param size
    * @param color
    * @param depth
    *
@@ -1744,7 +1744,7 @@ struct Text : public Shape {
    * @param text
    * @param font
    * @param svgFont The font family for an SVG file. (E.g. "Verdana, Arial" or "'Time New Roman', Serif" )
-   * @param size The font size expressed in 1/72 inches.
+   * @param size
    * @param color
    * @param depth
    *
