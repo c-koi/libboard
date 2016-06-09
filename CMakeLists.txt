@@ -6,7 +6,7 @@ if(POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif()
 
-Project(LibBoard VERSION 0.9.4)
+Project(LibBoard VERSION 0.9.5)
 
 ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
 
