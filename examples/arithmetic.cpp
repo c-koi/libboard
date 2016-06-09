@@ -32,7 +32,6 @@ int main( int argc, char *argv[] )
     Tools::secured_strncpy( the_string, argv[1], 1024 );
   }
   
-  // char letters[] = "abcde";
   double proba[100] = { 0.2, 0.1, 0.6, 0.05, 0.05 };
   double lefts[100] = { 0, 0.2, 0.3, 0.9, 0.95  };
   Color colors[5] = { Color( 0, 0, 255 ),
@@ -79,8 +78,6 @@ int main( int argc, char *argv[] )
   for ( int k = 0; k < 5; k++ ) {
     board.setPenColor( colors[ k ] );
     board.drawRectangle( lefts[k], thickness, proba[k], 0.9*thickness );
-    secured_sprintf( str, 20, "%c", 'a' + k  );
-    //board.drawText( lefts[k] + proba[k]/2.0, 0.5*thickness, str );
   }
 
   board.save( "arithmetic_A4.eps", Board::A4, 0.5, Board::UCentimeter  );

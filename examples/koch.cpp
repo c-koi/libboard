@@ -48,7 +48,6 @@ int main( int , char *[] )
 
   Polyline curve(true,Color::Null,Color::Green,0.0,Shape::SolidStyle,Shape::RoundCap,Shape::RoundJoin);
 
-  // curve << a;  // Not required here.
   const int recursions = 5;
   Koch( curve, a, b, recursions );
   Koch( curve, b, c, recursions );

@@ -1,7 +1,7 @@
 /**
  * @file   graph.cpp
  * @author Sebastien Fourey (GREYC)
- * 
+ *
  * @brief   Draw a random complete graph
  *
  * This source code is part of the Board project, a C++ library whose
@@ -47,17 +47,17 @@ int main( int , char *[] )
     Color pen( coordinate(255), coordinate(255), coordinate(255) );
     while ( i2 != end ) {
       if ( i1 != i2 ) {
-	board << Arrow( i1->first, i1->second, i2->first, i2->second,
-			pen, pen, 0.1 );
-	double mod = sqrt( static_cast<double>( (i2->first-i1->first)
-						*(i2->first-i1->first)
-						+(i2->second-i1->second)
-						*(i2->second-i1->second) ) );
-	board << Arrow( i1->first,
-			i1->second, 
-			i1->first + ((i2->first-i1->first)/mod)*((mod>8)?8:mod), 
-			i1->second  + ((i2->second-i1->second)/mod)*((mod>8)?8:mod),
-			pen, pen, 0.1 ).translated(80,0);
+        board << Arrow( i1->first, i1->second, i2->first, i2->second,
+                        pen, pen, 0.1 );
+        double mod = sqrt( static_cast<double>( (i2->first-i1->first)
+                                                *(i2->first-i1->first)
+                                                +(i2->second-i1->second)
+                                                *(i2->second-i1->second) ) );
+        board << Arrow( i1->first,
+                        i1->second,
+                        i1->first + ((i2->first-i1->first)/mod)*((mod>8)?8:mod),
+                        i1->second  + ((i2->second-i1->second)/mod)*((mod>8)?8:mod),
+                        pen, pen, 0.1 ).translated(80,0);
       }
       ++i2;
     }

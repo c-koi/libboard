@@ -1,7 +1,7 @@
 /**
  * @file   linestyle.cpp
  * @author Sebastien Fourey (GREYC)
- * 
+ *
  * @brief  Sample program to check line styles.
  *
  * This source code is part of the Board project, a C++ library whose

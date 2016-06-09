@@ -1,7 +1,7 @@
 /**
  * @file   scale_ellipse.cpp
  * @author Sebastien Fourey (GREYC)
- * 
+ *
  * @brief  Sample program to check that ellipses are correctly scaled.
  *
  * This source code is part of the Board project, a C++ library whose
@@ -27,7 +27,7 @@ int main( int , char *[] )
   g << Rectangle( -30, 10, 60, 20, Color::Green, Color::White, 0.1 );
   g << Ellipse( 0, 0, 30, 10, Color::Red, Color::White, 0.1 );
   g << Ellipse( 0, 0, 2, 10, Color::Null, Color::Green, 0.1 );
-  //board << g.rotated( 1.5 ).scaled(2);
+
   board << g;
   board.addDuplicates( g, 5, 0, -15, 0.8, 0.8, 0.2 );
   board.addDuplicates( g, 5, 0, 15, 0.8, 0.8, -0.2 );

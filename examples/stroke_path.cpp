@@ -114,20 +114,12 @@ int main( int , char *[] )
   l.append(Text(0,0,"Square cap, miter/bevel/miter/round join",Fonts::Courier,14.0),ShapeList::Right,ShapeList::AlignCenter);
   board.append(l,ShapeList::Bottom,ShapeList::AlignLeft);
 
-  //  l.clear();
-  //  l.append( strikeOut(losange,20.0,Shape::SquareCap,Shape::MiterJoin ),
-  //            ShapeList::Right, ShapeList::AlignCenter, 0.0 );
-  //  l.append( strikeOut(losange,20.0,Shape::SquareCap,Shape::MiterJoin ),
-  //            ShapeList::Right, ShapeList::AlignCenter, 0.0 );
-  //  board.append(l,ShapeList::Bottom,ShapeList::AlignLeft);
-
   ShapeList list;
   Polyline poly(true,Color::Blue,Color::Null,1.0,Shape::SolidStyle,Shape::ButtCap,Shape::MiterJoin);
   poly << Point(0,0) << Point(30,-50) << Point(60,0) << Point(30,50);
   list.append(poly,ShapeList::Right,ShapeList::AlignCenter);
   list.append(poly,ShapeList::Right,ShapeList::AlignCenter);
   board.append(list,ShapeList::Right,ShapeList::AlignCenter);
-
   board.append( Rectangle(0,0,100,30).rotateDeg(40).scale(1.5,1.0),
                 ShapeList::Right,ShapeList::AlignCenter);
 

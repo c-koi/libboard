@@ -37,7 +37,6 @@ int main( int , char *[] )
 
   board << Rectangle( -8, 12, 16, 24, Color::Black, Color::Null, 0.1 );
 
-  //board.setLineStyle( Shape::DashStyle );
   double radius = 10;
 
   board.setFont( Fonts::CourierBold, 2 );

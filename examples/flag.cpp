@@ -34,11 +34,8 @@ int main( int, char *[] )
   }
   
   board.setClippingRectangle( -100, 100, 350, 250 );
-  // board.saveEPS( "flag.eps", 210, 297, 0.0, Board::UMillimeter );
+  board.saveEPS( "flag.eps", 210, 297, 0.0, Board::UMillimeter );
   board.saveTikZ( "flag.tikz" );
-
-  //  Line line(0,0,100,0,Color::Black,1.0);
-  //  board << line;
 
   board.scaleToWidth(20,Board::UseLineWidth);
   board.saveSVG( "flag.svg", Board::BoundingBox, 0.0, Board::UCentimeter );

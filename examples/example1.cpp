@@ -20,7 +20,6 @@ int main( int, char *[] )
 {
   Board board;
 
-  // Default unit is the Postscript dot (1/72 inch).
   board.setLineWidth( 0.1 );
   board.setPenColorRGBi( 0, 0, 255 );
   std::vector<Point> points;
@@ -31,16 +30,11 @@ int main( int, char *[] )
   board.setLineWidth(0.1);
   board.drawPolyline( points );
 
-  Polyline p = board.last<Polyline>();
-
   board.setPenColor(Color::Black);
   board.drawArrow( board.center(), board.boundingBox(Board::UseLineWidth).topRight(), true );
-
   board.fillGouraudTriangle( -50, 0, Color( 255, 0, 0 ),
                              0, 0, Color( 0, 255, 0 ),
                              -30, 30, Color( 0, 0, 255 ) );
-
-  GouraudTriangle t = board.last<GouraudTriangle>();
 
   board.setPenColorRGBi( 255, 0, 0 );
   board.fillGouraudTriangle( 100, 0, 0.1f,

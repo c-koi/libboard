@@ -1,7 +1,7 @@
 /**
  * @file   ruler.cpp
  * @author Sebastien Fourey (GREYC)
- * 
+ *
  * @brief  Sample program that draws a ruler.
  *
  * This source code is part of the Board project, a C++ library whose

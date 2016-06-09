@@ -1,9 +1,9 @@
 /**
  * @file   clipping.cpp
  * @author Sebastien Fourey (GREYC)
- * 
+ *
  * @brief  Sample drawing using the board library.
- * 
+ *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
@@ -30,9 +30,6 @@ int main( int, char *[] )
   g.setClippingPath( clip );
 
   g << Circle( 0, 0, 10, Color::Black, Color::Red, 1.0 );
-  
-  // board << g;
-  // board << g.scaled(0.8,1.5).translated( 20, 0 );
 
   board.addDuplicates( g, 10, 18, 0, 0.9, 1.05 );
   board.addDuplicates( g, 10, 18, -18, 1.2, 1 );
@@ -59,10 +56,10 @@ int main( int, char *[] )
   
   board << cross.scaled( 3 );
   board.addDuplicates( cross.translated( 0, -60 ).scaled( 2 ),
-		       18,
-		       0, 0,
-		       0.85, 0.85,
-		       0.1 );
+                       18,
+                       0, 0,
+                       0.85, 0.85,
+                       0.1 );
 
   board.saveEPS( "clipping.eps", 210, 297 );
 
