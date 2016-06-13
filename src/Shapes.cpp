@@ -121,6 +121,14 @@ Shape::moveCenter(Point p, LineWidthFlag lineWidthFlag)
 }
 
 Shape &
+Shape::resize(double width, double height, Shape::LineWidthFlag lineWidthFlag)
+{
+  Rect bbox = boundingBox(lineWidthFlag);
+  scale(width/bbox.width,height/bbox.height);
+  return *this;
+}
+
+Shape &
 Shape::scaleToWidth(double w, Shape::LineWidthFlag lineWidthFlag)
 {
   double factor = w / boundingBox(lineWidthFlag).width;
@@ -561,6 +569,12 @@ Line::scaleAll( double s )
   _y2 *= s;
 }
 
+Line
+Line::resized(double w, double h, LineWidthFlag lineWidthFlag) const
+{
+  return static_cast<Line&>( Line(*this).resize(w,h,lineWidthFlag) );
+}
+
 Line *
 Line::clone() const {
   return new Line(*this);
@@ -701,7 +715,14 @@ Arrow::scaled( double s ) const
   return Arrow::scaled( s, s );
 }
 
-Rect Arrow::boundingBox(Shape::LineWidthFlag) const
+Arrow
+Arrow::resized(double w, double h, Shape::LineWidthFlag lineWidthFlag) const
+{
+  return static_cast<Arrow&>(Arrow(*this).resize(w,h,lineWidthFlag));
+}
+
+Rect
+Arrow::boundingBox(Shape::LineWidthFlag) const
 {
   double dx = _x1 - _x2;
   double dy = _y1 - _y2;
@@ -1006,6 +1027,12 @@ Ellipse::scaleAll( double s )
   _center *= s;
 }
 
+Ellipse
+Ellipse::resized(double w, double h, Shape::LineWidthFlag lineWidthFlag) const
+{
+  return static_cast<Ellipse&>(Ellipse(*this).resize(w,h,lineWidthFlag));
+}
+
 Ellipse *
 Ellipse::clone() const {
   return new Ellipse(*this);
@@ -1219,6 +1246,12 @@ Circle::scaled( double s ) const
   return Circle(*this).scale( s, s );
 }
 
+Circle
+Circle::resized(double w, double h, Shape::LineWidthFlag lineWidthFlag) const
+{
+  return static_cast<Circle&>(Circle(*this).resize(w,h,lineWidthFlag));
+}
+
 void
 Circle::scaleAll( double s )
 {
@@ -1351,6 +1384,12 @@ void
 Polyline::scaleAll( double s )
 {
   _path.scaleAll( s );
+}
+
+Polyline
+Polyline::resized(double w, double h, Shape::LineWidthFlag lineWidthFlag) const
+{
+  return static_cast<Polyline&>( Polyline(*this).resize(w,h,lineWidthFlag));
 }
 
 Polyline *
@@ -1507,6 +1546,12 @@ void
 Rectangle::scaleAll( double s )
 {
   _path.scaleAll( s );
+}
+
+Rectangle
+Rectangle::resized(double w, double h, Shape::LineWidthFlag lineWidthFlag) const
+{
+  return static_cast<Rectangle&>(Rectangle(*this).resize(w,h,lineWidthFlag));
 }
 
 Rectangle *
@@ -1728,6 +1773,12 @@ GouraudTriangle::scaleAll( double s )
   _path.scaleAll( s );
 }
 
+GouraudTriangle
+GouraudTriangle::resized(double w, double h, Shape::LineWidthFlag lineWidthFlag) const
+{
+  return static_cast<GouraudTriangle&>(GouraudTriangle(*this).resize(w,h,lineWidthFlag));
+}
+
 GouraudTriangle *
 GouraudTriangle::clone() const {
   return new GouraudTriangle(*this);
@@ -1874,6 +1925,12 @@ Triangle
 Triangle::scaled( double s ) const
 {
   return static_cast<Triangle &>( Triangle( *this ).scale( s ) );
+}
+
+Triangle
+Triangle::resized(double w, double h, Shape::LineWidthFlag lineWidthFlag) const
+{
+  return static_cast<Triangle&>(Triangle(*this).resize(w,h,lineWidthFlag));
 }
 
 Triangle *

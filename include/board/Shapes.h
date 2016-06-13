@@ -210,6 +210,18 @@ struct Shape {
    */
   virtual Shape & scale( double s ) = 0;
 
+
+  /**
+   * Resize the shape.
+   *
+   * @param width The new width.
+   * @param height The new height.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   *
+   * @return The shape itself.
+   */
+  Shape & resize(double width, double height, LineWidthFlag lineWidthFlag);
+
   /**
    * Scale the shape to a given width.
    *
@@ -745,6 +757,16 @@ struct Line : public Shape {
   void scaleAll( double s ) override;
 
   /**
+   * Returns a resized copy of the line.
+   *
+   * @param w Width of the new line.
+   * @param h Height of the new line.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   * @return A resized copy of the line.
+   */
+  Line resized(double w, double h, LineWidthFlag lineWidthFlag) const;
+
+  /**
    * Returns the bounding box of the line.
    *
    * @return The rectangle of the bounding box.
@@ -876,6 +898,16 @@ struct Arrow : public Line {
    * @return A scaled copy of the arrow.
    */
   Arrow scaled( double s ) const;
+
+  /**
+   * Returns a resized copy of the arrow.
+   *
+   * @param w Width of the new arrow.
+   * @param h Height of the new arrow.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   * @return A resized copy of the arrow.
+   */
+  Arrow resized(double w, double h, LineWidthFlag lineWidthFlag) const;
 
   /**
    * Computes the bounding box of the arrow.
@@ -1064,6 +1096,16 @@ struct Polyline : public Shape {
    */
   void scaleAll( double s ) override;
 
+  /**
+   * Returns a resized copy of the polyline.
+   *
+   * @param w Width of the new polyline.
+   * @param h Height of the new polyline.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   * @return A resized copy of the polyline.
+   */
+  Polyline resized(double w, double h, LineWidthFlag lineWidthFlag) const;
+
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const override;
 
@@ -1187,6 +1229,16 @@ struct Rectangle : public Polyline {
    */
   void scaleAll( double s ) override;
 
+  /**
+   * Returns a resized copy of the rectangle.
+   *
+   * @param w Width of the new rectangle.
+   * @param h Height of the new rectangle.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   * @return A resized copy of the rectangle.
+   */
+  Rectangle resized(double w, double h, LineWidthFlag lineWidthFlag) const;
+
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
                  std::map<Color,int> & colormap ) const override;
@@ -1281,6 +1333,16 @@ struct Triangle : public Polyline {
    */
   Triangle scaled( double s ) const;
 
+  /**
+   * Returns a resized copy of the triangle.
+   *
+   * @param w Width of the new triangle.
+   * @param h Height of the new triangle.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   * @return A resized copy of the triangle.
+   */
+  Triangle resized(double w, double h, LineWidthFlag lineWidthFlag) const;
+
   Triangle * clone() const override;
 
 private:
@@ -1362,6 +1424,16 @@ struct GouraudTriangle : public Polyline {
    * @param s The scaling factor.
    */
   void scaleAll( double s ) override;
+
+  /**
+   * Returns a resized copy of the triangle.
+   *
+   * @param w Width of the new triangle.
+   * @param h Height of the new triangle.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   * @return A resized copy of the triangle.
+   */
+  GouraudTriangle resized(double w, double h, LineWidthFlag lineWidthFlag) const;
 
   /**
    * Sends the triangle to a Postscript document.
@@ -1542,6 +1614,16 @@ struct Ellipse : public Shape {
    */
   void scaleAll( double s ) override;
 
+  /**
+   * Returns a resized copy of the ellipse.
+   *
+   * @param w Width of the new ellipse.
+   * @param h Height of the new ellipse.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   * @return A resized copy of the ellipse.
+   */
+  Ellipse resized(double w, double h, LineWidthFlag lineWidthFlag) const;
+
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const override;
 
@@ -1668,6 +1750,16 @@ struct Circle : public Ellipse {
    * @return A scaled copy of the circle.
    */
   Circle scaled( double s ) const;
+
+  /**
+   * Returns a resized copy of the circle.
+   *
+   * @param w Width of the new circle.
+   * @param h Height of the new circle.
+   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+   * @return A resized copy of the ellipse.
+   */
+  Circle resized(double w, double h, LineWidthFlag lineWidthFlag) const;
 
   /**
    * Scales all the values (positions, dimensions, etc.) associated
