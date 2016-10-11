@@ -1965,7 +1965,7 @@ Text::Text( double x, double y,
 }
 
 Text::Text(Point p,
-           const std::__cxx11::string & text,
+           const std::string & text,
            const Fonts::Font font,
            double size,
            Color color,
