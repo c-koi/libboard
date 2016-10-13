@@ -147,6 +147,7 @@ SET_TARGET_PROPERTIES(board-dynamic PROPERTIES PREFIX "lib")
 
 install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY include/board/ DESTINATION include/board FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY include/board/ DESTINATION include/board FILES_MATCHING PATTERN "*.ih")
 install(TARGETS board DESTINATION lib)
 install(TARGETS board-dynamic DESTINATION lib)
 install(DIRECTORY examples/ DESTINATION share/libboard/examples FILES_MATCHING PATTERN "*.cpp")
