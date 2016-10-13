@@ -49,7 +49,7 @@ LibBoard: A vector graphics C++ library (Version 0.9.5). GREYC laboratory. [Soft
    git clone https://github.com/c-koi/libboard.git
 ```
 
-  * You may also consider [downloading an archive of the latest stable release](https://github.com/c-koi/libboard/releases/tag/v0.9.5).
+  * You may also consider [downloading an archive of the latest stable release](https://github.com/c-koi/libboard/releases/tag/v0.9.4).
 
 ### Author
 
