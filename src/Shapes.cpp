@@ -1055,7 +1055,7 @@ Ellipse::flushPostscript( std::ostream & stream,
     stream << " fill gr" << std::endl;
   }
 
-  if ( _penColor != Color::Null ) {
+  if ( _penColor != Color::Null && _lineWidth != 0.0 ) {
     stream << postscriptProperties(transform) << "\n";
     stream << "gs " << transform.mapX( _center.x ) << " " << transform.mapY( _center.y ) << " tr";
     if ( _angle != 0.0 ) stream << " " << (_angle*180/M_PI) << " rot ";
@@ -1411,7 +1411,7 @@ Polyline::flushPostscript( std::ostream & stream,
     stream << " " << postscriptProperties(transform);
     stream << " fill" << std::endl;
   }
-  if ( _penColor != Color::Null ) {
+  if ( _penColor != Color::Null && _lineWidth != 0.0 ) {
     stream << " " << postscriptProperties(transform) << "\n";
     stream << "n ";
     _path.flushPostscript( stream, transform );
