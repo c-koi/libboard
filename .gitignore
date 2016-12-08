@@ -18,3 +18,11 @@ LICENSE.gz
 include/BoardConfig.h
 CMakeLists.txt.user
 CMakeLists.txt.user.*
+cmake_rebuild
+examples_clean
+examples_images
+examples_md
+sync_doc
+version
+version_tag
+version_update
