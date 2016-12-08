@@ -274,7 +274,7 @@ struct Path {
    */
   Rect boundingBox() const;
 
-  const std::vector<Point> points() const;
+  const std::vector<Point> & points() const;
 
   std::ostream & flush( std::ostream & ) const;
 

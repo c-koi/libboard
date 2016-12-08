@@ -1,5 +1,5 @@
 /**
- * @file   koch.cpp
+ * @file   fern.cpp
  * @author Sebastien Fourey (GREYC)
  *
  * @brief  Draws a Koch fractal.

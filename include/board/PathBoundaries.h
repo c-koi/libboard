@@ -64,10 +64,6 @@ Rect pathBoundingBox(const Path & path,
                      Shape::LineJoin lineJoin,
                      double miterLimit = 4.0);
 
-
-
-
-
 }  // namespace Tools
 
 }  // namespace LibBoard

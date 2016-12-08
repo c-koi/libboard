@@ -303,8 +303,7 @@ Path::boundingBox() const
   return rect;
 }
 
-const
-std::vector<Point> Path::points() const
+const std::vector<Point> & Path::points() const
 {
   return _points;
 }

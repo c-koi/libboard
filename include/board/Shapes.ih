@@ -180,7 +180,7 @@ Polyline::Polyline( const std::vector<Point> & points,
                     const LineCap cap,
                     const LineJoin join,
                     int depth )
-   : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth ),
+     : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth ),
      _path( points, closed )
 {
 }
