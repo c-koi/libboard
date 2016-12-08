@@ -1959,10 +1959,10 @@ Bezier::Bezier(const std::vector<Point> & points,
 
 }
 
-Bezier::Bezier( Point from,
-                Point controlFrom,
-                Point to,
-                Point controlTo,
+Bezier::Bezier( Point p0,
+                Point control0,
+                Point p1,
+                Point control1,
                 Color penColor,
                 Color fillColor,
                 double lineWidth,
@@ -1972,8 +1972,25 @@ Bezier::Bezier( Point from,
                 int depth )
   : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth )
 {
-  _path << from << to;
-  _controls << controlFrom << controlTo;
+  _path << p0 << p1;
+  _controls << control0 << control1;
+}
+
+Bezier::Bezier( double x0, double y0,
+                double xc0, double yc0,
+                double x1, double y1,
+                double xc1, double yc1,
+                Color penColor,
+                Color fillColor,
+                double lineWidth,
+                const LineStyle lineStyle,
+                const LineCap cap,
+                const LineJoin join,
+                int depth )
+  : Shape( penColor, fillColor, lineWidth, lineStyle, cap, join, depth )
+{
+  _path << Point(x0,y0) << Point(x1,y1);
+  _controls << Point(xc0,yc0) << Point(xc1,yc1);
 }
 
 const std::string &
@@ -2082,19 +2099,19 @@ Path Bezier::discretizedPath() const
   ++iPoint;
   while ( iPoint != endPoint ) {
     p1 = Point(iPoint->x, iPoint->y);
-    Point n0 = 3 * (Point(iControl[0].x,iControl[0].y) - p0);
-    Point n1 = 3 * (p1 - Point(iControl[1].x,iControl[1].y));
+    Point t0 = 3 * (Point(iControl[0].x,iControl[0].y) - p0);
+    Point t1 = 3 * (p1 - Point(iControl[1].x,iControl[1].y));
 
     //
     // Discretize a Bezier segment
     //
-    const double a0 = 2 * p0.x- 2 * p1.x + n0.x + n1.x;
-    const double b0 = -3 * p0.x + 3 * p1.x - 2 * n0.x - n1.x;
-    const double c0 = n0.x;
+    const double a0 = 2 * p0.x- 2 * p1.x + t0.x + t1.x;
+    const double b0 = -3 * p0.x + 3 * p1.x - 2 * t0.x - t1.x;
+    const double c0 = t0.x;
     const double d0 = p0.x;
-    const double a1 = 2 * p0.y - 2 * p1.y + n0.y + n1.y;
-    const double b1 = -3 * p0.y + 3 * p1.y- 2 * n0.y - n1.y;
-    const double c1 = n0.y;
+    const double a1 = 2 * p0.y - 2 * p1.y + t0.y + t1.y;
+    const double b1 = -3 * p0.y + 3 * p1.y- 2 * t0.y - t1.y;
+    const double c1 = t0.y;
     const double d1 = p0.y;
     // Compute optimal step
     double previousLength = 0.0;
@@ -2251,11 +2268,7 @@ Bezier::flushTikZ( std::ostream & stream,
 Rect
 Bezier::boundingBox(LineWidthFlag lineWidthFlag) const
 {
-  //  Path all;
-  //  all << _path.points() << _controls.points();
-
   Path path = discretizedPath();
-
   switch (lineWidthFlag) {
   case UseLineWidth:
     return Tools::pathBoundingBox(path,_lineWidth,_lineCap,Shape::RoundJoin);

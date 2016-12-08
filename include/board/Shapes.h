@@ -1508,8 +1508,52 @@ struct Bezier : public Shape {
           const LineJoin join = Shape::defaultLineJoin(),
           int depth = -1 );
 
-  Bezier( Point from, Point controlFrom,
-          Point to, Point controlTo,
+  /**
+   * @brief Bezier
+   * @param p0 Start point
+   * @param control0 Start control point
+   * @param p1 End point
+   * @param control1 End control point
+   * @param penColor
+   * @param fillColor
+   * @param lineWidth
+   * @param lineStyle
+   * @param cap
+   * @param join
+   * @param depth
+   */
+  Bezier( Point p0, Point control0,
+          Point p1, Point control1,
+          Color penColor = Shape::defaultPenColor(),
+          Color fillColor = Shape::defaultFillColor(),
+          double lineWidth = Shape::defaultLineWidth(),
+          const LineStyle lineStyle = Shape::defaultLineStyle(),
+          const LineCap cap = Shape::defaultLineCap(),
+          const LineJoin join = Shape::defaultLineJoin(),
+          int depth = -1 );
+
+  /**
+   * @brief Bezier
+   * @param x0 Start point (x coordinate)
+   * @param y0 Start point (y coordinate)
+   * @param xc0 Start control point (x coordinate)
+   * @param yc0 Start control point (y coordinate)
+   * @param x1 End point (x coordinate)
+   * @param y1 End point (y coordinate)
+   * @param xc1 End control point (x coordinate)
+   * @param yc1 End control point (y coordinate)
+   * @param penColor
+   * @param fillColor
+   * @param lineWidth
+   * @param lineStyle
+   * @param cap
+   * @param join
+   * @param depth
+   */
+  Bezier( double x0, double y0,
+          double xc0, double yc0,
+          double x1, double y1,
+          double xc1, double yc1,
           Color penColor = Shape::defaultPenColor(),
           Color fillColor = Shape::defaultFillColor(),
           double lineWidth = Shape::defaultLineWidth(),
