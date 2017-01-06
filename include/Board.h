@@ -129,22 +129,6 @@ public:
 
   Board scaled( double s );
 
-
-  /**
-   * Set the unit used by the drawSomething methods.
-   *
-   * @param unit The unit to be used in { PT, IN, CM, MM }.
-   */
-  void setUnit( Unit unit );
-
-  /**
-   * Set the unit used by the drawSomething methods.
-   *
-   * @param factor The factor of the unit.
-   * @param unit The unit to be used in { PT, IN, CM, MM }.
-   */
-  void setUnit( double factor, Unit unit );
-
   /**
    * Draws a dot at coordinates (x,y).
    *
