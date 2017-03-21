@@ -210,7 +210,6 @@ struct Shape {
    */
   virtual Shape & scale( double s ) = 0;
 
-
   /**
    * Resize the shape.
    *
@@ -1106,6 +1105,12 @@ struct Polyline : public Shape {
    */
   Polyline resized(double w, double h, LineWidthFlag lineWidthFlag) const;
 
+  /**
+   * @brief Add a hole to the path. Warning: Hole share the polyline line style.
+   * @param path Vertices of the polyline
+   */
+  void addHole(const Path & path);
+
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const override;
 
@@ -1132,6 +1137,7 @@ private:
 
 protected:
   Path _path;
+  std::vector<Path> _holes;
 };
 
 /**

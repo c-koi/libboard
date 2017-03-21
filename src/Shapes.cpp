@@ -1318,6 +1318,11 @@ Polyline &
 Polyline::rotate( double angle, const Point & center )
 {
   _path.rotate( angle, center );
+  int count = _holes.size();
+  for (int i = 0; i < count; ++i) {
+    Path & hole = _holes[i];
+    hole.rotate(angle,center);
+  }
   return *this;
 }
 
@@ -1330,7 +1335,7 @@ Polyline::rotated( double angle, const Point & center ) const
 Polyline &
 Polyline::rotate( double angle )
 {
-  _path.rotate( angle, center() );
+  rotate( angle, center() );
   return *this;
 }
 
@@ -1344,6 +1349,11 @@ Polyline &
 Polyline::translate( double dx, double dy )
 {
   _path.translate( dx, dy );
+  int count = _holes.size();
+  for (int i = 0; i < count; ++i) {
+    Path & hole = _holes[i];
+    hole.translate(dx,dy);
+  }
   return *this;
 }
 
@@ -1357,6 +1367,16 @@ Polyline &
 Polyline::scale( double sx, double sy )
 {
   _path.scale( sx, sy );
+  Point pathCenter = _path.center();
+  int count = _holes.size();
+  for (int i = 0; i < count; ++i) {
+    Path & hole = _holes[i];
+    Point holeShift = hole.center() - pathCenter;
+    hole.scale(sx,sy);
+    holeShift.x *= sx;
+    holeShift.y *= sy;
+    hole.moveCenter(pathCenter+holeShift);
+  }
   updateLineWidth(std::max(sx,sy));
   return *this;
 }
@@ -1383,13 +1403,24 @@ Polyline::scaled( double s) const
 void
 Polyline::scaleAll( double s )
 {
-  _path.scaleAll( s );
+  _path.scaleAll(s);
+  int count = _holes.size();
+  for (int i = 0; i < count; ++i) {
+    Path & hole = _holes[i];
+    hole.scaleAll(s);
+  }
 }
 
 Polyline
 Polyline::resized(double w, double h, Shape::LineWidthFlag lineWidthFlag) const
 {
   return static_cast<Polyline&>( Polyline(*this).resize(w,h,lineWidthFlag));
+}
+
+void Polyline::addHole(const Path & path)
+{
+  _holes.push_back(path);
+  _holes.back().setClosed(true);
 }
 
 Polyline *
@@ -1401,11 +1432,18 @@ void
 Polyline::flushPostscript( std::ostream & stream,
                            const TransformEPS & transform ) const
 {
-  if ( _path.empty() ) return;
+  if ( _path.empty() ) {
+    return;
+  }
   stream << "\n% Polyline\n";
   if ( filled() ) {
     stream << "n ";
-    _path.flushPostscript( stream, transform );
+    _path.getClockwise().flushPostscript( stream, transform );
+    if ( _holes.size() ) {
+      for (unsigned int h = 0; h < _holes.size(); ++h ) {
+        _holes[h].getCounterclockwise().flushPostscript(stream,transform);
+      }
+    }
     stream << " ";
     _fillColor.flushPostscript( stream );
     stream << " " << postscriptProperties(transform);
@@ -1414,7 +1452,12 @@ Polyline::flushPostscript( std::ostream & stream,
   if ( _penColor != Color::Null && _lineWidth != 0.0 ) {
     stream << " " << postscriptProperties(transform) << "\n";
     stream << "n ";
-    _path.flushPostscript( stream, transform );
+    _path.flushPostscript(stream, transform);
+    if ( _holes.size() ) {
+      for (unsigned int h = 0; h < _holes.size(); ++h) {
+        _holes[h].flushPostscript(stream,transform);
+      }
+    }
     stream << " ";
     _penColor.flushPostscript( stream );
     stream << " stroke" << std::endl;
@@ -1459,13 +1502,31 @@ Polyline::flushSVG( std::ostream & stream,
 {
   if ( _path.empty() )
     return;
-  if ( _path.closed() )
-    stream << "<polygon";
-  else
-    stream << "<polyline";
-  stream << svgProperties( transform ) << std::endl;
-  stream << "          points=\"";
-  _path.flushSVGPoints( stream, transform );
+
+  if ( _holes.size() ) {
+    stream << "<path";
+    stream << svgProperties( transform ) << std::endl;
+    stream << "          d=\"";
+    Path p = _path.getClockwise();
+    p.setClosed(true);
+    p.flushSVGCommands(stream, transform);
+    for (unsigned int h = 0; h < _holes.size(); ++h) {
+      p = _holes[h];
+      p.setCounterclockwise();
+      p.setClosed(true);
+      p.flushSVGCommands(stream,transform);
+    }
+  } else {
+    if ( _path.closed() ) {
+      stream << "<polygon";
+    } else {
+      stream << "<polyline";
+    }
+    stream << svgProperties( transform ) << std::endl;
+    stream << "          points=\"";
+    _path.flushSVGPoints( stream, transform );
+  }
+
   stream << "\" />" << std::endl;
 }
 
@@ -2219,7 +2280,9 @@ Bezier::flushFIG( std::ostream & stream,
                   const TransformFIG & transform,
                   std::map<Color,int> & colormap ) const
 {
-  // Not supported yet
+  Tools::unused(stream);
+  Tools::unused(transform);
+  Tools::unused(colormap);
   Tools::warning << "Bezier::flushFIG not supported yet\n";
 }
 
@@ -2260,6 +2323,8 @@ void
 Bezier::flushTikZ( std::ostream & stream,
                    const TransformTikZ & transform ) const
 {
+  Tools::unused(stream);
+  Tools::unused(transform);
   // Not supported yet
   Tools::warning << "Bezier::flushTikZ not supported yet\n";
 }

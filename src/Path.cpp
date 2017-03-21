@@ -145,6 +145,24 @@ Path::translated( double dx, double dy ) const
   return res;
 }
 
+
+Path &
+Path::moveCenter(double x, double y)
+{
+  Point c = center();
+  translate(x-c.x,y-c.y);
+  return *this;
+}
+
+Path &
+Path::moveCenter(Point p)
+{
+  Point c = center();
+  translate(p.x-c.x,p.y-c.y);
+  return *this;
+}
+
+
 Path &
 Path::scale( double sx, double sy )
 {
@@ -248,8 +266,9 @@ Path::flushSVGCommands( std::ostream & stream,
     count = ( count + 1 ) % 6;
     if ( !count ) stream << "\n                  ";
   }
-  if ( _closed )
+  if ( _closed ) {
     stream << " Z" << std::endl;
+  }
 }
 
 void
@@ -286,6 +305,60 @@ Path::flushTikZPoints( std::ostream & stream,
            << '(' << transform.mapX( i->x ) << "," << transform.mapY( i->y ) << ')';
     ++i;
   }
+}
+
+bool Path::isClockwise() const
+{
+  if ( _points.size() < 3 ) {
+    return true;
+  }
+  double sum = 0.0;
+  std::vector< Point >::const_iterator it = _points.begin();
+  std::vector< Point >::const_iterator end = _points.end();
+  Point previous = _points.front();
+  ++it;
+  while ( it != end ) {
+    sum += previous.x * (*it).y;
+    sum -= previous.y * (*it).x;
+    previous = *it;
+    ++it;
+  }
+  sum += previous.x * _points.front().y;
+  sum -= previous.y * _points.front().x;
+  return sum >= 0;
+}
+
+bool Path::isCounterclockwise() const
+{
+  return !isClockwise();
+}
+
+void Path::setClockwise()
+{
+  if ( isCounterclockwise() ) {
+    std::reverse(_points.begin(),_points.end());
+  }
+}
+
+void Path::setCounterclockwise()
+{
+  if ( isClockwise() ) {
+    std::reverse(_points.begin(),_points.end());
+  }
+}
+
+Path Path::getClockwise() const
+{
+  Path p(*this);
+  p.setClockwise();
+  return p;
+}
+
+Path Path::getCounterclockwise() const
+{
+  Path p(*this);
+  p.setCounterclockwise();
+  return p;
 }
 
 Rect

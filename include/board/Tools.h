@@ -113,6 +113,8 @@ const char * temporaryFilename( const char * extension );
 
 unsigned int boardRand();
 
+template<typename T> inline void unused(const T&, ...) {}
+
 }  // namespace Tools
 
 }  // namespace LibBoard

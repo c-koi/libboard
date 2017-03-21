@@ -206,6 +206,21 @@ struct Path {
   Path translated( double dx, double dy ) const;
 
   /**
+   * @brief Translate the center to a given position.
+   * @param x
+   * @param y
+   * @return The (translated) path itself
+   */
+  Path & moveCenter(double x, double y);
+
+  /**
+   * @brief Translate the center to a given position.
+   * @param p
+   * @return The (translated) path itself
+   */
+  Path & moveCenter(Point p);
+
+  /**
    * Apply a scaling factor to the path along each axis.
    *
    * @param sx The scaling factor along the x axis.
@@ -266,6 +281,40 @@ struct Path {
 
   void flushTikZPoints( std::ostream & stream,
                         const TransformTikZ & transform ) const;
+
+  /**
+   * @brief Tell if the points of the path are ordered clockwise.
+   * @return true if the points are ordered clockwise, otherwise false.
+   */
+  bool isClockwise() const;
+
+  /**
+   * @brief Tell if the points of the path are ordered counterclockwise.
+   * @return true if the points are ordered counterclockwise, otherwise false.
+   */
+  bool isCounterclockwise() const;
+
+  /**
+   * @brief Make the path clockwise
+   */
+  void setClockwise();
+
+  /**
+   * @brief Make the path counterclockwise
+   */
+  void setCounterclockwise();
+
+  /**
+   * @brief Return a clockwise copy of the path
+   * @return A clockwise copy of the path
+   */
+  Path getClockwise() const;
+
+  /**
+   * @brief Return a counterclockwise copy of the path
+   * @return A counterclockwise copy of the path
+   */
+  Path getCounterclockwise() const;
 
   /**
    * Compute the bounding box of the path.
