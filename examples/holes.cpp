@@ -48,9 +48,9 @@ int main( int , char *[] )
   board.append(board.last<Polyline>(),Board::Right,Board::AlignCenter);
 
 
-  Polyline square(true,Color::Black,Color(10,20,130),0.1);
+  Polyline square(true,Color::Black,Color(70,70,130),0.1);
   square << Point(-110,110) << Point(110,110) << Point(110,-110) << Point(-110,-110);
-  int n = 40 ;
+  int n = 80 ;
   std::set<std::pair<int,int>> holes;
   while ( n-- ) {
     holes.insert(std::make_pair((int)(rand()%20)-10,(int)(rand()%20)-10));
@@ -59,11 +59,11 @@ int main( int , char *[] )
   while (it != holes.end()) {
     Path hole;
     Point p(it->first*10,it->second*10);
-    hole << Point(p.x-4.5,p.y+4.5) << Point(p.x+4.5,p.y+4.5) << Point(p.x+4.5,p.y-4.5) << Point(p.x-4.5,p.y-4.5);
+    hole << Point(p.x-5,p.y+5) << Point(p.x+5,p.y+5) << Point(p.x+5,p.y-5) << Point(p.x-5,p.y-5);
     square.addHole(hole);
     ++it;
   }
-  board << square.scaled(2);
+  board << square.scaled(3).translated(1000,0).rotated(45*Board::Degree);
 
   //  board << Polyline(losange,Shape::defaultPenColor(),Color::White);
 

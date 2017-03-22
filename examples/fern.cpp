@@ -2,7 +2,7 @@
  * @file   fern.cpp
  * @author Sebastien Fourey (GREYC)
  *
- * @brief  Draws a Koch fractal.
+ * @brief  Draws a Fern fractal.
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -48,6 +48,7 @@ int main( int , char *[] )
   board.setLineWidth(0.0);
   board.setPenColor(Color::Null);
   board.setFillColor(Color::Red);
-  drawFern(board,1<<19);
+  drawFern(board,1<<17);
   board.saveEPS( "fern.eps", Board::A4 );
+  board.saveSVG( "fern.svg", Board::A4 );
 }
