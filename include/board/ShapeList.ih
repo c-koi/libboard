@@ -25,7 +25,7 @@
  */
 
 #if defined( max )
-#undef max 
+#undef max
 #define _HAS_MSVC_MAX_ true
 #endif
 
@@ -40,7 +40,13 @@ ShapeList::last( const std::size_t position )
 {
   if ( position < _shapes.size() ) {
     std::vector<Shape*>::reverse_iterator it = _shapes.rbegin() + position;
-    return dynamic_cast<T&>( *(*it) );
+    Shape * pshape = *it;
+    T * result = dynamic_cast<T*>( pshape );
+    if ( !result ) {
+      std::cerr << "Error: ShapeList::last<> called with invalid result type\n";
+      exit(-1);
+    }
+    return dynamic_cast<T&>( *result );
   } else {
     Tools::error << "Trying to access an element that does not exist ("
                  << position << "/" << _shapes.size() << ").\n";

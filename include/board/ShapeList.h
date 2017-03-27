@@ -43,7 +43,7 @@ struct Group;
  * @brief A group of shapes
  */
 struct ShapeList : public Shape {
-  
+
   enum Direction { Top, Right, Bottom, Left };
   enum Alignment { AlignTop, AlignBottom, AlignCenter, AlignLeft, AlignRight };
 
@@ -99,7 +99,7 @@ struct ShapeList : public Shape {
    * @return
    */
   const std::string & name() const;
-  
+
   ShapeList & clear();
 
   ShapeList & rotate( double angle, const Point & center );
@@ -129,10 +129,10 @@ struct ShapeList : public Shape {
    * @param s The scaling factor.
    */
   void scaleAll( double s );
-  
+
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const;
-  
+
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
                  std::map<Color,int> & colormap ) const;
@@ -144,7 +144,7 @@ struct ShapeList : public Shape {
                   const TransformTikZ & transform ) const;
 
   Rect boundingBox(LineWidthFlag) const;
-  
+
   virtual int minDepth() const;
 
   virtual int maxDepth() const;
@@ -152,7 +152,7 @@ struct ShapeList : public Shape {
   void shiftDepth( int shift );
 
   ShapeList * clone() const;
-  
+
   /**
    * Adds a shape to the shape list. If the shape has no given depth
    * or is a compound shape (ShapeList) then it is placed on top of
@@ -172,7 +172,7 @@ struct ShapeList : public Shape {
    * @return
    */
   ShapeList & operator+=( const Shape & shape );
-  
+
 
   /**
    * Append a shape beside the shapelist.
@@ -244,7 +244,7 @@ struct ShapeList : public Shape {
    * @param copies The number of copies.
    */
   ShapeList & dup( std::size_t copies  = 1 );
-  
+
   /**
    * Return the last inserted shape with its actual type, if specified (otherwise, a Shape &).
    *
@@ -282,7 +282,7 @@ struct ShapeList : public Shape {
 private:
 
   static const std::string _name; /**< The generic name of the shape. */
-  
+
 protected:
 
   void addShape( const Shape & shape, double scaleFactor );
@@ -302,15 +302,15 @@ protected:
  * when rendered in either an SVG of a FIG file, it is a true compound element.
  */
 struct Group : public ShapeList {
-  
+
   Group( int depth = -1 )
     : ShapeList( depth ), _clippingPath( true /* closed path */ ) { }
-  
+
   Group( const Group & other )
     : ShapeList( other ), _clippingPath( other._clippingPath ) { }
 
   ~Group() { }
-  
+
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
    *
@@ -321,23 +321,23 @@ struct Group : public ShapeList {
   Group & rotate( double angle, const Point & center );
 
   Group & rotate( double angle );
-  
+
   Group rotated( double angle, const Point & center );
-  
+
   Group rotated( double angle );
-  
+
   Group & translate( double dx, double dy );
-  
+
   Group translated( double dx, double dy );
-  
+
   Group & scale( double sx, double sy );
-  
+
   Group & scale( double s );
-  
+
   Group scaled( double sx, double sy );
-  
+
   Group scaled( double s );
-  
+
   /**
    * Define a clipping rectangle for the group.
    *
@@ -365,7 +365,7 @@ struct Group : public ShapeList {
 
   void flushPostscript( std::ostream & stream,
                         const TransformEPS & transform ) const;
-  
+
   void flushFIG( std::ostream & stream,
                  const TransformFIG & transform,
                  std::map<Color,int> & colormap ) const;

@@ -24,13 +24,23 @@ int main( int , char *[] )
                    Point(30,10), Point(30,10) + Point(-5,5),
                    Color::Red ).rotated(45);
 
-  board << Bezier( Point(0,0), Point(0,0) + Point(0,20),
-                   Point(-30,0), Point(-30,0) + Point(0,-15),
-                   Color::Green,
-                   Color::Null,
-                   1.0).rotated(45);
 
-  board << Polyline(board.last<Bezier>().discretizedPath()).translated(100,100);
+  Bezier b( Point(0,0), Point(0,0) + Point(0,20),
+            Point(-30,0), Point(-30,0) + Point(0,-15),
+            Color::Green,
+            Color::Null,
+            1.0);
+
+  ShapeList l;
+  l << b << Rectangle(b.boundingBox(Board::UseLineWidth),Color::Black,Color::Null,1.0);
+
+  board << l.rotated(45);
+  board << l.rotated(45).translated(100,0).scaled(3);
+  board << l.rotated(45).translated(200,0).scaled(3,1);
+
+
+  board << Polyline(b.discretizedPath()).translated(300,100);
+
 
 
   board.saveSVG( "bezier.svg", Board::BoundingBox );
