@@ -364,8 +364,9 @@ Path Path::getCounterclockwise() const
 Rect
 Path::boundingBox() const
 {
-  if ( _points.empty() )
+  if ( _points.empty() ) {
     return Rect( 0, 0, 0, 0 );
+  }
   std::vector< Point >::const_iterator it = _points.begin();
   std::vector< Point >::const_iterator end = _points.end();
   Rect rect(*it,0.0,0.0);
