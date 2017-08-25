@@ -52,7 +52,7 @@ public:
 
   inline Color( const bool valid = true );
 
-  inline Color( const std::string& rgb, unsigned char alpha = 255 );
+  inline Color( const std::string& htmlColor, unsigned char alpha = 255 );
 
   inline void red( unsigned char red );
   inline void green( unsigned char green );
@@ -174,7 +174,7 @@ inline Color::Color( const bool valid )
   }
 }
 
-inline Color::Color( const std::string& rgb, unsigned char alpha )
+inline Color::Color( const std::string& htmlColor, unsigned char alpha )
   :_alpha( alpha )
 {
   // Expects an HTML color definition (#AABBCC)
@@ -182,9 +182,9 @@ inline Color::Color( const std::string& rgb, unsigned char alpha )
 
   unsigned int r, g, b;
 
-  sscanf(rgb.substr(1, 2).c_str(), "%x", &r);
-  sscanf(rgb.substr(3, 2).c_str(), "%x", &g);
-  sscanf(rgb.substr(5, 2).c_str(), "%x", &b);
+  sscanf(htmlColor.substr(1, 2).c_str(), "%x", &r);
+  sscanf(htmlColor.substr(3, 2).c_str(), "%x", &g);
+  sscanf(htmlColor.substr(5, 2).c_str(), "%x", &b);
 
   _red = (int) r;
   _green = (int) g;
