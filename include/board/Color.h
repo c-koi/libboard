@@ -29,6 +29,7 @@
 #include <cstdio>
 #include <ostream>
 #include <string>
+#include "Tools.h"
 
 namespace LibBoard {
 
@@ -52,7 +53,12 @@ public:
 
   inline Color( const bool valid = true );
 
-  inline Color( const std::string& htmlColor, unsigned char alpha = 255 );
+  /**
+   * @brief Build a color from an HTML color string (#RRGGBB)
+   * @param htmlColor An HTML color string
+   * @param alpha The alpha value
+   */
+  inline Color( const std::string & htmlColor, unsigned char alpha = 255 );
 
   inline void red( unsigned char red );
   inline void green( unsigned char green );
@@ -63,17 +69,17 @@ public:
   inline unsigned char green() const;
   inline unsigned char blue() const;
   inline unsigned char alpha() const;
-  
+
   inline Color & setRGBi( const unsigned char red,
                           const unsigned char green,
                           const unsigned char blue,
                           const unsigned char alpha = 255 );
-  
+
   Color & setRGBf( float red,
                    float green,
                    float blue,
                    float alpha = 1.0 );
-  
+
   bool operator==( const Color & other ) const;
 
   bool operator!=( const Color & other ) const;
@@ -95,7 +101,7 @@ public:
   std::string svgAlpha( const char * prefix ) const;
 
   std::string postscript() const;
-  
+
   /**
    * Return a string representation of the color usable in TikZ commands.
    * Use the corresponding named color (or a mixture of a named color and black)
@@ -174,21 +180,20 @@ inline Color::Color( const bool valid )
   }
 }
 
-inline Color::Color( const std::string& htmlColor, unsigned char alpha )
+inline Color::Color( const std::string & htmlColor, unsigned char alpha )
   :_alpha( alpha )
 {
-  // Expects an HTML color definition (#AABBCC)
-  // TODO: add error handling
-
   unsigned int r, g, b;
-
-  sscanf(htmlColor.substr(1, 2).c_str(), "%x", &r);
-  sscanf(htmlColor.substr(3, 2).c_str(), "%x", &g);
-  sscanf(htmlColor.substr(5, 2).c_str(), "%x", &b);
-
-  _red = (int) r;
-  _green = (int) g;
-  _blue = (int) b;
+  if ( sscanf(htmlColor.substr(1, 2).c_str(), "%x", &r) == 1
+       && sscanf(htmlColor.substr(3, 2).c_str(), "%x", &g) == 1
+       && sscanf(htmlColor.substr(5, 2).c_str(), "%x", &b) == 1 ) {
+    _red = (int) r;
+    _green = (int) g;
+    _blue = (int) b;
+  } else {
+    *this = Color::Null;
+    Tools::error << "Color::Color(htmlcolor): cannot parse color string\n";
+  }
 }
 
 inline void
@@ -203,22 +208,22 @@ Color::green( unsigned char green )
   _green = green;
 }
 
-inline void 
+inline void
 Color::blue( unsigned char blue )
 {
   _blue = blue;
 }
 
-inline void 
+inline void
 Color::alpha( unsigned char alpha )
 {
   _alpha = alpha;
 }
 
-inline unsigned char Color::red() const { return _red; } 
-inline unsigned char Color::green() const { return _green; } 
-inline unsigned char Color::blue() const { return _blue; } 
-inline unsigned char Color::alpha() const { return _alpha; } 
+inline unsigned char Color::red() const { return _red; }
+inline unsigned char Color::green() const { return _green; }
+inline unsigned char Color::blue() const { return _blue; }
+inline unsigned char Color::alpha() const { return _alpha; }
 
 }
 
