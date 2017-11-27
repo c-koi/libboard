@@ -8,6 +8,7 @@ ECHO=echo
 [ -f /usr/ucb/echo ] && ECHO=/usr/ucb/echo
 DOXYGEN=doxygen
 SANITIZE=""
+CXXVERSION="11"
 
 #
 # Get version number from CMakeLists.txt
@@ -50,6 +51,9 @@ do
     --sanitize-address )
 	SANITIZE="-fsanitize=address"
 	;;
+    --force-cpp03 )
+	CXXVERSION="03"
+	;;
     -help | --help | --hel | --he)
     # Omit some internal or obsolete options to make the list less imposing.
     # This message is too long to be a string in the A/UX 3.1 sh.
@@ -64,6 +68,7 @@ Directory and file names:
   --no-doc                don't build the documentation [yes if Doxygen is present]
   --static		  build only the static version of the library [both static and dynamic]
   --sanitize-address      build using -fsanitize=address option
+  --force-cpp03           force C++03 even if compiler supports C++11
 EOF
     exit 0;
     ;;
@@ -147,6 +152,32 @@ if [ -n "$DOXYGEN" ]; then
     fi
 fi
 
+
+##
+## C++ version
+##
+if [ $CXXVERSION = "11" ]; then
+    echo -n "Checking that compiler supports C++11..."
+    cat > cpp11.cpp <<EOF
+    int main()
+    {
+      auto x = 1 + 2;
+      return 0;
+    }
+EOF
+    if ( ${CXX} --std=c++11 cpp11.cpp -o a.out > /dev/null 2>&1 ); then
+	echo "yes"
+    else
+	echo "no"
+	CXXVERSION="03"
+    fi
+    rm -f cpp11.cpp a.out
+fi
+if [ $CXXVERSION = "03" ]; then
+    ${ECHO} "Compiling with C++98/03 standard."
+fi
+CXXVERSION="--std=c++${CXXVERSION}"
+
 ##
 ## GZip
 ##
@@ -212,8 +243,8 @@ AR=ar
 ARFLAGS=rsv
 LN=ln -s
 
-CXXFLAGSOBJ=-O3 -ansi -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include ${CXX64FLAGS}
-CXXFLAGSEXEC=-O3 -ansi  -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include
+CXXFLAGSOBJ=-O3 ${CXXVERSION} -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include ${CXX64FLAGS}
+CXXFLAGSEXEC=-O3 ${CXXVERSION} -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include
 
 .PHONY: all clean distclean install examples lib doc
 
