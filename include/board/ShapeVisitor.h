@@ -47,6 +47,10 @@ namespace LibBoard {
     virtual void visit( const Shape & shape ) const = 0;
   };
 
+  /**
+   * @brief The BoundingBoxExtractor struct may be used to compute the
+   *        bounding box of a composite shape tree.
+   */
   struct BoundingBoxExtractor : public ConstShapeVisitor {
     BoundingBoxExtractor( ShapeList & );
     void visit( const Shape & ) override;
@@ -56,11 +60,19 @@ namespace LibBoard {
     ShapeList & _shapeList;
   };
 
+  /**
+   * @brief The BoundingBoxViewer struct may be used to display the bounding
+   *        boxes of the shapes in a composite tree.
+   */
   struct BoundingBoxViewer : public ConstShapeVisitor {
     void visit( const Shape & ) override;
     void visit( const Shape & ) const override;
   };
 
+  /**
+   * @brief The ShapeCounter struct may be used to count shapes in
+   *        the composite shapes tree.
+   */
   struct ShapeCounter : public ConstShapeVisitor {
     ShapeCounter();
     void clear();
