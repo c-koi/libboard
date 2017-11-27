@@ -1316,16 +1316,16 @@ Board::save(const char * filename, PageSize size, double margin , Unit unit) con
  * @example examples/example4.cpp
  * @example examples/flag.cpp
  * @example examples/graph.cpp
+ * @example examples/images.cpp
  * @example examples/koch.cpp
- * @example examples/line_style.cpp
  * @example examples/line_segment.cpp
+ * @example examples/line_style.cpp
  * @example examples/logo.cpp
  * @example examples/ruler.cpp
  * @example examples/scale_ellipse.cpp
  * @example examples/stroke_path.cpp
  * @example examples/tilings.cpp
  * @example examples/traversal.cpp
- * @example examples/Makefile
  */
 
 /**
