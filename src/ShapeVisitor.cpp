@@ -60,4 +60,31 @@ void BoundingBoxViewer::visit(Shape & shape) const
   std::cout << shape.name() << " - " << shape.boundingBox(Board::UseLineWidth) << std::endl;
 }
 
+ShapeCounter::ShapeCounter()
+  :_count(0)
+{
+}
+
+void ShapeCounter::clear()
+{
+  _count = 0;
+}
+
+std::size_t ShapeCounter::value() const
+{
+  return _count;
+}
+
+void ShapeCounter::visit(Shape & shape)
+{
+  if ( typeid(shape) != typeid(Group) ) {
+    ++_count;
+  }
+}
+
+void ShapeCounter::visit(Shape & ) const
+{
+  Tools::warning << "ShapeCounter(): Visiting using the const method does not make sense.\n";
+}
+
 }

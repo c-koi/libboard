@@ -289,6 +289,86 @@ struct ShapeList : public Shape {
    */
   virtual void accept( const ShapeVisitor & visitor );
 
+  /**
+   * @brief The TopLevelIterator struct
+   *
+   * Allows the traversal of a ShapeList using an STL-like syntax.
+   */
+  struct TopLevelIterator {
+    inline TopLevelIterator(std::vector<Shape*>::iterator it);
+    inline Shape & operator*();
+    inline TopLevelIterator & operator++();
+    inline TopLevelIterator operator++(int);
+    inline bool operator==(const TopLevelIterator & other);
+    inline bool operator!=(const TopLevelIterator & other);
+  private:
+    std::vector<Shape*>::iterator _it;
+  };
+
+  /**
+   * @brief The TopLevelConstIterator struct
+   *
+   * Allows the traversal of a const ShapeList using an STL-like syntax.
+   */
+  struct TopLevelConstIterator {
+    inline TopLevelConstIterator(std::vector<Shape*>::const_iterator it);
+    inline const Shape & operator*();
+    inline TopLevelConstIterator & operator++();
+    inline TopLevelConstIterator operator++(int);
+    inline bool operator==(const TopLevelConstIterator & other);
+    inline bool operator!=(const TopLevelConstIterator & other);
+  private:
+    std::vector<Shape*>::const_iterator _it;
+  };
+
+  /**
+   * @brief begin
+   * @return An iterator referencing the first shape of the ShapeList.
+   */
+  inline TopLevelIterator begin();
+
+  /**
+   * @brief end
+   * @return An iterator pointing at the end of the ShapeList.
+   */
+  inline TopLevelIterator end();
+
+  /**
+   * @brief begin
+   * @return A const iterator referencing the first shape of the ShapeList.
+   */
+  inline TopLevelConstIterator begin() const;
+
+  /**
+   * @brief cbegin
+   * @return A const iterator referencing the first shape of the ShapeList.
+   */
+  inline TopLevelConstIterator cbegin() const;
+
+  /**
+   * @brief end
+   * @return A const iterator pointing at the end of the ShapeList.
+   */
+  inline TopLevelConstIterator end() const;
+
+  /**
+   * @brief cend
+   * @return A const iterator pointing at the end of the ShapeList.
+   */
+  inline TopLevelConstIterator cend() const;
+
+  //  /**
+  //   * @brief Recursively counts the number of shapes in the list.
+  //   * @return The total number of shapes in the
+  //   */
+  //  std::size_t deepSize() const;
+
+  /**
+   * @brief The number of shapes in the list (at top level).
+   * @return The number of shapes (at top level).
+   */
+  inline std::size_t size() const;
+
 private:
 
   static const std::string _name; /**< The generic name of the shape. */

@@ -30,6 +30,7 @@
 #include <typeinfo>
 #include <utility>
 #include "board/Tools.h"
+#include "board/ShapeVisitor.h"
 
 #if defined( max )
 #undef max
@@ -614,6 +615,13 @@ ShapeList::accept(const ShapeVisitor & visitor)
     (*i++)->accept( visitor );
   }
 }
+
+//std::size_t ShapeList::deepSize() const
+//{
+//  ShapeCounter counter;
+//  accept(counter);
+//  return counter.value();
+//}
 
 //
 // Definition of the Group methods.

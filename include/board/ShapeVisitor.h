@@ -29,7 +29,7 @@
 #if __cplusplus<201100
 #define override
 #endif
-
+#include <cstddef> // For std::size_t
 
 namespace LibBoard {
 
@@ -56,6 +56,15 @@ namespace LibBoard {
     void visit( Shape & ) const override;
   };
 
+  struct ShapeCounter : public ShapeVisitor {
+    ShapeCounter();
+    void clear();
+    std::size_t value() const;
+    void visit( Shape & ) override;
+    void visit( Shape & ) const override;
+  private:
+    std::size_t _count;
+  };
 
 }
 

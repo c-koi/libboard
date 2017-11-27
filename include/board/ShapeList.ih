@@ -65,6 +65,106 @@ T & ShapeList::topLevelFindLast( std::size_t position )
   throw Exception("topLevelFindLast<T>(): no such shape type found (" + std::string(typeid(T).name()) + ")");
 }
 
+ShapeList::TopLevelIterator::TopLevelIterator(std::vector<Shape*>::iterator it)
+  :_it(it)
+{
+}
+
+Shape & ShapeList::TopLevelIterator::operator*()
+{
+  return **_it;
+}
+
+ShapeList::TopLevelIterator & ShapeList::TopLevelIterator::operator++()
+{
+  ++_it;
+  return *this;
+}
+
+ShapeList::TopLevelIterator ShapeList::TopLevelIterator::operator++(int)
+{
+  TopLevelIterator previous(*this);
+  ++_it;
+  return previous;
+}
+
+bool ShapeList::TopLevelIterator::operator==(const TopLevelIterator & other)
+{
+  return _it == other._it;
+}
+
+bool ShapeList::TopLevelIterator::operator!=(const TopLevelIterator & other)
+{
+  return _it != other._it;
+}
+
+ShapeList::TopLevelConstIterator::TopLevelConstIterator(std::vector<Shape*>::const_iterator it)
+  :_it(it)
+{
+}
+
+const Shape & ShapeList::TopLevelConstIterator::operator*()
+{
+  return **_it;
+}
+
+ShapeList::TopLevelConstIterator & ShapeList::TopLevelConstIterator::operator++()
+{
+  ++_it;
+  return *this;
+}
+
+ShapeList::TopLevelConstIterator ShapeList::TopLevelConstIterator::operator++(int)
+{
+  TopLevelConstIterator previous(*this);
+  ++_it;
+  return previous;
+}
+
+bool ShapeList::TopLevelConstIterator::operator==(const TopLevelConstIterator & other)
+{
+  return _it == other._it;
+}
+
+bool ShapeList::TopLevelConstIterator::operator!=(const TopLevelConstIterator & other)
+{
+  return _it != other._it;
+}
+
+ShapeList::TopLevelIterator ShapeList::begin()
+{
+  return TopLevelIterator(_shapes.begin());
+}
+
+ShapeList::TopLevelIterator ShapeList::end()
+{
+  return TopLevelIterator(_shapes.end());
+}
+
+ShapeList::TopLevelConstIterator ShapeList::begin() const
+{
+  return TopLevelConstIterator(_shapes.begin());
+}
+
+ShapeList::TopLevelConstIterator ShapeList::cbegin() const
+{
+  return TopLevelConstIterator(_shapes.begin());
+}
+
+ShapeList::TopLevelConstIterator ShapeList::end() const
+{
+  return TopLevelConstIterator(_shapes.end());
+}
+
+ShapeList::TopLevelConstIterator ShapeList::cend() const
+{
+  return TopLevelConstIterator(_shapes.end());
+}
+
+std::size_t ShapeList::size() const
+{
+  return _shapes.size();
+}
 
 #if defined( _HAS_MSVC_MAX_ )
 #define max(A,B) ((A)>(B)?(A):(B))
