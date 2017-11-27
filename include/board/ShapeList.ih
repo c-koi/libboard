@@ -25,7 +25,7 @@
  */
 
 #if defined( max )
-#undef max 
+#undef max
 #define _HAS_MSVC_MAX_ true
 #endif
 
@@ -47,6 +47,24 @@ ShapeList::last( const std::size_t position )
     throw -1;
   }
 }
+
+template<typename T>
+T & ShapeList::topLevelFindLast( std::size_t position )
+{
+  std::vector<Shape*>::iterator it = _shapes.begin();
+  while ( it != _shapes.end() ) {
+    if ( typeid(**it) == typeid(T) ) {
+      if ( ! position ) {
+        return static_cast<T&>(**it);
+      } else {
+        --position;
+      }
+    }
+    ++it;
+  }
+  throw Exception("topLevelFindLast<T>(): no such shape type found (" + std::string(typeid(T).name()) + ")");
+}
+
 
 #if defined( _HAS_MSVC_MAX_ )
 #define max(A,B) ((A)>(B)?(A):(B))

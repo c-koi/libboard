@@ -78,9 +78,13 @@ struct Shape {
    * @param penColor The pen color of the shape.
    * @param fillColor The fill color of the shape.
    * @param lineWidth The line thickness.
+   * @param style The line style.
+   * @param cap The line cap style.
+   * @param join The line join style.
    * @param depth The depth of the shape.
    */
-  inline Shape( Color penColor, Color fillColor,
+  inline Shape( Color penColor,
+                Color fillColor,
                 double lineWidth,
                 LineStyle style,
                 const LineCap cap,

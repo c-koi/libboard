@@ -37,4 +37,10 @@
 
 #define _BOARD_VERSION_STRING_  BOARD_XSTRINGIFY( _BOARD_VERSION_ )
 
+#if __cplusplus<201100
+#define BOARD_NOEXCEPT throw()
+#else
+#define BOARD_NOEXCEPT noexcept
+#endif
+
 #endif

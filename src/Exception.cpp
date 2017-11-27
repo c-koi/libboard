@@ -1,10 +1,10 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   Board.h
+ * @file   Exception.cpp
  * @author Sebastien Fourey (GREYC)
+ * @date   Nov 2017
  *
- * @brief  Declaration of the Board class.
- *
+ * @brief  The Exception type.
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -23,24 +23,28 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_CONFIG_H_
-#define _BOARD_CONFIG_H_
+#include "board/Exception.h"
 
-#define _BOARD_HAVE_MAGICKPLUSPLUS_ @Board_Have_MagickPlusPlus@
+namespace LibBoard {
 
-#define _BOARD_WIN32_ @Board_Win32@
+Exception::Exception() BOARD_NOEXCEPT
+{ }
 
-#define _BOARD_VERSION_ @LibBoard_VERSION@
+Exception::Exception(const char * what) BOARD_NOEXCEPT
+  :_what(what)
+{ }
 
-#define BOARD_STRINGIFY( X ) # X
-#define BOARD_XSTRINGIFY( X ) BOARD_STRINGIFY( X )
+Exception::Exception(const std::string & what) BOARD_NOEXCEPT
+  :_what(what)
+{ }
 
-#define _BOARD_VERSION_STRING_  BOARD_XSTRINGIFY( _BOARD_VERSION_ )
+Exception::~Exception() BOARD_NOEXCEPT
+{
+}
 
-#if __cplusplus<201100
-#define BOARD_NOEXCEPT throw()
-#else
-#define BOARD_NOEXCEPT noexcept
-#endif
+const char * Exception::what() const BOARD_NOEXCEPT
+{
+  return _what.c_str();
+}
 
-#endif
+}

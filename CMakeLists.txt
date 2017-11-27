@@ -109,6 +109,7 @@ LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib/ )
 SET(lib_src
   src/Board.cpp
   src/Color.cpp
+  src/Exception.cpp
   src/Rect.cpp
   src/Path.cpp
   src/Shapes.cpp
@@ -124,6 +125,7 @@ SET(lib_src
 
   include/Board.h
   include/board/Color.h
+  include/board/Exception.h
   include/board/Image.h
   include/board/PSFonts.h
   include/board/Path.h
