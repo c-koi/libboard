@@ -290,6 +290,20 @@ struct ShapeList : public Shape {
   virtual void accept( const ShapeVisitor & visitor );
 
   /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept( ConstShapeVisitor & visitor ) const override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept( const ConstShapeVisitor & visitor ) const override;
+
+  /**
    * @brief The TopLevelIterator struct
    *
    * Allows the traversal of a ShapeList using an STL-like syntax.
@@ -357,11 +371,11 @@ struct ShapeList : public Shape {
    */
   inline TopLevelConstIterator cend() const;
 
-  //  /**
-  //   * @brief Recursively counts the number of shapes in the list.
-  //   * @return The total number of shapes in the
-  //   */
-  //  std::size_t deepSize() const;
+  /**
+   * @brief Recursively counts the number of shapes in the list.
+   * @return The total number of shapes in the
+   */
+  std::size_t deepSize() const;
 
   /**
    * @brief The number of shapes in the list (at top level).

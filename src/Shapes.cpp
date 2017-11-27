@@ -293,6 +293,18 @@ Shape::accept(const ShapeVisitor & visitor)
   visitor.visit(*this);
 }
 
+void
+Shape::accept(ConstShapeVisitor & visitor) const
+{
+  visitor.visit(*this);
+}
+
+void
+Shape::accept(const ConstShapeVisitor & visitor) const
+{
+  visitor.visit(*this);
+}
+
 /*
  * Dot
  */

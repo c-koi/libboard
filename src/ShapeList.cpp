@@ -616,12 +616,34 @@ ShapeList::accept(const ShapeVisitor & visitor)
   }
 }
 
-//std::size_t ShapeList::deepSize() const
-//{
-//  ShapeCounter counter;
-//  accept(counter);
-//  return counter.value();
-//}
+void ShapeList::accept(ConstShapeVisitor & visitor) const
+{
+  std::vector< Shape* >::const_iterator i = _shapes.begin();
+  std::vector< Shape* >::const_iterator end = _shapes.end();
+  while ( i != end ) {
+    const Shape & shape = **i;
+    shape.accept( visitor );
+    ++i;
+  }
+}
+
+void ShapeList::accept(const ConstShapeVisitor & visitor) const
+{
+  std::vector< Shape* >::const_iterator i = _shapes.begin();
+  std::vector< Shape* >::const_iterator end = _shapes.end();
+  while ( i != end ) {
+    const Shape & shape = **i;
+    shape.accept( visitor );
+    ++i;
+  }
+}
+
+std::size_t ShapeList::deepSize() const
+{
+  ShapeCounter counter;
+  accept(counter);
+  return counter.value();
+}
 
 //
 // Definition of the Group methods.

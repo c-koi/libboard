@@ -42,26 +42,31 @@ namespace LibBoard {
     virtual void visit( Shape & shape ) const = 0;
   };
 
-  struct BoundingBoxExtractor : public ShapeVisitor {
+  struct ConstShapeVisitor {
+    virtual void visit( const Shape & shape ) = 0;
+    virtual void visit( const Shape & shape ) const = 0;
+  };
+
+  struct BoundingBoxExtractor : public ConstShapeVisitor {
     BoundingBoxExtractor( ShapeList & );
-    void visit( Shape & ) override;
-    void visit( Shape & ) const override;
+    void visit( const Shape & ) override;
+    void visit( const Shape & ) const override;
     const ShapeList & shapeList() const;
   private:
     ShapeList & _shapeList;
   };
 
-  struct BoundingBoxViewer : public ShapeVisitor {
-    void visit( Shape & ) override;
-    void visit( Shape & ) const override;
+  struct BoundingBoxViewer : public ConstShapeVisitor {
+    void visit( const Shape & ) override;
+    void visit( const Shape & ) const override;
   };
 
-  struct ShapeCounter : public ShapeVisitor {
+  struct ShapeCounter : public ConstShapeVisitor {
     ShapeCounter();
     void clear();
     std::size_t value() const;
-    void visit( Shape & ) override;
-    void visit( Shape & ) const override;
+    void visit( const Shape & ) override;
+    void visit( const Shape & ) const override;
   private:
     std::size_t _count;
   };

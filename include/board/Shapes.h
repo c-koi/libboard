@@ -54,6 +54,7 @@
 namespace LibBoard {
 
 struct ShapeVisitor;
+struct ConstShapeVisitor;
 
 /**
  * Shape structure.
@@ -404,7 +405,19 @@ struct Shape {
    */
   virtual void accept( const ShapeVisitor & visitor );
 
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept( ConstShapeVisitor & visitor ) const;
 
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept( const ConstShapeVisitor & visitor ) const;
 
 private:
 

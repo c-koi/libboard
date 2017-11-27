@@ -35,12 +35,12 @@ BoundingBoxExtractor::BoundingBoxExtractor( LibBoard::ShapeList & shapeList )
 {
 }
 
-void BoundingBoxExtractor::visit(Shape & shape)
+void BoundingBoxExtractor::visit(const Shape & shape)
 {
   _shapeList << Rectangle(shape.boundingBox(Board::UseLineWidth),Color::Black,Color::Null);
 }
 
-void BoundingBoxExtractor::visit(Shape &) const
+void BoundingBoxExtractor::visit(const Shape &) const
 {
   Tools::warning << "BoundingBoxExtractor(): Visiting using the const method does not make sense.\n";
 }
@@ -50,12 +50,12 @@ const ShapeList & BoundingBoxExtractor::shapeList() const
   return _shapeList;
 }
 
-void BoundingBoxViewer::visit(Shape & shape)
+void BoundingBoxViewer::visit(const Shape & shape)
 {
   std::cout << shape.name() << " - " << shape.boundingBox(Board::UseLineWidth) << " " << std::endl;
 }
 
-void BoundingBoxViewer::visit(Shape & shape) const
+void BoundingBoxViewer::visit(const Shape &shape) const
 {
   std::cout << shape.name() << " - " << shape.boundingBox(Board::UseLineWidth) << std::endl;
 }
@@ -75,14 +75,14 @@ std::size_t ShapeCounter::value() const
   return _count;
 }
 
-void ShapeCounter::visit(Shape & shape)
+void ShapeCounter::visit(const Shape & shape)
 {
   if ( typeid(shape) != typeid(Group) ) {
     ++_count;
   }
 }
 
-void ShapeCounter::visit(Shape & ) const
+void ShapeCounter::visit(const Shape & ) const
 {
   Tools::warning << "ShapeCounter(): Visiting using the const method does not make sense.\n";
 }
