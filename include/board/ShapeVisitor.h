@@ -85,10 +85,8 @@ namespace LibBoard {
 
 }
 
-
 #if __cplusplus<201100
 #undef override
 #endif
-
 
 #endif /* _BOARD_SHAPE_VISITOR_H_ */
