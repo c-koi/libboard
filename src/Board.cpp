@@ -1323,6 +1323,7 @@ Board::save(const char * filename, PageSize size, double margin , Unit unit) con
  * @example examples/scale_ellipse.cpp
  * @example examples/stroke_path.cpp
  * @example examples/tilings.cpp
+ * @example examples/traversal.cpp
  * @example examples/Makefile
  */
 

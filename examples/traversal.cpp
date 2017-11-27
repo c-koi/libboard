@@ -1,5 +1,5 @@
 /**
- * @file   example1.cpp
+ * @file   traversal.cpp
  * @author Sebastien Fourey (GREYC)
  *
  * @brief  Sample code showing the use of shape iterators as well as
