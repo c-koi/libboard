@@ -863,6 +863,7 @@ Board::saveEPS( std::ostream & out, double pageWidth, double pageHeight, double 
          "/sa {save} bind def\n"
          "/rs {restore} bind def\n"
          "/l {lineto} bind def\n"
+         "/ct {curveto} bind def\n"
          "/m {moveto} bind def\n"
          "/rm {rmoveto} bind def\n"
          "/n {newpath} bind def\n"

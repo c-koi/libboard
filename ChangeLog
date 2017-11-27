@@ -1,7 +1,11 @@
+2016-12-08  Sebastien Fourey  <http://foureys.users.greyc.fr>
+
+        * Shapes: Add cubic Bezier curve support (Postscript & SVG only).
+
 2016-06-08  Sebastien Fourey  <http://foureys.users.greyc.fr>
 
-        * All: Linewidths are now expressed using the same unit as
-	other lengths or sizes (no longer as "points").
+                * All: Linewidths are now expressed using the same unit as
+                other lengths or sizes (no longer as "points").
 
 2015-02-23  Sebastien Fourey  <http://foureys.users.greyc.fr>
 

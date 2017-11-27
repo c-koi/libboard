@@ -250,12 +250,38 @@ pathBoundaryPoints(const Path & path,
     return path.points();
   }
   std::vector<Point> result;
-  Path simplePath = path;
+  std::vector<Point> unclosedPath = path.points();
   if ( path.closed() ) {
-    while (simplePath.size() > 1 && (simplePath[0] == simplePath[simplePath.size()-1]) ) {
-      simplePath.pop_back();
+    while (unclosedPath.size() > 1 && (unclosedPath.front() == unclosedPath.back()) ) {
+      unclosedPath.pop_back();
     }
   }
+  if ( unclosedPath.size() == 1) {
+    Point p = unclosedPath.front();
+    double shift = strokeWidth*0.5;
+    result.push_back(Point(p.x-shift,p.y+shift));
+    result.push_back(Point(p.x+shift,p.y+shift));
+    result.push_back(Point(p.x+shift,p.y-shift));
+    result.push_back(Point(p.x-shift,p.y-shift));
+    return result;
+  }
+  std::vector<Point> simplePath;
+  simplePath.push_back(unclosedPath.front());
+  for ( size_t i = 1; i < unclosedPath.size(); ++i) {
+    if ( unclosedPath[i] != simplePath.back() ) {
+      simplePath.push_back(unclosedPath[i]);
+    }
+  }
+  if ( unclosedPath.size() == 1) {
+    Point p = unclosedPath.front();
+    double shift = strokeWidth*0.5;
+    result.push_back(Point(p.x-shift,p.y+shift));
+    result.push_back(Point(p.x+shift,p.y+shift));
+    result.push_back(Point(p.x+shift,p.y-shift));
+    result.push_back(Point(p.x-shift,p.y-shift));
+    return result;
+  }
+
   if ( simplePath.size() == 1 ) {           // TODO Handle this case
     result.push_back(simplePath[0]);
     return result;
@@ -368,7 +394,7 @@ pathBoundingBox(const Path & path, double strokeWidth, Shape::LineCap lineCap, S
     return Rect();
   }
   Rect result(*it);
-  while (it != v.end()) {
+  while ( it != v.end() ) {
     result.growToContain(*it++);
   }
   return result;

@@ -156,8 +156,9 @@ install(DIRECTORY examples/ DESTINATION share/libboard/examples FILES_MATCHING P
 install(FILES README.md LICENSE AUTHORS DESTINATION share/libboard )
 
 FOREACH( EXAMPLE logo example1 example2 example3 example4
-    arithmetic ellipse graph arrows  ruler koch clipping
-    flag scale_ellipse line_style images line_segment tilings stroke_path traversal )
+         arithmetic ellipse graph arrows ruler koch fern clipping
+         flag scale_ellipse line_style images line_segment tilings stroke_path
+         holes bezier traversal)
   ADD_EXECUTABLE(
     ${EXAMPLE}
     examples/${EXAMPLE}.cpp
