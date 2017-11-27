@@ -37,6 +37,7 @@
 #include "board/Shapes.h"
 #include "board/Image.h"
 #include "board/ShapeList.h"
+#include "board/Exception.h"
 
 namespace LibBoard {
 

@@ -51,11 +51,11 @@ int main( int , char *[] )
   Polyline square(true,Color::Black,Color(70,70,130),0.1);
   square << Point(-110,110) << Point(110,110) << Point(110,-110) << Point(-110,-110);
   int n = 80 ;
-  std::set<std::pair<int,int>> holes;
+  std::set< std::pair<int,int> > holes;
   while ( n-- ) {
     holes.insert(std::make_pair((int)(rand()%20)-10,(int)(rand()%20)-10));
   }
-  std::set<std::pair<int,int>>::iterator it = holes.begin();
+  std::set< std::pair<int,int> >::iterator it = holes.begin();
   while (it != holes.end()) {
     Path hole;
     Point p(it->first*10,it->second*10);

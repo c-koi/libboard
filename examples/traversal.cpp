@@ -13,7 +13,6 @@
 #include <cstdlib>
 #include <ctime>
 #include "Board.h"
-#include "Exception.h"
 using namespace LibBoard;
 
 /**

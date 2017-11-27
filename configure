@@ -217,7 +217,9 @@ CXXFLAGSEXEC=-O3 -ansi  -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include
 
 .PHONY: all clean distclean install examples lib doc
 
-OBJS=obj/Board.o obj/Transforms.o obj/Point.o obj/Path.o obj/PathBoundaries.o obj/Shapes.o obj/ShapeList.o obj/Rect.o obj/Color.o obj/Exception.o obj/Tools.o obj/PSFonts.o obj/TransformMatrix.o obj/Image.o
+OBJS=\$(patsubst src/%.cpp,obj/%.o,\$(wildcard src/*.cpp))
+
+
 
 all: lib examples ${DOXYGEN_TARGET}
 
