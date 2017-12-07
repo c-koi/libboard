@@ -36,7 +36,8 @@ ShapeList findAll(ShapeList & list)
 
 int main( int, char *[] )
 {
-  srand(time(0));
+  //srand(time(0));
+  srand(1000);
   Board board;
 
   Shape::setDefaultLineWidth(0.5);
@@ -89,12 +90,35 @@ int main( int, char *[] )
   for (Shape & s : circles) {
     s.scale(1,2);
   }
-  for (const Shape & s : board) {
-    std::cout << s.name() << std::endl;
-  }
 #endif
-
   board.append(circles,Board::Bottom,Board::AlignRight);
+
+  std::cout << "List of shapes at to level\n";
+  std::cout << "==========================\n";
+  for (const Shape & s : board) {
+    std::cout << s.name() << ", ";
+  }
+  std::cout << "\n\n";
+
+  std::cout << "Beadth-First traversal of the shapes tree\n";
+  std::cout << "=========================================\n";
+  ShapeList::BreadthFirstIterator bfi = board.breadthFirstBegin();
+  ShapeList::BreadthFirstIterator bfe = board.breadthFirstEnd();
+  while (bfi!=bfe) {
+    std::cout << (*bfi).name() << ", ";
+    ++bfi;
+  }
+  std::cout << "\n\n";
+
+  std::cout << "Depth-First traversal of the shapes tree\n";
+  std::cout << "========================================\n";
+  ShapeList::DepthFirstIterator dfi = board.depthFirstBegin();
+  ShapeList::DepthFirstIterator dfe = board.depthFirstEnd();
+  while (dfi!=dfe) {
+    std::cout << (*dfi).name() << ", ";
+    ++dfi;
+  }
+  std::cout << "\n\n";
 
   std::cout << "Size is " << board.size() << std::endl;
   std::cout << "Deep size is " << board.deepSize() << std::endl;
