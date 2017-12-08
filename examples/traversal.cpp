@@ -21,20 +21,21 @@ const Color Colors[NbColors] = { Color("#cc0000"),
                                  Color("#0000cc"),
                                  Color("#c0c0c0") };
 
-Color c("#cc0000");
-
 ShapeList generateGroup(int n) {
   if ( !n ) {
     return Group();
   }
   if (n==1) {
     Group g;
-    switch (rand()%2) {
+    switch (rand()%3) {
     case 0:
       g << Circle(0,0,5,Colors[rand() % NbColors],Color::Null,1.0);
       break;
     case 1:
       g << Rectangle(0,0,10,10,Colors[rand()%NbColors],Color::Null,1.0);
+      break;
+    case 2:
+      g << Rectangle(0,0,10,10,Color::Null,Color::Null,0.0);
       break;
     default:
       break;
@@ -51,18 +52,20 @@ ShapeList generateGroup(int n) {
   ShapeList bottomRight = generateGroup(count[3]);
   ShapeList top;
   top << topLeft;
-  top.append(topRight,ShapeList::Right,ShapeList::AlignCenter);
+  top.append(topRight,ShapeList::Right,ShapeList::AlignCenter,0.0,ShapeList::UseLineWidth);
   ShapeList bottom;
   bottom << bottomLeft;
-  bottom.append(bottomRight,ShapeList::Right,ShapeList::AlignCenter);
-  top.append(bottom,ShapeList::Bottom,ShapeList::AlignCenter);
+  bottom.append(bottomRight,ShapeList::Right,ShapeList::AlignCenter,0.0,ShapeList::UseLineWidth);
+  top.append(bottom,ShapeList::Bottom,ShapeList::AlignCenter,0.0,ShapeList::UseLineWidth);
 
   if ( n >= 4 ) {
     ShapeList list;
     Group group;
-    Rect r = group.bbox(Shape::UseLineWidth);
-    group << Rectangle(r,Color::Black,Color::Null,0.1);
     group << top;
+    Rect r = top.bbox(Shape::UseLineWidth);
+
+    group << Rectangle(r,Color::Black,Color::Null,0.5);
+    std::cout << r << std::endl;
     list << group;
     return list;
   } else {

@@ -45,8 +45,8 @@ public:
   inline Color();
   inline Color( const unsigned int rgb, unsigned char alpha = 255 );
   inline Color( unsigned char red,
-                unsigned char  green,
-                unsigned char  blue,
+                unsigned char green,
+                unsigned char blue,
                 unsigned char alpha = 255 );
   inline Color( unsigned char gray, unsigned char alpha = 255 );
 
@@ -186,7 +186,7 @@ inline Color::Color( const char * htmlColor, unsigned char alpha )
 {
   unsigned int r, g, b;
   if ( !htmlColor || *htmlColor == '\0' ) {
-    _red = _green = _blue = 0;
+    _red = _green = _blue = -1;
     _alpha = 255;
     return;
   }
