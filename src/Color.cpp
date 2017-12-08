@@ -32,7 +32,11 @@ using std::string;
 
 namespace LibBoard {
 
-const Color Color::Null(false);
+#if __cplusplus > 201100
+const Color Color::Null(nullptr);
+#else
+const Color Color::Null((const char*)0);
+#endif
 const Color Color::Black((unsigned char)0,(unsigned char)0,(unsigned char)0);
 const Color Color::Gray((unsigned char)128,(unsigned char)128,(unsigned char)128);
 const Color Color::White((unsigned char)255,(unsigned char)255,(unsigned char)255);
