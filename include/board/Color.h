@@ -162,15 +162,17 @@ inline Color::Color( const unsigned int rgb, unsigned char alpha )
 }
 
 inline Color::Color( unsigned char red,
-                     unsigned char  green,
-                     unsigned char  blue,
+                     unsigned char green,
+                     unsigned char blue,
                      unsigned char alpha )
   :_red(red),_green(green),_blue(blue),_alpha(alpha)
-{ }
+{
+}
 
 inline Color::Color( unsigned char gray, unsigned char alpha )
   :_red(gray),_green(gray),_blue(gray),_alpha(alpha)
-{ }
+{
+}
 
 inline Color::Color( const bool valid )
   :_red(-1),_green(-1),_blue(-1),_alpha(255)

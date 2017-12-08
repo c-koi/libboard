@@ -15,6 +15,66 @@
 #include "Board.h"
 using namespace LibBoard;
 
+const int NbColors = 4;
+const Color Colors[NbColors] = { Color("#cc0000"),
+                                 Color("#00cc00"),
+                                 Color("#0000cc"),
+                                 Color("#c0c0c0") };
+
+Color c("#cc0000");
+
+ShapeList generateGroup(int n) {
+  if ( !n ) {
+    return Group();
+  }
+  if (n==1) {
+    Group g;
+    switch (rand()%2) {
+    case 0:
+      g << Circle(0,0,5,Colors[rand() % NbColors],Color::Null,1.0);
+      break;
+    case 1:
+      g << Rectangle(0,0,10,10,Colors[rand()%NbColors],Color::Null,1.0);
+      break;
+    default:
+      break;
+    }
+    return g;
+  }
+  int count[4] = {0,0,0,0};
+  while (count[0]+count[1]+count[2]+count[3] != n) {
+    count[rand()%4] += 1;
+  }
+  ShapeList topLeft = generateGroup(count[0]);
+  ShapeList topRight= generateGroup(count[1]);
+  ShapeList bottomLeft = generateGroup(count[2]);
+  ShapeList bottomRight = generateGroup(count[3]);
+  ShapeList top;
+  top << topLeft;
+  top.append(topRight,ShapeList::Right,ShapeList::AlignCenter);
+  ShapeList bottom;
+  bottom << bottomLeft;
+  bottom.append(bottomRight,ShapeList::Right,ShapeList::AlignCenter);
+  top.append(bottom,ShapeList::Bottom,ShapeList::AlignCenter);
+
+  if ( n >= 4 ) {
+    ShapeList list;
+    Group group;
+    Rect r = group.bbox(Shape::UseLineWidth);
+    group << Rectangle(r,Color::Black,Color::Null,0.1);
+    group << top;
+    list << group;
+    return list;
+  } else {
+    ShapeList list;
+    list << top;
+    return list;
+  }
+
+}
+
+
+
 /**
  * Extract all shapes of a given type (T) thanks to the topLevelFindLast<>()
  * method.
@@ -122,6 +182,8 @@ int main( int, char *[] )
 
   std::cout << "Size is " << board.size() << std::endl;
   std::cout << "Deep size is " << board.deepSize() << std::endl;
+
+  board.append(generateGroup(25),ShapeList::Bottom,ShapeList::AlignCenter);
 
   board.saveSVG( "traversal.svg" );
 }
