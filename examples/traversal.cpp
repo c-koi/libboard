@@ -64,7 +64,7 @@ ShapeList generateGroup(int n) {
     group << top;
     Rect r = top.bbox(Shape::UseLineWidth);
 
-    group << Rectangle(r,Color::Black,Color::Null,0.5,Board::DotStyle);
+    group << Rectangle(r,Color::Black,Color::Null,0.5);
     std::cout << r << std::endl;
     list << group;
     return list;
