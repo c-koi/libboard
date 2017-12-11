@@ -347,6 +347,7 @@ struct ShapeList : public Shape {
     inline DepthFirstIterator();
     inline DepthFirstIterator(ShapeList * list);
     inline Shape & operator*();
+    inline Shape * pointer();
     inline bool operator==(const DepthFirstIterator & other);
     inline bool operator!=(const DepthFirstIterator & other);
     inline DepthFirstIterator & operator++();
@@ -366,6 +367,7 @@ struct ShapeList : public Shape {
     inline BreadthFirstIterator();
     inline BreadthFirstIterator(ShapeList * list);
     inline Shape & operator*();
+    inline Shape * pointer();
     inline bool operator==(const BreadthFirstIterator & other);
     inline bool operator!=(const BreadthFirstIterator & other);
     inline BreadthFirstIterator & operator++();

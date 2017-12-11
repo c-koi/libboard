@@ -23,19 +23,16 @@ const Color Colors[NbColors] = { Color("#cc0000"),
 
 ShapeList generateGroup(int n) {
   if ( !n ) {
-    return Group();
+    return ShapeList() << (Group() << Rectangle(0,0,10,10,Color("#404040"),Color::Null,0.1,Shape::DashStyle));
   }
   if (n==1) {
     Group g;
-    switch (rand()%3) {
+    switch (rand()%2) {
     case 0:
       g << Circle(0,0,5,Colors[rand() % NbColors],Color::Null,1.0);
       break;
     case 1:
       g << Rectangle(0,0,10,10,Colors[rand()%NbColors],Color::Null,1.0);
-      break;
-    case 2:
-      g << Rectangle(0,0,10,10,Color::Null,Color::Null,0.0);
       break;
     default:
       break;
@@ -57,15 +54,12 @@ ShapeList generateGroup(int n) {
   bottom << bottomLeft;
   bottom.append(bottomRight,ShapeList::Right,ShapeList::AlignCenter,0.0,ShapeList::UseLineWidth);
   top.append(bottom,ShapeList::Bottom,ShapeList::AlignCenter,0.0,ShapeList::UseLineWidth);
-
-  if ( n >= 4 ) {
+  if ( n >= 2 ) {
     ShapeList list;
     Group group;
     group << top;
     Rect r = top.bbox(Shape::UseLineWidth);
-
-    group << Rectangle(r,Color::Black,Color::Null,0.5);
-    std::cout << r << std::endl;
+    group << Rectangle(r,Color::Black,Color::Null,0.1);
     list << group;
     return list;
   } else {
@@ -73,7 +67,6 @@ ShapeList generateGroup(int n) {
     list << top;
     return list;
   }
-
 }
 
 
@@ -183,10 +176,37 @@ int main( int, char *[] )
   }
   std::cout << "\n\n";
 
+  board.append(generateGroup(50),ShapeList::Bottom,ShapeList::AlignCenter);
+
   std::cout << "Size is " << board.size() << std::endl;
-  std::cout << "Deep size is " << board.deepSize() << std::endl;
+  std::cout << "Board deep size is " << board.deepSize() << std::endl;
 
-  board.append(generateGroup(25),ShapeList::Bottom,ShapeList::AlignCenter);
+  ShapeList & tree = board.last<ShapeList>();
+  std::size_t deepSize = tree.deepSize();
+  std::cout << "Tree deep size is " << deepSize << std::endl;
 
+  dfi = tree.depthFirstBegin();
+  dfe = tree.depthFirstEnd();
+
+  std::size_t counter = 0;
+  ShapeList points;
+  Color shade;
+  Path path;
+  while (dfi != dfe) {
+    Shape * r = dynamic_cast<Rectangle*>(dfi.pointer());
+    if (!r) {
+      r = dynamic_cast<Circle*>(dfi.pointer());
+    }
+    if (r) {
+      shade.setRGBf(0.2+0.8*(counter/(float)deepSize),0,0,1.0);
+      points << Circle(r->center(),1,Color::Null,shade,0.0);
+      path << r->center();
+    }
+    ++dfi;
+    ++counter;
+  }
+  std::cout << counter << " shapes visited.\n";
+  board << points;
+  board << Polyline(path,Color("#00c000"),Color::Null,0.5,Shape::SolidStyle,Shape::RoundCap,Shape::RoundJoin);
   board.saveSVG( "traversal.svg" );
 }
