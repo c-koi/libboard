@@ -57,8 +57,8 @@ ShapeList::last( const std::size_t position )
 template<typename T>
 T & ShapeList::topLevelFindLast( std::size_t position )
 {
-  std::vector<Shape*>::iterator it = _shapes.begin();
-  while ( it != _shapes.end() ) {
+  std::vector<Shape*>::reverse_iterator it = _shapes.rbegin();
+  while ( it != _shapes.rend() ) {
     T * shape = dynamic_cast<T*>(*it);
     if ( shape ) {
       if ( ! position ) {
