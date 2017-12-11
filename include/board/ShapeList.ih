@@ -59,9 +59,10 @@ T & ShapeList::topLevelFindLast( std::size_t position )
 {
   std::vector<Shape*>::iterator it = _shapes.begin();
   while ( it != _shapes.end() ) {
-    if ( typeid(**it) == typeid(T) ) {
+    T * shape = dynamic_cast<T*>(*it);
+    if ( shape ) {
       if ( ! position ) {
-        return static_cast<T&>(**it);
+        return *shape;
       } else {
         --position;
       }
