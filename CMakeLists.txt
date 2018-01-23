@@ -155,7 +155,7 @@ install(TARGETS board-dynamic DESTINATION lib)
 install(DIRECTORY examples/ DESTINATION share/libboard/examples FILES_MATCHING PATTERN "*.cpp")
 install(FILES README.md LICENSE AUTHORS DESTINATION share/libboard )
 
-FOREACH( EXAMPLE logo example1 example2 example3 example4
+FOREACH( EXAMPLE logo example1 example2 example3 example4 example5
          arithmetic ellipse graph arrows ruler koch fern clipping
          flag scale_ellipse line_style images line_segment tilings stroke_path
          holes bezier traversal)

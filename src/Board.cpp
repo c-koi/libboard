@@ -424,6 +424,46 @@ Board::fillRectangle( double left, double top,
 }
 
 void
+Board::drawArray(const std::vector<Color>& v,
+                 int num_of_cols,
+                 int num_of_rows,
+                 double pix_size_x, double pix_size_y,
+                 int depth)
+{
+    int d = (depth!=-1) ? depth : _nextDepth--;
+
+    float origin_x = 0.0;
+    float origin_y = 0.0;
+
+    _state.lineStyle = SolidStyle;
+    _state.lineCap =  ButtCap;
+    _state.lineJoin =  MiterJoin;
+
+    for (int i = 0; i < num_of_rows; i++)
+    {
+        float cur_y = origin_y + i * pix_size_y;
+
+        int skip_lines = i*num_of_cols;
+        for (int j = 0; j < num_of_cols; j++)
+        {
+            float cur_x = origin_x + j * pix_size_x;
+
+            this->setFillColor(v[j + skip_lines]);
+            this->setPenColor(v[j + skip_lines]);
+
+            _shapes.push_back( new Rectangle(cur_x,
+                                             cur_y,
+                                             pix_size_x,
+                                             pix_size_y,
+                                             _state.penColor,_state.fillColor,
+                                             0.0f, _state.lineStyle,
+                                             _state.lineCap, _state.lineJoin,
+                                             d));
+        }
+    }
+}
+
+void
 Board::fillRectangle(const Rect & r, int depth)
 {
   int d = (depth!=-1) ? depth : _nextDepth--;

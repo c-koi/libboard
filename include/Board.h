@@ -373,6 +373,13 @@ public:
    */
   void fillRectangle( const Rect & r, int depth = -1 );
 
+
+  void drawArray(const std::vector<Color>& v,
+                 int num_of_cols, int num_of_rows,
+                 double pix_size_x,
+                 double pix_size_y,
+                 int depth = -1);
+
   /**
    * Draws a circle.
    *
