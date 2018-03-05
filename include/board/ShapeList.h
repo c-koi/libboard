@@ -28,6 +28,8 @@
 #define _BOARD_SHAPELIST_H_
 
 #include <typeinfo>
+#include <stack>
+#include <queue>
 #include "board/Exception.h"
 #include "board/Shapes.h"
 #include "board/Tools.h"
@@ -311,6 +313,7 @@ struct ShapeList : public Shape {
   struct TopLevelIterator {
     inline TopLevelIterator(std::vector<Shape*>::iterator it);
     inline Shape & operator*();
+    inline Shape * pointer();
     inline TopLevelIterator & operator++();
     inline TopLevelIterator operator++(int);
     inline bool operator==(const TopLevelIterator & other);
@@ -327,6 +330,7 @@ struct ShapeList : public Shape {
   struct TopLevelConstIterator {
     inline TopLevelConstIterator(std::vector<Shape*>::const_iterator it);
     inline const Shape & operator*();
+    inline const Shape * pointer();
     inline TopLevelConstIterator & operator++();
     inline TopLevelConstIterator operator++(int);
     inline bool operator==(const TopLevelConstIterator & other);
@@ -334,6 +338,47 @@ struct ShapeList : public Shape {
   private:
     std::vector<Shape*>::const_iterator _it;
   };
+
+  /**
+   * @brief The DepthFirstIterator struct allows to traverse the shape tree
+   * using a depth-first strategy.
+   */
+  struct DepthFirstIterator {
+    inline DepthFirstIterator();
+    inline DepthFirstIterator(ShapeList * list);
+    inline Shape & operator*();
+    inline Shape * pointer();
+    inline bool operator==(const DepthFirstIterator & other);
+    inline bool operator!=(const DepthFirstIterator & other);
+    inline DepthFirstIterator & operator++();
+    inline DepthFirstIterator operator++(int);
+  private:
+    void moveToFirstActuelShape();
+    void moveToNextActualShape();
+    std::stack<ShapeList*> _shapeListsStack;
+    std::stack<TopLevelIterator> _iteratorsStack;
+  };
+
+  /**
+   * @brief The BreadthFirstIterator struct allows to traverse the shape tree
+   * using a breadth-first strategy.
+   */
+  struct BreadthFirstIterator {
+    inline BreadthFirstIterator();
+    inline BreadthFirstIterator(ShapeList * list);
+    inline Shape & operator*();
+    inline Shape * pointer();
+    inline bool operator==(const BreadthFirstIterator & other);
+    inline bool operator!=(const BreadthFirstIterator & other);
+    inline BreadthFirstIterator & operator++();
+    inline BreadthFirstIterator operator++(int);
+  private:
+    void moveToFirstActuelShape();
+    void moveToNextActualShape();
+    std::queue<ShapeList*> _shapeListsQueue;
+    std::queue<TopLevelIterator> _iteratorsQueue;
+  };
+
 
   /**
    * @brief begin
@@ -370,6 +415,30 @@ struct ShapeList : public Shape {
    * @return A const iterator pointing at the end of the ShapeList.
    */
   inline TopLevelConstIterator cend() const;
+
+  /**
+   * @brief depthFirstBegin
+   * @return A depth-first iterator at the begining of the ShapeList shapes.
+   */
+  inline DepthFirstIterator depthFirstBegin();
+
+  /**
+   * @brief depthFirstEnd
+   * @return A depth-first iterator at the end of the ShapeList shapes.
+   */
+  inline DepthFirstIterator depthFirstEnd();
+
+  /**
+   * @brief breadthFirstBegin
+   * @return A breadth-first iterator at the begining of the ShapeList shapes.
+   */
+  inline BreadthFirstIterator breadthFirstBegin();
+
+  /**
+   * @brief breadthFirstEnd
+   * @return A breadth-first iterator at the end of the ShapeList shapes.
+   */
+  inline BreadthFirstIterator breadthFirstEnd();
 
   /**
    * @brief Recursively counts the number of shapes in the list.

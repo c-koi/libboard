@@ -82,6 +82,11 @@ Shape & ShapeList::TopLevelIterator::operator*()
   return **_it;
 }
 
+Shape * ShapeList::TopLevelIterator::pointer()
+{
+  return *_it;
+}
+
 ShapeList::TopLevelIterator & ShapeList::TopLevelIterator::operator++()
 {
   ++_it;
@@ -113,6 +118,11 @@ ShapeList::TopLevelConstIterator::TopLevelConstIterator(std::vector<Shape*>::con
 const Shape & ShapeList::TopLevelConstIterator::operator*()
 {
   return **_it;
+}
+
+const Shape * ShapeList::TopLevelConstIterator::pointer()
+{
+  return *_it;
 }
 
 ShapeList::TopLevelConstIterator & ShapeList::TopLevelConstIterator::operator++()
@@ -168,9 +178,119 @@ ShapeList::TopLevelConstIterator ShapeList::cend() const
   return TopLevelConstIterator(_shapes.end());
 }
 
+ShapeList::DepthFirstIterator ShapeList::depthFirstBegin()
+{
+  return DepthFirstIterator(this);
+}
+
+ShapeList::DepthFirstIterator ShapeList::depthFirstEnd()
+{
+  return DepthFirstIterator();
+}
+
+ShapeList::BreadthFirstIterator ShapeList::breadthFirstBegin()
+{
+  return BreadthFirstIterator(this);
+}
+
+ShapeList::BreadthFirstIterator ShapeList::breadthFirstEnd()
+{
+  return BreadthFirstIterator();
+}
+
 std::size_t ShapeList::size() const
 {
   return _shapes.size();
+}
+
+ShapeList::DepthFirstIterator::DepthFirstIterator()
+{
+}
+
+ShapeList::DepthFirstIterator::DepthFirstIterator(ShapeList * list)
+{
+  _shapeListsStack.push(list);
+  _iteratorsStack.push(list->begin());
+  moveToFirstActuelShape();
+}
+
+Shape & ShapeList::DepthFirstIterator::operator*() {
+  return *(_iteratorsStack.top());
+}
+
+Shape * ShapeList::DepthFirstIterator::pointer() {
+  return _iteratorsStack.top().pointer();
+}
+
+bool ShapeList::DepthFirstIterator::operator==(const DepthFirstIterator & other)
+{
+  return (_shapeListsStack.empty() && other._shapeListsStack.empty())
+      || ( (!_shapeListsStack.empty() && !other._shapeListsStack.empty())
+           && (_shapeListsStack.top() == other._shapeListsStack.top())
+           && (_iteratorsStack.top() == other._iteratorsStack.top()));
+}
+
+bool ShapeList::DepthFirstIterator::operator!=(const DepthFirstIterator & other)
+{
+  return !(*this == other);
+}
+
+ShapeList::DepthFirstIterator & ShapeList::DepthFirstIterator::operator++() {
+  moveToNextActualShape();
+  return *this;
+}
+
+ShapeList::DepthFirstIterator ShapeList::DepthFirstIterator::operator++(int) {
+  DepthFirstIterator currentValue(*this);
+  moveToNextActualShape();
+  return currentValue;
+}
+
+ShapeList::BreadthFirstIterator::BreadthFirstIterator()
+{
+}
+
+ShapeList::BreadthFirstIterator::BreadthFirstIterator(ShapeList * list)
+{
+  _shapeListsQueue.push(list);
+  _iteratorsQueue.push(list->begin());
+  moveToFirstActuelShape();
+}
+
+Shape & ShapeList::BreadthFirstIterator::operator*()
+{
+  return *(_iteratorsQueue.front());
+}
+
+Shape * ShapeList::BreadthFirstIterator::pointer()
+{
+  return _iteratorsQueue.front().pointer();
+}
+
+bool ShapeList::BreadthFirstIterator::operator==(const BreadthFirstIterator & other)
+{
+  return (_shapeListsQueue.empty() && other._shapeListsQueue.empty())
+      || ( (!_shapeListsQueue.empty() && !other._shapeListsQueue.empty())
+           && (_shapeListsQueue.front() == other._shapeListsQueue.front())
+           && (_iteratorsQueue.front() == other._iteratorsQueue.front()));
+}
+
+bool ShapeList::BreadthFirstIterator::operator!=(const BreadthFirstIterator & other)
+{
+  return !(*this == other);
+}
+
+ShapeList::BreadthFirstIterator & ShapeList::BreadthFirstIterator::operator++()
+{
+  moveToNextActualShape();
+  return *this;
+}
+
+ShapeList::BreadthFirstIterator ShapeList::BreadthFirstIterator::operator++(int)
+{
+  BreadthFirstIterator currentValue(*this);
+  moveToNextActualShape();
+  return currentValue;
 }
 
 #if defined( _HAS_MSVC_MAX_ )

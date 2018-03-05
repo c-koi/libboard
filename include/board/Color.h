@@ -42,16 +42,13 @@ class Color {
 
 public:
 
+  inline Color();
   inline Color( const unsigned int rgb, unsigned char alpha = 255 );
-
   inline Color( unsigned char red,
-                unsigned char  green,
-                unsigned char  blue,
+                unsigned char green,
+                unsigned char blue,
                 unsigned char alpha = 255 );
-
   inline Color( unsigned char gray, unsigned char alpha = 255 );
-
-  inline Color( const bool valid = true );
 
   /**
    * @brief Build a color from an HTML color string (#RRGGBB)
@@ -59,6 +56,7 @@ public:
    * @param alpha The alpha value
    */
   inline Color( const std::string & htmlColor, unsigned char alpha = 255 );
+  inline Color( const char * htmlColor, unsigned char alpha = 255 );
 
   inline void red( unsigned char red );
   inline void green( unsigned char green );
@@ -152,6 +150,10 @@ Color::setRGBi( const unsigned char red,
   return *this;
 }
 
+inline Color::Color()
+  :_red(0),_green(0),_blue(0),_alpha(255)
+{
+}
 
 inline Color::Color( const unsigned int rgb, unsigned char alpha )
   :_alpha( alpha )
@@ -162,31 +164,34 @@ inline Color::Color( const unsigned int rgb, unsigned char alpha )
 }
 
 inline Color::Color( unsigned char red,
-                     unsigned char  green,
-                     unsigned char  blue,
+                     unsigned char green,
+                     unsigned char blue,
                      unsigned char alpha )
   :_red(red),_green(green),_blue(blue),_alpha(alpha)
-{ }
+{
+}
 
 inline Color::Color( unsigned char gray, unsigned char alpha )
   :_red(gray),_green(gray),_blue(gray),_alpha(alpha)
-{ }
-
-inline Color::Color( const bool valid )
-  :_red(-1),_green(-1),_blue(-1),_alpha(255)
 {
-  if ( valid ) {
-    _red = _green = _blue = 0;
-  }
 }
 
 inline Color::Color( const std::string & htmlColor, unsigned char alpha )
+  : Color(htmlColor.c_str(), alpha)
+{
+}
+
+inline Color::Color( const char * htmlColor, unsigned char alpha )
   :_alpha( alpha )
 {
   unsigned int r, g, b;
-  if ( sscanf(htmlColor.substr(1, 2).c_str(), "%x", &r) == 1
-       && sscanf(htmlColor.substr(3, 2).c_str(), "%x", &g) == 1
-       && sscanf(htmlColor.substr(5, 2).c_str(), "%x", &b) == 1 ) {
+  if ( !htmlColor || *htmlColor == '\0' ) {
+    _red = _green = _blue = -1;
+    _alpha = 255;
+    return;
+  }
+  if ( strlen(htmlColor) == 7
+       && sscanf(htmlColor, "#%2x%2x%2x", &r, &g, &b) == 3) {
     _red = (int) r;
     _green = (int) g;
     _blue = (int) b;

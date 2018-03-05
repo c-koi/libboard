@@ -645,6 +645,81 @@ std::size_t ShapeList::deepSize() const
   return counter.value();
 }
 
+void ShapeList::DepthFirstIterator::moveToFirstActuelShape()
+{
+  Shape * shape = nullptr;
+  while (!shape) {
+    if (_shapeListsStack.empty()) {
+      return;
+    }
+    if (_iteratorsStack.top()==_shapeListsStack.top()->end()) {
+      // Go up one level, move right
+      _iteratorsStack.pop();
+      _shapeListsStack.pop();
+      if (!_iteratorsStack.empty()) {
+        ++_iteratorsStack.top();
+      }
+    } else {
+      ShapeList * list = dynamic_cast<ShapeList*>(_iteratorsStack.top().pointer());
+      if (list != nullptr) {
+        // Visit the ShapeList
+        _iteratorsStack.push(list->begin());
+        _shapeListsStack.push(list);
+      } else {
+        // Found an actual Shape which is not a ShapeList
+        shape = dynamic_cast<Shape*>(_iteratorsStack.top().pointer());
+      }
+    }
+  }
+}
+
+void ShapeList::DepthFirstIterator::moveToNextActualShape()
+{
+  if (_shapeListsStack.empty()) {
+    return;
+  }
+  ++_iteratorsStack.top();
+  moveToFirstActuelShape();
+}
+
+
+void ShapeList::BreadthFirstIterator::moveToFirstActuelShape()
+{
+  Shape * shape = nullptr;
+  while (!shape) {
+    if (_shapeListsQueue.empty()) {
+      return;
+    }
+    if (_iteratorsQueue.front()==_shapeListsQueue.front()->end()) {
+      // Go up one level, move right
+      _iteratorsQueue.pop();
+      _shapeListsQueue.pop();
+    } else {
+      ShapeList * list = dynamic_cast<ShapeList*>(_iteratorsQueue.front().pointer());
+      if (list != nullptr) {
+        // Enqueue this list of shapes
+        _iteratorsQueue.push(list->begin());
+        _shapeListsQueue.push(list);
+        // Shift right at current level
+        ++_iteratorsQueue.front();
+      } else {
+        // Found an actual Shape which is not a ShapeList
+        shape = dynamic_cast<Shape*>(_iteratorsQueue.front().pointer());
+      }
+    }
+  }
+}
+
+void ShapeList::BreadthFirstIterator::moveToNextActualShape()
+{
+  if (_shapeListsQueue.empty()) {
+    return;
+  }
+  ++_iteratorsQueue.front();
+  moveToFirstActuelShape();
+}
+
+
 //
 // Definition of the Group methods.
 //
