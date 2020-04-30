@@ -23,17 +23,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "BoardConfig.h"
 #include "board/Point.h"
 #include <limits>
+#include "BoardConfig.h"
 
-namespace LibBoard {
-Point Point::Infinity( std::numeric_limits<double>::infinity(),
-                       std::numeric_limits<double>::infinity());
+namespace LibBoard
+{
+Point Point::Infinity(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
 }
 
-std::ostream &
-operator<<( std::ostream & out, const LibBoard::Point & p )
+std::ostream & operator<<(std::ostream & out, const LibBoard::Point & p)
 {
   return out << "Point(" << p.x << "," << p.y << ")";
 }

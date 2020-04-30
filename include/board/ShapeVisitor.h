@@ -26,66 +26,68 @@
 #ifndef _BOARD_SHAPE_VISITOR_H_
 #define _BOARD_SHAPE_VISITOR_H_
 
-#if __cplusplus<201100
+#if __cplusplus < 201100
 #define override
 #endif
 #include <cstddef> // For std::size_t
 
-namespace LibBoard {
+namespace LibBoard
+{
 
-  struct Shape;
-  struct ShapeList;
-  struct Board;
+struct Shape;
+struct ShapeList;
+struct Board;
 
-  struct ShapeVisitor {
-    virtual void visit( Shape & shape ) = 0;
-    virtual void visit( Shape & shape ) const = 0;
-  };
+struct ShapeVisitor {
+  virtual void visit(Shape & shape) = 0;
+  virtual void visit(Shape & shape) const = 0;
+};
 
-  struct ConstShapeVisitor {
-    virtual void visit( const Shape & shape ) = 0;
-    virtual void visit( const Shape & shape ) const = 0;
-  };
+struct ConstShapeVisitor {
+  virtual void visit(const Shape & shape) = 0;
+  virtual void visit(const Shape & shape) const = 0;
+};
 
-  /**
-   * @brief The BoundingBoxExtractor struct may be used to compute the
-   *        bounding box of a composite shape tree.
-   */
-  struct BoundingBoxExtractor : public ConstShapeVisitor {
-    BoundingBoxExtractor( ShapeList & );
-    void visit( const Shape & ) override;
-    void visit( const Shape & ) const override;
-    const ShapeList & shapeList() const;
-  private:
-    ShapeList & _shapeList;
-  };
+/**
+ * @brief The BoundingBoxExtractor struct may be used to compute the
+ *        bounding box of a composite shape tree.
+ */
+struct BoundingBoxExtractor : public ConstShapeVisitor {
+  BoundingBoxExtractor(ShapeList &);
+  void visit(const Shape &) override;
+  void visit(const Shape &) const override;
+  const ShapeList & shapeList() const;
 
-  /**
-   * @brief The BoundingBoxViewer struct may be used to display the bounding
-   *        boxes of the shapes in a composite tree.
-   */
-  struct BoundingBoxViewer : public ConstShapeVisitor {
-    void visit( const Shape & ) override;
-    void visit( const Shape & ) const override;
-  };
+private:
+  ShapeList & _shapeList;
+};
 
-  /**
-   * @brief The ShapeCounter struct may be used to count shapes in
-   *        the composite shapes tree.
-   */
-  struct ShapeCounter : public ConstShapeVisitor {
-    ShapeCounter();
-    void clear();
-    std::size_t value() const;
-    void visit( const Shape & ) override;
-    void visit( const Shape & ) const override;
-  private:
-    std::size_t _count;
-  };
+/**
+ * @brief The BoundingBoxViewer struct may be used to display the bounding
+ *        boxes of the shapes in a composite tree.
+ */
+struct BoundingBoxViewer : public ConstShapeVisitor {
+  void visit(const Shape &) override;
+  void visit(const Shape &) const override;
+};
 
+/**
+ * @brief The ShapeCounter struct may be used to count shapes in
+ *        the composite shapes tree.
+ */
+struct ShapeCounter : public ConstShapeVisitor {
+  ShapeCounter();
+  void clear();
+  std::size_t value() const;
+  void visit(const Shape &) override;
+  void visit(const Shape &) const override;
+
+private:
+  std::size_t _count;
+};
 }
 
-#if __cplusplus<201100
+#if __cplusplus < 201100
 #undef override
 #endif
 

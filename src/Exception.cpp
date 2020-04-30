@@ -25,26 +25,19 @@
  */
 #include "board/Exception.h"
 
-namespace LibBoard {
-
-Exception::Exception() BOARD_NOEXCEPT
-{ }
-
-Exception::Exception(const char * what) BOARD_NOEXCEPT
-  :_what(what)
-{ }
-
-Exception::Exception(const std::string & what) BOARD_NOEXCEPT
-  :_what(what)
-{ }
-
-Exception::~Exception() BOARD_NOEXCEPT
+namespace LibBoard
 {
-}
+
+Exception::Exception() BOARD_NOEXCEPT {}
+
+Exception::Exception(const char * what) BOARD_NOEXCEPT : _what(what) {}
+
+Exception::Exception(const std::string & what) BOARD_NOEXCEPT : _what(what) {}
+
+Exception::~Exception() BOARD_NOEXCEPT {}
 
 const char * Exception::what() const BOARD_NOEXCEPT
 {
   return _what.c_str();
 }
-
 }

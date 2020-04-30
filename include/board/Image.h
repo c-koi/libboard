@@ -25,11 +25,13 @@
 #ifndef _BOARD_IMAGE_H_
 #define _BOARD_IMAGE_H_
 
-#include "board/Shapes.h"
-#include "board/TransformMatrix.h"
 #include <string>
+#include "board/Polyline.h"
+#include "board/Shape.h"
+#include "board/TransformMatrix.h"
 
-namespace LibBoard {
+namespace LibBoard
+{
 
 /**
  * Image structure.
@@ -53,9 +55,7 @@ struct Image : public Shape {
    * @param depth
    *
    */
-  Image( const char * filename,
-         double left, double top, double width, double height = 0.0,
-         int depth = -1 );
+  Image(const char * filename, double left, double top, double width, double height = 0.0, int depth = -1);
 
   /**
    *
@@ -66,7 +66,7 @@ struct Image : public Shape {
    * @param depth The depth (default -1)
    *
    */
-  Image( const char * filename, const Rect & rect, int depth = -1 );
+  Image(const char * filename, const Rect & rect, int depth = -1);
 
   /**
    * Image destructor.
@@ -95,7 +95,7 @@ struct Image : public Shape {
    *
    * @return A reference to the shape itself.
    */
-  Shape & rotate( double angle, const Point & center );
+  Shape & rotate(double angle, const Point & center);
 
   /**
    * Rotate the shape around its center.
@@ -104,26 +104,26 @@ struct Image : public Shape {
    *
    * @return A reference to the shape itself.
    */
-  Shape & rotate( double angle );
+  Shape & rotate(double angle);
 
   /**
-    * Returns a rotated copy of the image.
-    *
-    * @param angle The rotation angle in radian.
-    *
-    * @return A rotated copy of the image.
-    */
+   * Returns a rotated copy of the image.
+   *
+   * @param angle The rotation angle in radian.
+   *
+   * @return A rotated copy of the image.
+   */
   Image rotated(double angle) const;
 
   /**
-    * Returns a rotated copy of the image.
-    *
-    * @param angle The rotation angle in radian.
-    * @param center The center of rotation.
-    *
-    * @return A rotated copy of the image.
-    */
-  Image rotated(double angle, const Point & ) const;
+   * Returns a rotated copy of the image.
+   *
+   * @param angle The rotation angle in radian.
+   * @param center The center of rotation.
+   *
+   * @return A rotated copy of the image.
+   */
+  Image rotated(double angle, const Point &) const;
 
   /**
    * Translate the shape by a given offset.
@@ -133,16 +133,16 @@ struct Image : public Shape {
    *
    * @return A reference to the shape itself.
    */
-  Shape & translate( double dx, double dy );
+  Shape & translate(double dx, double dy);
 
   /**
-    * Returns a translated copy of the image.
-    *
-    * @param dx The x offset.
-    * @param dy The y offset.
-    *
-    * @return A translated copy of the image.
-    */
+   * Returns a translated copy of the image.
+   *
+   * @param dx The x offset.
+   * @param dy The y offset.
+   *
+   * @return A translated copy of the image.
+   */
   Image translated(double dx, double dy) const;
 
   /**
@@ -153,7 +153,7 @@ struct Image : public Shape {
    *
    * @return The shape itself.
    */
-  Shape & scale( double sx, double sy );
+  Shape & scale(double sx, double sy);
 
   /**
    * Scale the shape along both axis.
@@ -162,16 +162,16 @@ struct Image : public Shape {
    *
    * @return The shape itself.
    */
-  Shape & scale( double s );
+  Shape & scale(double s);
 
   /**
-    * Returns a scaled copy of the image.
-    *
-    * @param sx Scale factor along the x axis.
-    * @param sy Scale factor along the y axis.
-    *
-    * @return A scaled copy of the image.
-    */
+   * Returns a scaled copy of the image.
+   *
+   * @param sx Scale factor along the x axis.
+   * @param sy Scale factor along the y axis.
+   *
+   * @return A scaled copy of the image.
+   */
   Image scaled(double sx, double sy);
 
   /**
@@ -188,7 +188,7 @@ struct Image : public Shape {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll(double s);
 
   /**
    * Writes the EPS code of the shape in a stream according
@@ -197,8 +197,7 @@ struct Image : public Shape {
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
    */
-  void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+  void flushPostscript(std::ostream & stream, const TransformEPS & transform) const;
 
   /**
    * Writes the FIG code of the shape in a stream according
@@ -207,9 +206,7 @@ struct Image : public Shape {
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
    */
-  void flushFIG( std::ostream & stream,
-                 const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+  void flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const;
 
   /**
    * Writes the SVG code of the shape in a stream according
@@ -218,8 +215,7 @@ struct Image : public Shape {
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
    */
-  void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+  void flushSVG(std::ostream & stream, const TransformSVG & transform) const;
 
   /**
    * Writes the TikZ code of the shape in a stream according
@@ -228,23 +224,19 @@ struct Image : public Shape {
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
    */
-  void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+  void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const;
 
 private:
-  static const std::string _name;        /**< The generic name of the shape. */
-  Rectangle _rectangle;
-  Rectangle _originalRectangle;
+  static const std::string _name; /**< The generic name of the shape. */
+  Polyline _rectangle;
+  Polyline _originalRectangle;
   TransformMatrix _transformMatrixSVG;
   TransformMatrix _transformMatrixEPS;
   std::string _filename;
 };
 
-Image::~Image()
-{}
-
+Image::~Image() {}
 
 } // namespace LibBoard
 
 #endif /* _SHAPE_H_ */
-

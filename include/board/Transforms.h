@@ -26,14 +26,14 @@
 #ifndef _BOARD_TRANSFORMS_H_
 #define _BOARD_TRANSFORMS_H_
 
+#include <cmath>
 #include <limits>
 #include <vector>
-#include <cmath>
 #include "TransformMatrix.h"
+#include "board/Rect.h"
+namespace LibBoard
+{
 
-namespace LibBoard {
-
-struct Rect;
 struct Shape;
 struct ShapeList;
 
@@ -44,19 +44,16 @@ struct ShapeList;
 struct Transform {
 public:
   inline Transform();
-  virtual ~Transform() { }
-  virtual double mapX( double x ) const;
-  virtual double mapY( double y ) const = 0;
-  virtual Point map( const Point & ) const;
-  virtual void apply( double & x, double & y ) const;
-  virtual double scale( double x ) const;
-  virtual Point scale( const Point & ) const;
-  virtual double rounded( double x ) const;
-  virtual void setBoundingBox( const Rect & rect,
-                               const double pageWidth,
-                               const double pageHeight,
-                               const double margin ) = 0;
-  static inline double round( const double & x );
+  virtual ~Transform() {}
+  virtual double mapX(double x) const;
+  virtual double mapY(double y) const = 0;
+  virtual Point map(const Point &) const;
+  virtual void apply(double & x, double & y) const;
+  virtual double scale(double x) const;
+  virtual Point scale(const Point &) const;
+  virtual double rounded(double x) const;
+  virtual void setBoundingBox(const Rect & rect, const double pageWidth, const double pageHeight, const double margin) = 0;
+  static inline double round(const double & x);
 
 protected:
   double _scale;
@@ -72,12 +69,9 @@ protected:
  */
 struct TransformEPS : public Transform {
 public:
-  double mapWidth( double w ) const;
-  double mapY( double y ) const;
-  void setBoundingBox( const Rect & rect,
-                       const double pageWidth,
-                       const double pageHeight,
-                       const double margin );
+  double mapWidth(double w) const;
+  double mapY(double y) const;
+  void setBoundingBox(const Rect & rect, const double pageWidth, const double pageHeight, const double margin);
   double scaleBackMM(double);
   Rect pageBoundingBox() const;
 
@@ -93,15 +87,13 @@ private:
 struct TransformFIG : public Transform {
 public:
   inline TransformFIG();
-  double rounded( double x ) const;
-  double mapY( double y ) const;
-  int mapWidth( double width ) const;
-  void setBoundingBox( const Rect & rect,
-                       const double pageWidth,
-                       const double pageHeight,
-                       const double margin );
-  void setDepthRange( const ShapeList & shapes );
-  int mapDepth( int depth ) const;
+  double rounded(double x) const;
+  double mapY(double y) const;
+  int mapWidth(double width) const;
+  void setBoundingBox(const Rect & rect, const double pageWidth, const double pageHeight, const double margin);
+  void setDepthRange(const ShapeList & shapes);
+  int mapDepth(int depth) const;
+
 private:
   int _maxDepth;
   int _minDepth;
@@ -115,13 +107,10 @@ private:
  */
 struct TransformSVG : public Transform {
 public:
-  double rounded( double x ) const;
-  double mapY( double y ) const;
-  double mapWidth( double width ) const;
-  void setBoundingBox( const Rect & rect,
-                       const double pageWidth,
-                       const double pageHeight,
-                       const double margin );
+  double rounded(double x) const;
+  double mapY(double y) const;
+  double mapWidth(double width) const;
+  void setBoundingBox(const Rect & rect, const double pageWidth, const double pageHeight, const double margin);
   double scaleBackMM(double);
   TransformMatrix matrix() const;
   Point translation() const;
@@ -137,9 +126,26 @@ public:
 struct TransformTikZ : public TransformSVG {
 };
 
+// Inline methods and functions
 
-#include "Transforms.ih"
+#if defined(max)
+#undef max
+#define _HAS_MSVC_MAX_ true
+#endif
+
+Transform::Transform() : _scale(1.0), _deltaX(0.0), _deltaY(0.0), _height(0.0) {}
+
+TransformFIG::TransformFIG() : _maxDepth(std::numeric_limits<int>::max()), _minDepth(0), _postscriptScale(1.0) {}
+
+double Transform::round(const double & x)
+{
+  return std::floor(x + 0.5);
+}
+
+#if defined(_HAS_MSVC_MAX_)
+#define max(A, B) ((A) > (B) ? (A) : (B))
+#endif
 
 } // namespace LibBoard
 
-#endif /* _TRANSFORMS_H_ */
+#endif /* _BOARD_TRANSFORMS_H_ */

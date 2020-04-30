@@ -27,18 +27,19 @@
 #ifndef _BOARD_SHAPELIST_H_
 #define _BOARD_SHAPELIST_H_
 
-#include <typeinfo>
-#include <stack>
 #include <queue>
+#include <stack>
+#include <typeinfo>
 #include "board/Exception.h"
-#include "board/Shapes.h"
+#include "board/Shape.h"
 #include "board/Tools.h"
 
-#if __cplusplus<201100
+#if __cplusplus < 201100
 #define override
 #endif
 
-namespace LibBoard {
+namespace LibBoard
+{
 
 struct Group;
 
@@ -48,23 +49,35 @@ struct Group;
  */
 struct ShapeList : public Shape {
 
-  enum Direction { Top, Right, Bottom, Left };
-  enum Alignment { AlignTop, AlignBottom, AlignCenter, AlignLeft, AlignRight };
+  enum Direction
+  {
+    Top,
+    Right,
+    Bottom,
+    Left
+  };
+  enum Alignment
+  {
+    AlignTop,
+    AlignBottom,
+    AlignCenter,
+    AlignLeft,
+    AlignRight
+  };
 
-  inline ShapeList( int depth = -1 );
+  inline ShapeList(int depth = -1);
 
-  ShapeList( const ShapeList & other );
+  ShapeList(const ShapeList & other);
 
-  ShapeList & operator=( const ShapeList & other );
+  ShapeList & operator=(const ShapeList & other);
 
 #if __cplusplus > 201100
 
-  ShapeList( ShapeList && other );
+  ShapeList(ShapeList && other);
 
-  ShapeList & operator=( ShapeList && other );
+  ShapeList & operator=(ShapeList && other);
 
 #endif
-
 
   /**
    * Create a ShapeList by repeating a shape (translation & scaling)
@@ -74,10 +87,7 @@ struct ShapeList : public Shape {
    * @param dy The y shift between two repetitions.
    * @param scale The scaling factor between two repetitions.
    */
-  ShapeList( const Shape & shape,
-             unsigned int times,
-             double dx, double dy,
-             double scale );
+  ShapeList(const Shape & shape, unsigned int times, double dx, double dy, double scale);
 
   /**
    * Create a ShapeList by repeating a shape (translation, scaling & rotation)
@@ -89,11 +99,7 @@ struct ShapeList : public Shape {
    * @param scaleY The y scaling factor between two repetitions.
    * @param angle The rotation angle between two repetitions.
    */
-  ShapeList( const Shape & shape,
-             unsigned int times,
-             double dx, double dy,
-             double scaleX, double scaleY,
-             double angle );
+  ShapeList(const Shape & shape, unsigned int times, double dx, double dy, double scaleX, double scaleY, double angle);
 
   ~ShapeList();
 
@@ -106,25 +112,25 @@ struct ShapeList : public Shape {
 
   ShapeList & clear();
 
-  ShapeList & rotate( double angle, const Point & center );
+  ShapeList & rotate(double angle, const Point & center);
 
-  ShapeList rotated( double angle, const Point & center );
+  ShapeList rotated(double angle, const Point & center);
 
-  ShapeList & rotate( double angle );
+  ShapeList & rotate(double angle);
 
-  ShapeList rotated( double angle );
+  ShapeList rotated(double angle);
 
-  ShapeList & translate( double dx, double dy );
+  ShapeList & translate(double dx, double dy);
 
-  ShapeList translated( double dx, double dy );
+  ShapeList translated(double dx, double dy);
 
-  ShapeList & scale( double sx, double sy );
+  ShapeList & scale(double sx, double sy);
 
-  ShapeList & scale( double s );
+  ShapeList & scale(double s);
 
-  ShapeList scaled( double sx, double sy );
+  ShapeList scaled(double sx, double sy);
 
-  ShapeList scaled( double s );
+  ShapeList scaled(double s);
 
   /**
    * Scales all the values (positions, dimensions, etc.) associated
@@ -132,20 +138,15 @@ struct ShapeList : public Shape {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll(double s);
 
-  void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+  void flushPostscript(std::ostream & stream, const TransformEPS & transform) const;
 
-  void flushFIG( std::ostream & stream,
-                 const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+  void flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const;
 
-  void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+  void flushSVG(std::ostream & stream, const TransformSVG & transform) const;
 
-  void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+  void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const;
 
   Rect boundingBox(LineWidthFlag) const;
 
@@ -153,7 +154,7 @@ struct ShapeList : public Shape {
 
   virtual int maxDepth() const;
 
-  void shiftDepth( int shift );
+  void shiftDepth(int shift);
 
   ShapeList * clone() const;
 
@@ -166,7 +167,7 @@ struct ShapeList : public Shape {
    *
    * @return
    */
-  ShapeList & operator<<( const Shape & shape );
+  ShapeList & operator<<(const Shape & shape);
 
   /**
    * Adds a shape to the list of shape, always preserving the shape's depth.
@@ -175,8 +176,7 @@ struct ShapeList : public Shape {
    *
    * @return
    */
-  ShapeList & operator+=( const Shape & shape );
-
+  ShapeList & operator+=(const Shape & shape);
 
   /**
    * Append a shape beside the shapelist.
@@ -188,12 +188,7 @@ struct ShapeList : public Shape {
    * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    * @return The shapelist itself, after the shape has been appended.
    */
-  ShapeList & append( const Shape & shape,
-                      Direction direction,
-                      Alignment alignment,
-                      double margin = 0.0,
-                      LineWidthFlag lineWidthFlag = UseLineWidth );
-
+  ShapeList & append(const Shape & shape, Direction direction, Alignment alignment, double margin = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
 
   /**
    * Insert a tiling based on a shape by repeating this shape along its
@@ -207,12 +202,7 @@ struct ShapeList : public Shape {
    * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    * @return A reference to the tiling that has been added, as a Group.
    */
-  Group & addTiling( const Shape & shape,
-                     Point topLeftCorner,
-                     std::size_t columns,
-                     std::size_t rows,
-                     double spacing = 0.0,
-                     LineWidthFlag lineWidthFlag = UseLineWidth );
+  Group & addTiling(const Shape & shape, Point topLeftCorner, std::size_t columns, std::size_t rows, double spacing = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
 
   /**
    * A a repeated shape (with translation, scaling & rotation)
@@ -224,12 +214,7 @@ struct ShapeList : public Shape {
    * @param scaleY The y scaling factor between two repetitions.
    * @param angle The rotation angle between two repetitions.
    */
-  void repeat( const Shape & shape,
-               unsigned int times,
-               double dx, double dy,
-               double scaleX = 1.0, double scaleY = 1.0,
-               double angle = 0.0 );
-
+  void repeat(const Shape & shape, unsigned int times, double dx, double dy, double scaleX = 1.0, double scaleY = 1.0, double angle = 0.0);
 
   /**
    * Insert the shape at a given depth. If the shape is ShapeList or a Board,
@@ -240,14 +225,14 @@ struct ShapeList : public Shape {
    *
    * @return
    */
-  ShapeList & insert( const Shape & shape, int depth );
+  ShapeList & insert(const Shape & shape, int depth);
 
   /**
    * Duplicates the last inserted shape.
    *
    * @param copies The number of copies.
    */
-  ShapeList & dup( std::size_t copies  = 1 );
+  ShapeList & dup(std::size_t copies = 1);
 
   /**
    * Return the last inserted shape with its actual type, if specified (otherwise, a Shape &).
@@ -255,18 +240,16 @@ struct ShapeList : public Shape {
    * @param position The position. 0 is the last inserted shape, 1 is the one before, etc.
    * @return A reference to the addressed shape.
    */
-  template<typename T>
-  T & last( const std::size_t position = 0 );
+  template <typename T> T & last(const std::size_t position = 0);
 
-  Shape & last( const std::size_t position = 0 );
+  Shape & last(const std::size_t position = 0);
 
   /**
    * Find the n-th most recently inserted shape with type T.
    *
    * @return A reference to the n-th most recently inserted shape with type T.
    */
-  template<typename T>
-  T & topLevelFindLast( std::size_t position = 0 );
+  template <typename T> T & topLevelFindLast(std::size_t position = 0);
 
   /**
    * Convenience function that simply calls last(0).
@@ -282,28 +265,28 @@ struct ShapeList : public Shape {
    *
    * @param visitor A visitor object.
    */
-  virtual void accept( ShapeVisitor & visitor );
+  virtual void accept(ShapeVisitor & visitor);
 
   /**
    * @brief Accepts a visitor object.
    *
    * @param visitor A visitor object.
    */
-  virtual void accept( const ShapeVisitor & visitor );
+  virtual void accept(const ShapeVisitor & visitor);
 
   /**
    * @brief Accepts a const-shape visitor object.
    *
    * @param visitor A const-shape visitor object.
    */
-  virtual void accept( ConstShapeVisitor & visitor ) const override;
+  virtual void accept(ConstShapeVisitor & visitor) const override;
 
   /**
    * @brief Accepts a const-shape visitor object.
    *
    * @param visitor A const-shape visitor object.
    */
-  virtual void accept( const ConstShapeVisitor & visitor ) const override;
+  virtual void accept(const ConstShapeVisitor & visitor) const override;
 
   /**
    * @brief The TopLevelIterator struct
@@ -311,15 +294,16 @@ struct ShapeList : public Shape {
    * Allows the traversal of a ShapeList using an STL-like syntax.
    */
   struct TopLevelIterator {
-    inline TopLevelIterator(std::vector<Shape*>::iterator it);
+    inline TopLevelIterator(std::vector<Shape *>::iterator it);
     inline Shape & operator*();
     inline Shape * pointer();
     inline TopLevelIterator & operator++();
     inline TopLevelIterator operator++(int);
     inline bool operator==(const TopLevelIterator & other);
     inline bool operator!=(const TopLevelIterator & other);
+
   private:
-    std::vector<Shape*>::iterator _it;
+    std::vector<Shape *>::iterator _it;
   };
 
   /**
@@ -328,15 +312,16 @@ struct ShapeList : public Shape {
    * Allows the traversal of a const ShapeList using an STL-like syntax.
    */
   struct TopLevelConstIterator {
-    inline TopLevelConstIterator(std::vector<Shape*>::const_iterator it);
+    inline TopLevelConstIterator(std::vector<Shape *>::const_iterator it);
     inline const Shape & operator*();
     inline const Shape * pointer();
     inline TopLevelConstIterator & operator++();
     inline TopLevelConstIterator operator++(int);
     inline bool operator==(const TopLevelConstIterator & other);
     inline bool operator!=(const TopLevelConstIterator & other);
+
   private:
-    std::vector<Shape*>::const_iterator _it;
+    std::vector<Shape *>::const_iterator _it;
   };
 
   /**
@@ -352,10 +337,11 @@ struct ShapeList : public Shape {
     inline bool operator!=(const DepthFirstIterator & other);
     inline DepthFirstIterator & operator++();
     inline DepthFirstIterator operator++(int);
+
   private:
     void moveToFirstActuelShape();
     void moveToNextActualShape();
-    std::stack<ShapeList*> _shapeListsStack;
+    std::stack<ShapeList *> _shapeListsStack;
     std::stack<TopLevelIterator> _iteratorsStack;
   };
 
@@ -372,13 +358,13 @@ struct ShapeList : public Shape {
     inline bool operator!=(const BreadthFirstIterator & other);
     inline BreadthFirstIterator & operator++();
     inline BreadthFirstIterator operator++(int);
+
   private:
     void moveToFirstActuelShape();
     void moveToNextActualShape();
-    std::queue<ShapeList*> _shapeListsQueue;
+    std::queue<ShapeList *> _shapeListsQueue;
     std::queue<TopLevelIterator> _iteratorsQueue;
   };
-
 
   /**
    * @brief begin
@@ -453,15 +439,13 @@ struct ShapeList : public Shape {
   inline std::size_t size() const;
 
 private:
-
   static const std::string _name; /**< The generic name of the shape. */
 
 protected:
+  void addShape(const Shape & shape, double scaleFactor);
 
-  void addShape( const Shape & shape, double scaleFactor );
-
-  std::vector<Shape*> _shapes; /**< The vector of shapes. */
-  int _nextDepth;              /**< The depth of the next figure to be added. */
+  std::vector<Shape *> _shapes; /**< The vector of shapes. */
+  int _nextDepth;               /**< The depth of the next figure to be added. */
 
   /**
    * Free the memory used by the shapes in the shape vector.
@@ -476,13 +460,11 @@ protected:
  */
 struct Group : public ShapeList {
 
-  Group( int depth = -1 )
-    : ShapeList( depth ), _clippingPath( true /* closed path */ ) { }
+  Group(int depth = -1) : ShapeList(depth), _clippingPath(true /* closed path */) {}
 
-  Group( const Group & other )
-    : ShapeList( other ), _clippingPath( other._clippingPath ) { }
+  Group(const Group & other) : ShapeList(other), _clippingPath(other._clippingPath) {}
 
-  ~Group() { }
+  ~Group() {}
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -491,25 +473,25 @@ struct Group : public ShapeList {
    */
   const std::string & name() const;
 
-  Group & rotate( double angle, const Point & center );
+  Group & rotate(double angle, const Point & center);
 
-  Group & rotate( double angle );
+  Group & rotate(double angle);
 
-  Group rotated( double angle, const Point & center );
+  Group rotated(double angle, const Point & center);
 
-  Group rotated( double angle );
+  Group rotated(double angle);
 
-  Group & translate( double dx, double dy );
+  Group & translate(double dx, double dy);
 
-  Group translated( double dx, double dy );
+  Group translated(double dx, double dy);
 
-  Group & scale( double sx, double sy );
+  Group & scale(double sx, double sy);
 
-  Group & scale( double s );
+  Group & scale(double s);
 
-  Group scaled( double sx, double sy );
+  Group scaled(double sx, double sy);
 
-  Group scaled( double s );
+  Group scaled(double s);
 
   /**
    * Define a clipping rectangle for the group.
@@ -519,37 +501,31 @@ struct Group : public ShapeList {
    * @param width
    * @param height
    */
-  void setClippingRectangle(  float x, float y,
-                              float width, float height );
+  void setClippingRectangle(float x, float y, float width, float height);
 
   /**
    * Define a clipping path for the group.
    *
    * @param points A path.
    */
-  void setClippingPath(  const std::vector<Point> & points  );
+  void setClippingPath(const std::vector<Point> & points);
 
   /**
    * Define a clipping path for the group.
    *
    * @param points A path.
    */
-  void setClippingPath( const Path & path );
+  void setClippingPath(const Path & path);
 
-  void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+  void flushPostscript(std::ostream & stream, const TransformEPS & transform) const;
 
-  void flushFIG( std::ostream & stream,
-                 const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+  void flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const;
 
-  void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+  void flushSVG(std::ostream & stream, const TransformSVG & transform) const;
 
-  void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+  void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const;
 
-  Group & operator=( const Group & other );
+  Group & operator=(const Group & other);
 
   Group * clone() const;
 
@@ -561,15 +537,268 @@ private:
   static std::size_t _clippingCount;
 };
 
+// Inline methods and functions
 
-#include "ShapeList.ih"
+#if defined(max)
+#undef max
+#define _HAS_MSVC_MAX_ true
+#endif
+
+ShapeList::ShapeList(int depth) : Shape(Color::Null, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth), _nextDepth(std::numeric_limits<int>::max() - 1) {}
+
+template <typename T> T & ShapeList::last(const std::size_t position)
+{
+  if (position < _shapes.size()) {
+    std::vector<Shape *>::reverse_iterator it = _shapes.rbegin() + position;
+    Shape * pshape = *it;
+    T * result = dynamic_cast<T *>(pshape);
+    if (!result) {
+      std::cerr << "Error: ShapeList::last<> called with invalid result type\n";
+      exit(-1);
+    }
+    return dynamic_cast<T &>(*result);
+  } else {
+    Tools::error << "Trying to access an element that does not exist (" << position << "/" << _shapes.size() << ").\n";
+    throw - 1;
+  }
+}
+
+template <typename T> T & ShapeList::topLevelFindLast(std::size_t position)
+{
+  std::vector<Shape *>::reverse_iterator it = _shapes.rbegin();
+  while (it != _shapes.rend()) {
+    T * shape = dynamic_cast<T *>(*it);
+    if (shape) {
+      if (!position) {
+        return *shape;
+      } else {
+        --position;
+      }
+    }
+    ++it;
+  }
+  throw Exception("topLevelFindLast<T>(): no such shape type found (" + std::string(typeid(T).name()) + ")");
+}
+
+ShapeList::TopLevelIterator::TopLevelIterator(std::vector<Shape *>::iterator it) : _it(it) {}
+
+Shape & ShapeList::TopLevelIterator::operator*()
+{
+  return **_it;
+}
+
+Shape * ShapeList::TopLevelIterator::pointer()
+{
+  return *_it;
+}
+
+ShapeList::TopLevelIterator & ShapeList::TopLevelIterator::operator++()
+{
+  ++_it;
+  return *this;
+}
+
+ShapeList::TopLevelIterator ShapeList::TopLevelIterator::operator++(int)
+{
+  TopLevelIterator previous(*this);
+  ++_it;
+  return previous;
+}
+
+bool ShapeList::TopLevelIterator::operator==(const TopLevelIterator & other)
+{
+  return _it == other._it;
+}
+
+bool ShapeList::TopLevelIterator::operator!=(const TopLevelIterator & other)
+{
+  return _it != other._it;
+}
+
+ShapeList::TopLevelConstIterator::TopLevelConstIterator(std::vector<Shape *>::const_iterator it) : _it(it) {}
+
+const Shape & ShapeList::TopLevelConstIterator::operator*()
+{
+  return **_it;
+}
+
+const Shape * ShapeList::TopLevelConstIterator::pointer()
+{
+  return *_it;
+}
+
+ShapeList::TopLevelConstIterator & ShapeList::TopLevelConstIterator::operator++()
+{
+  ++_it;
+  return *this;
+}
+
+ShapeList::TopLevelConstIterator ShapeList::TopLevelConstIterator::operator++(int)
+{
+  TopLevelConstIterator previous(*this);
+  ++_it;
+  return previous;
+}
+
+bool ShapeList::TopLevelConstIterator::operator==(const TopLevelConstIterator & other)
+{
+  return _it == other._it;
+}
+
+bool ShapeList::TopLevelConstIterator::operator!=(const TopLevelConstIterator & other)
+{
+  return _it != other._it;
+}
+
+ShapeList::TopLevelIterator ShapeList::begin()
+{
+  return TopLevelIterator(_shapes.begin());
+}
+
+ShapeList::TopLevelIterator ShapeList::end()
+{
+  return TopLevelIterator(_shapes.end());
+}
+
+ShapeList::TopLevelConstIterator ShapeList::begin() const
+{
+  return TopLevelConstIterator(_shapes.begin());
+}
+
+ShapeList::TopLevelConstIterator ShapeList::cbegin() const
+{
+  return TopLevelConstIterator(_shapes.begin());
+}
+
+ShapeList::TopLevelConstIterator ShapeList::end() const
+{
+  return TopLevelConstIterator(_shapes.end());
+}
+
+ShapeList::TopLevelConstIterator ShapeList::cend() const
+{
+  return TopLevelConstIterator(_shapes.end());
+}
+
+ShapeList::DepthFirstIterator ShapeList::depthFirstBegin()
+{
+  return DepthFirstIterator(this);
+}
+
+ShapeList::DepthFirstIterator ShapeList::depthFirstEnd()
+{
+  return DepthFirstIterator();
+}
+
+ShapeList::BreadthFirstIterator ShapeList::breadthFirstBegin()
+{
+  return BreadthFirstIterator(this);
+}
+
+ShapeList::BreadthFirstIterator ShapeList::breadthFirstEnd()
+{
+  return BreadthFirstIterator();
+}
+
+std::size_t ShapeList::size() const
+{
+  return _shapes.size();
+}
+
+ShapeList::DepthFirstIterator::DepthFirstIterator() {}
+
+ShapeList::DepthFirstIterator::DepthFirstIterator(ShapeList * list)
+{
+  _shapeListsStack.push(list);
+  _iteratorsStack.push(list->begin());
+  moveToFirstActuelShape();
+}
+
+Shape & ShapeList::DepthFirstIterator::operator*()
+{
+  return *(_iteratorsStack.top());
+}
+
+Shape * ShapeList::DepthFirstIterator::pointer()
+{
+  return _iteratorsStack.top().pointer();
+}
+
+bool ShapeList::DepthFirstIterator::operator==(const DepthFirstIterator & other)
+{
+  return (_shapeListsStack.empty() && other._shapeListsStack.empty()) ||
+         ((!_shapeListsStack.empty() && !other._shapeListsStack.empty()) && (_shapeListsStack.top() == other._shapeListsStack.top()) && (_iteratorsStack.top() == other._iteratorsStack.top()));
+}
+
+bool ShapeList::DepthFirstIterator::operator!=(const DepthFirstIterator & other)
+{
+  return !(*this == other);
+}
+
+ShapeList::DepthFirstIterator & ShapeList::DepthFirstIterator::operator++()
+{
+  moveToNextActualShape();
+  return *this;
+}
+
+ShapeList::DepthFirstIterator ShapeList::DepthFirstIterator::operator++(int)
+{
+  DepthFirstIterator currentValue(*this);
+  moveToNextActualShape();
+  return currentValue;
+}
+
+ShapeList::BreadthFirstIterator::BreadthFirstIterator() {}
+
+ShapeList::BreadthFirstIterator::BreadthFirstIterator(ShapeList * list)
+{
+  _shapeListsQueue.push(list);
+  _iteratorsQueue.push(list->begin());
+  moveToFirstActuelShape();
+}
+
+Shape & ShapeList::BreadthFirstIterator::operator*()
+{
+  return *(_iteratorsQueue.front());
+}
+
+Shape * ShapeList::BreadthFirstIterator::pointer()
+{
+  return _iteratorsQueue.front().pointer();
+}
+
+bool ShapeList::BreadthFirstIterator::operator==(const BreadthFirstIterator & other)
+{
+  return (_shapeListsQueue.empty() && other._shapeListsQueue.empty()) ||
+         ((!_shapeListsQueue.empty() && !other._shapeListsQueue.empty()) && (_shapeListsQueue.front() == other._shapeListsQueue.front()) && (_iteratorsQueue.front() == other._iteratorsQueue.front()));
+}
+
+bool ShapeList::BreadthFirstIterator::operator!=(const BreadthFirstIterator & other)
+{
+  return !(*this == other);
+}
+
+ShapeList::BreadthFirstIterator & ShapeList::BreadthFirstIterator::operator++()
+{
+  moveToNextActualShape();
+  return *this;
+}
+
+ShapeList::BreadthFirstIterator ShapeList::BreadthFirstIterator::operator++(int)
+{
+  BreadthFirstIterator currentValue(*this);
+  moveToNextActualShape();
+  return currentValue;
+}
+
+#if defined(_HAS_MSVC_MAX_)
+#define max(A, B) ((A) > (B) ? (A) : (B))
+#endif
 
 } // namespace LibBoard
 
-
-#if __cplusplus<201100
+#if __cplusplus < 201100
 #undef override
 #endif
 
 #endif /* _SHAPELIST_H_ */
-

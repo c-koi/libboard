@@ -29,7 +29,8 @@
 #include <iostream>
 #include "board/Point.h"
 
-namespace LibBoard {
+namespace LibBoard
+{
 
 /**
  * The Rectangle structure.
@@ -40,7 +41,7 @@ struct Rect {
   double top;    /**< Coordinate of the upper side. */
   double width;  /**< Width of the rectangle. */
   double height; /**< Height of the rectangle. */
-  
+
   /**
    * Rect constructor.
    *
@@ -49,9 +50,7 @@ struct Rect {
    * @param width
    * @param height
    */
-  Rect( double left = 0.0f, double top = 0.0f,
-        double width = 0.0f, double height = 0.0f )
-    :left( left ), top( top ), width( width ), height( height ) { }
+  Rect(double left = 0.0f, double top = 0.0f, double width = 0.0f, double height = 0.0f) : left(left), top(top), width(width), height(height) {}
 
   /**
    * Rect constructor.
@@ -60,9 +59,7 @@ struct Rect {
    * @param width
    * @param height
    */
-  Rect( Point topLeft,
-        double width = 0.0f, double height = 0.0f )
-    :left( topLeft.x ), top( topLeft.y ), width( width ), height( height ) { }
+  Rect(Point topLeft, double width = 0.0f, double height = 0.0f) : left(topLeft.x), top(topLeft.y), width(width), height(height) {}
 
   /**
    * Rect constructor.
@@ -70,29 +67,25 @@ struct Rect {
    * @param topLeft The top-left point of the rectangle.
    * @param bottomRight The bottom-right point of the rectangle.
    */
-  Rect( Point topLeft, Point bottomRight )
-    : left( topLeft.x ),
-      top( topLeft.y ),
-      width( bottomRight.x - topLeft.x ),
-      height( topLeft.y - bottomRight.y ) { }
+  Rect(Point topLeft, Point bottomRight) : left(topLeft.x), top(topLeft.y), width(bottomRight.x - topLeft.x), height(topLeft.y - bottomRight.y) {}
 
-  Point topLeft() const { return Point( left, top ); }
-  Point topRight() const { return Point( left + width, top ); }
-  Point bottomLeft() const { return Point( left, top - height ); }
-  Point bottomRight() const { return Point( left + width, top - height ); }
-  Point center() const { return Point(left+width/2.0,top-height/2.0); }
-  Point centerLeft() const { return Point(left,top-height/2.0); }
-  Point centerRight() const { return Point(left+width,top-height/2.0); }
-  Point centerTop() const { return Point(left+width/2.0,top); }
-  Point centerBottom() const { return Point(left+width/2.0,top-height); }
+  Point topLeft() const { return Point(left, top); }
+  Point topRight() const { return Point(left + width, top); }
+  Point bottomLeft() const { return Point(left, top - height); }
+  Point bottomRight() const { return Point(left + width, top - height); }
+  Point center() const { return Point(left + width / 2.0, top - height / 2.0); }
+  Point centerLeft() const { return Point(left, top - height / 2.0); }
+  Point centerRight() const { return Point(left + width, top - height / 2.0); }
+  Point centerTop() const { return Point(left + width / 2.0, top); }
+  Point centerBottom() const { return Point(left + width / 2.0, top - height); }
   double bottom() const { return top - height; }
   double right() const { return left + width; }
-  void growToContain(Point );
-  bool contains(Point ) const;
+  void growToContain(Point);
+  bool contains(Point) const;
   Rect & grow(double margin);
 };
 
-/** 
+/**
  * Computes the bounding box of two bounding boxes.
  *
  * @param rectA A first rectangle.
@@ -100,9 +93,9 @@ struct Rect {
  *
  * @return The smallest rectangle that contains both rectA and rectB.
  */
-Rect operator||( const Rect & rectA, const Rect & rectB );
+Rect operator||(const Rect & rectA, const Rect & rectB);
 
-/** 
+/**
  * Computes the intersection of two bounding boxes.
  *
  * @param rectA A first rectangle.
@@ -110,7 +103,7 @@ Rect operator||( const Rect & rectA, const Rect & rectB );
  *
  * @return The intersecting rectangle of two bounding boxes.
  */
-Rect operator&&( const Rect & rectA, const Rect & rectB );
+Rect operator&&(const Rect & rectA, const Rect & rectB);
 
 } // mamespace LibBoard
 
@@ -122,6 +115,6 @@ Rect operator&&( const Rect & rectA, const Rect & rectB );
  *
  * @return The output stream.
  */
-std::ostream & operator<<( std::ostream & out, const LibBoard::Rect & rect );
+std::ostream & operator<<(std::ostream & out, const LibBoard::Rect & rect);
 
 #endif // _RECT_H_

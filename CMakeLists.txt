@@ -107,12 +107,19 @@ INCLUDE_DIRECTORIES( include/ include/board )
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib/ )
 
 SET(lib_src
+  src/Shape.cpp
+  src/Dot.cpp
+  src/Line.cpp
+  src/Arrow.cpp
+  src/Polyline.cpp
+  src/Bezier.cpp
+  src/Ellipse.cpp
+  src/Text.cpp
   src/Board.cpp
   src/Color.cpp
   src/Exception.cpp
   src/Rect.cpp
   src/Path.cpp
-  src/Shapes.cpp
   src/Image.cpp
   src/ShapeList.cpp
   src/ShapeVisitor.cpp
@@ -124,6 +131,15 @@ SET(lib_src
   src/Point.cpp
 
   include/Board.h
+
+  include/board/Shape.h
+  include/board/Dot.h
+  include/board/Line.h
+  include/board/Arrow.h
+  include/board/Polyline.h
+  include/board/Bezier.h
+  include/board/Ellipse.h
+  include/board/Text.h
   include/board/Color.h
   include/board/Exception.h
   include/board/Image.h
@@ -133,7 +149,6 @@ SET(lib_src
   include/board/Rect.h
   include/board/ShapeList.h
   include/board/ShapeVisitor.h
-  include/board/Shapes.h
   include/board/Tools.h
   include/board/PathBoundaries.h
   include/board/TransformMatrix.h
@@ -158,7 +173,7 @@ install(FILES README.md LICENSE AUTHORS DESTINATION share/libboard )
 FOREACH( EXAMPLE logo example1 example2 example3 example4
          arithmetic ellipse graph arrows ruler koch fern clipping
          flag scale_ellipse line_style images line_segment tilings stroke_path
-         holes bezier traversal)
+         holes bezier traversal hull)
   ADD_EXECUTABLE(
     ${EXAMPLE}
     examples/${EXAMPLE}.cpp

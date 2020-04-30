@@ -11,24 +11,24 @@
 #include "Board.h"
 using namespace LibBoard;
 
-int main( int , char *[] )
+int main(int, char * [])
 {
   Board board;
   board.setLineWidth(0.25);
 
   Group g;
-  g << Rectangle( -30, 10, 60, 20, Color::Green, Color::White, 0.1 );
-  g << Ellipse( 0, 0, 30, 10, Color::Red, Color::White, 0.1 );
-  g << Ellipse( 0, 0, 2, 10, Color::Null, Color::Green, 0.1 );
+  g << rectangle(-30, 10, 60, 20, Color::Green, Color::White, 0.1);
+  g << Ellipse(0, 0, 30, 10, Color::Red, Color::White, 0.1);
+  g << Ellipse(0, 0, 2, 10, Color::Null, Color::Green, 0.1);
 
   board << g;
-  board.addDuplicates( g, 5, 0, -15, 0.8, 0.8, 0.2 );
-  board.addDuplicates( g, 5, 0, 15, 0.8, 0.8, -0.2 );
-  board << g.scaled( 0.2 );
-  
-  board.saveEPS( "scale_ellipse.eps", Board::A4 );
-  board.saveFIG( "scale_ellipse.fig", Board::A4 );
+  board.addDuplicates(g, 5, 0, -15, 0.8, 0.8, 0.2);
+  board.addDuplicates(g, 5, 0, 15, 0.8, 0.8, -0.2);
+  board << g.scaled(0.2);
 
-  board.scaleToWidth(25,Board::UseLineWidth);
-  board.saveSVG( "scale_ellipse.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
+  board.saveEPS("scale_ellipse.eps", Board::A4);
+  board.saveFIG("scale_ellipse.fig", Board::A4);
+
+  board.scaleToWidth(25, Board::UseLineWidth);
+  board.saveSVG("scale_ellipse.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
 }

@@ -23,74 +23,72 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "BoardConfig.h"
 #include "board/Rect.h"
+#include "BoardConfig.h"
 
-namespace LibBoard {
+namespace LibBoard
+{
 
-Rect
-operator||( const Rect & rectA, const Rect & rectB )
+Rect operator||(const Rect & rectA, const Rect & rectB)
 {
   Rect rect;
-  rect.top = ( rectA.top > rectB.top ) ? rectA.top : rectB.top;
+  rect.top = (rectA.top > rectB.top) ? rectA.top : rectB.top;
   rect.left = (rectA.left < rectB.left) ? rectA.left : rectB.left;
-  if ( rectA.left + rectA.width > rectB.left + rectB.width )
+  if (rectA.left + rectA.width > rectB.left + rectB.width)
     rect.width = rectA.left + rectA.width - rect.left;
   else
     rect.width = rectB.left + rectB.width - rect.left;
-  if ( rectA.top - rectA.height < rectB.top - rectB.height )
-    rect.height = rect.top - ( rectA.top - rectA.height );
+  if (rectA.top - rectA.height < rectB.top - rectB.height)
+    rect.height = rect.top - (rectA.top - rectA.height);
   else
-    rect.height = rect.top - ( rectB.top - rectB.height );
+    rect.height = rect.top - (rectB.top - rectB.height);
   return rect;
 }
 
-Rect
-operator&&( const Rect & rectA, const Rect & rectB )
+Rect operator&&(const Rect & rectA, const Rect & rectB)
 {
   Rect rect;
-  rect.top = ( rectA.top < rectB.top ) ? rectA.top : rectB.top;
+  rect.top = (rectA.top < rectB.top) ? rectA.top : rectB.top;
   rect.left = (rectA.left > rectB.left) ? rectA.left : rectB.left;
-  if ( rectA.left + rectA.width < rectB.left + rectB.width )
+  if (rectA.left + rectA.width < rectB.left + rectB.width)
     rect.width = rectA.left + rectA.width - rect.left;
   else
     rect.width = rectB.left + rectB.width - rect.left;
-  if ( rectA.top - rectA.height > rectB.top - rectB.height )
-    rect.height = rect.top - ( rectA.top - rectA.height );
+  if (rectA.top - rectA.height > rectB.top - rectB.height)
+    rect.height = rect.top - (rectA.top - rectA.height);
   else
-    rect.height = rect.top - ( rectB.top - rectB.height );
-  if ( rect.height < 0 ) rect.height = 0;
-  if ( rect.width < 0 ) rect.width = 0;
+    rect.height = rect.top - (rectB.top - rectB.height);
+  if (rect.height < 0)
+    rect.height = 0;
+  if (rect.width < 0)
+    rect.width = 0;
   return rect;
 }
 
-void
-Rect::growToContain(Point p)
+void Rect::growToContain(Point p)
 {
-  if ( p.x < left ) {
+  if (p.x < left) {
     double dw = left - p.x;
     left = p.x;
     width += dw;
-  } else if ( p.x > left + width ) {
+  } else if (p.x > left + width) {
     width = p.x - left;
   }
-  if ( p.y > top ) {
+  if (p.y > top) {
     double dh = p.y - top;
     top = p.y;
     height += dh;
-  } else if ( p.y < top - height ) {
+  } else if (p.y < top - height) {
     height = top - p.y;
   }
 }
 
 bool Rect::contains(Point p) const
 {
-  return p.x >= left && p.x <= left + width
-      && p.y <= top && p.y >= top - height;
+  return p.x >= left && p.x <= left + width && p.y <= top && p.y >= top - height;
 }
 
-Rect &
-Rect::grow(double margin)
+Rect & Rect::grow(double margin)
 {
   top += margin;
   left -= margin;
@@ -101,10 +99,8 @@ Rect::grow(double margin)
 
 } // namespace LibBoard
 
-std::ostream &
-operator<<( std::ostream & out, const LibBoard::Rect & rect )
+std::ostream & operator<<(std::ostream & out, const LibBoard::Rect & rect)
 {
-  out << "Rect(" << rect.left << "," << rect.top
-      << "+" << rect.width << "x" << rect.height << ")";
+  out << "Rect(" << rect.left << "," << rect.top << "+" << rect.width << "x" << rect.height << ")";
   return out;
 }

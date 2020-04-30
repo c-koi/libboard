@@ -250,8 +250,6 @@ CXXFLAGSEXEC=-O3 ${CXXVERSION} -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./inclu
 
 OBJS=\$(patsubst src/%.cpp,obj/%.o,\$(wildcard src/*.cpp))
 
-
-
 all: lib examples ${DOXYGEN_TARGET}
 
 EOF

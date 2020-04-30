@@ -28,7 +28,8 @@
 
 #include <cmath>
 
-namespace LibBoard {
+namespace LibBoard
+{
 
 /*
  * Postscript Type 1 base fonts :
@@ -44,8 +45,10 @@ namespace LibBoard {
  * ITC Zapf Chancery (Medium Italic)
  * ITC Zapf Dingbats
  */
-namespace Fonts {
-enum Font {
+namespace Fonts
+{
+enum Font
+{
   TimesRoman,
   TimesItalic,
   TimesBold,
@@ -89,4 +92,3 @@ extern const char * PSFontNames[];
 } // mamespace LibBoard
 
 #endif // _BOARD_PSFONTS_H_
-

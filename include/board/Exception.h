@@ -30,19 +30,20 @@
 #include <string>
 #include "BoardConfig.h"
 
-namespace LibBoard {
+namespace LibBoard
+{
 
-  class Exception : public std::exception {
-  public:
-    Exception() BOARD_NOEXCEPT;
-    Exception(const char * what) BOARD_NOEXCEPT;
-    Exception(const std::string & what) BOARD_NOEXCEPT;
-    ~Exception() BOARD_NOEXCEPT;
-    const char* what() const BOARD_NOEXCEPT;
-  private:
-    std::string _what;
-  };
+class Exception : public std::exception {
+public:
+  Exception() BOARD_NOEXCEPT;
+  Exception(const char * what) BOARD_NOEXCEPT;
+  Exception(const std::string & what) BOARD_NOEXCEPT;
+  ~Exception() BOARD_NOEXCEPT;
+  const char * what() const BOARD_NOEXCEPT;
 
+private:
+  std::string _what;
+};
 }
 
 #endif // _BOARD_EXCEPTION_H_

@@ -26,35 +26,39 @@
 #ifndef _BOARD_TOOLS_H_
 #define _BOARD_TOOLS_H_
 
-#include <iostream>
-#include <ctime>
 #include <cstring>
+#include <ctime>
+#include <iostream>
 #include "Rect.h"
 
-#if defined( _MSC_VER )
+#if defined(_MSC_VER)
 #define secured_sprintf sprintf_s
 #else
 #define secured_sprintf snprintf
 #endif // defined( _MSC_VER )
 
-namespace LibBoard {
+namespace LibBoard
+{
 
-namespace Tools {
+namespace Tools
+{
 
-enum CaseSensitivity { CaseSensitive, CaseInsensitive };
+enum CaseSensitivity
+{
+  CaseSensitive,
+  CaseInsensitive
+};
 
 /**
-  * A "prefixable" message stream
-  */
+ * A "prefixable" message stream
+ */
 class MessageStream {
 public:
+  inline MessageStream(std::ostream & out, const char * prefix);
 
-  inline MessageStream( std::ostream & out, const char * prefix  );
+  template <typename T> inline MessageStream operator<<(const T & v);
 
-  template<typename T>
-  inline MessageStream operator<<( const T & v );
-
-  inline MessageStream operator<<( std::ostream & (*fun)(std::ostream &) );
+  inline MessageStream operator<<(std::ostream & (*fun)(std::ostream &));
 
 private:
   std::ostream & _out;
@@ -65,60 +69,72 @@ extern MessageStream error;
 extern MessageStream warning;
 extern MessageStream notice;
 
-MessageStream::MessageStream( std::ostream & out, const char * prefix )
-  : _out( out ),
-    _prefix( prefix )
-{
-}
+MessageStream::MessageStream(std::ostream & out, const char * prefix) : _out(out), _prefix(prefix) {}
 
-template<typename T>
-MessageStream MessageStream::operator<<( const T & v )
+template <typename T> MessageStream MessageStream::operator<<(const T & v)
 {
-  if ( _prefix ) {
+  if (_prefix) {
     _out << _prefix << v;
   } else {
     _out << v;
   }
-  return MessageStream( _out, 0 );
+  return MessageStream(_out, 0);
 }
 
-MessageStream MessageStream::operator<<( std::ostream & (*fun)(std::ostream &) )
+MessageStream MessageStream::operator<<(std::ostream & (*fun)(std::ostream &))
 {
-  if ( _prefix ) {
+  if (_prefix) {
     _out << _prefix << fun;
   } else {
     _out << fun;
   }
-  return MessageStream( _out, 0 );
+  return MessageStream(_out, 0);
 }
 
+inline void secured_strncpy(char * dst, const char * src, size_t count);
 
-inline void secured_strncpy( char * dst, const char * src, size_t count );
+inline void secured_ctime(char * str, const time_t * t, size_t count);
 
-inline void secured_ctime( char * str, const time_t * t, size_t count );
+bool base64encode(std::istream & in, std::ostream &, int linesize = 80);
 
-bool base64encode(std::istream & in, std::ostream & , int linesize = 80);
+bool stringEndsWith(const char * str, const char * end, CaseSensitivity sensitivity = CaseSensitive);
 
-bool stringEndsWith( const char * str, const char * end, CaseSensitivity sensitivity = CaseSensitive );
+void flushFile(const char * filename, std::ostream & out);
 
-void flushFile( const char * filename, std::ostream & out );
+Rect getEPSBoundingBox(const char * filename);
 
-Rect getEPSBoundingBox( const char * filename );
+bool canCreateFile(const char * filename);
 
-bool canCreateFile( const char * filename );
+bool canReadFile(const char * filename);
 
-bool canReadFile( const char * filename );
-
-const char * temporaryFilename( const char * extension );
+const char * temporaryFilename(const char * extension);
 
 unsigned int boardRand();
 
-template<typename T> inline void unused(const T&, ...) {}
+template <typename T> inline void unused(const T &, ...) {}
 
-}  // namespace Tools
+// Inline methods and functions
 
-}  // namespace LibBoard
+void secured_strncpy(char * dst, const char * src, size_t count)
+{
+#if defined(_MSC_VER)
+  strncpy_s(dst, count, src, _TRUNCATE);
+#else
+  strncpy(dst, src, count - 1);
+#endif // defined( _MSC_VER )
+}
 
-#include "Tools.ih"
+void secured_ctime(char * str, const time_t * t, size_t count)
+{
+#if defined(_MSC_VER)
+  ctime_s(str, count, t);
+#else
+  strncpy(str, ctime(t), count - 1);
+#endif // defined( _MSC_VER )
+}
+
+} // namespace Tools
+
+} // namespace LibBoard
 
 #endif /* _SHAPE_H_ */
