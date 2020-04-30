@@ -28,7 +28,7 @@ int main( int , char *[] )
   board.addDuplicates( small, 201, 0, 0.1 );
   board.addDuplicates( large, 21, 0, 1  );
   board.setFontSize(2);
-  board.drawText( board.last<Line>().boundingBox(Board::UseLineWidth).topRight(),
+  board.drawText( board.last<Line>().boundingBox(UseLineWidth).topRight(),
                   "Centimeters" );
 
   // Inches
@@ -39,12 +39,12 @@ int main( int , char *[] )
   board.addDuplicates( small, 21, 0, 2.54/2  );
   board.addDuplicates( large, 11, 0, 2.54  );
 
-  board << Text( board.last<Line>().boundingBox(Board::UseLineWidth).topRight(),
+  board << Text( board.last<Line>().boundingBox(UseLineWidth).topRight(),
                  "Inches", Fonts::CourierBold, 2, Color::Red );
 
   board.saveEPS( "ruler.eps" /*, Board::A4 */ );
   board.saveFIG( "ruler.fig" /*, Board::A4 */ );
 
-  board.scaleToWidth(25,Board::UseLineWidth);
+  board.scaleToWidth(25,UseLineWidth);
   board.saveSVG( "ruler.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
 }

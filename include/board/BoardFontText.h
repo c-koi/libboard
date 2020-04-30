@@ -1,10 +1,11 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   Transforms.ih
+ * @file   BoardFontText.h
  * @author Sebastien Fourey (GREYC)
- * @date   Sat Aug 18 2007
- * 
- * @brief  Inline methods of the Transform classes.
+ * @date   Aug 2007
+ *
+ * @brief  Group class
+ *
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +15,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -23,27 +24,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef BOARD_BOARD_FONT_TEXT_H
+#define BOARD_BOARD_FONT_TEXT_H
 
-#if defined( max )
-#undef max 
-#define _HAS_MSVC_MAX_ true
-#endif
+#include <string>
+#include "board/Group.h"
 
-
-Transform::Transform() 
-  : _scale(1.0), _deltaX(0.0), _deltaY(0.0), _height(0.0)
-{ }
-  
-TransformFIG::TransformFIG()
- : _maxDepth(std::numeric_limits<int>::max()),_minDepth(0),_postscriptScale(1.0)
-{ }
-
-    
-double Transform::round( const double & x )
+namespace LibBoard
 {
-  return std::floor( x + 0.5 );
-}
 
-#if defined( _HAS_MSVC_MAX_ )
-#define max(A,B) ((A)>(B)?(A):(B))
-#endif
+// TODO : Handle line width (normalised)
+
+Group boardFontText(Point p, const std::string & text, double size, Color penColor = Style::defaultPenColor(), double lineWidth = 0.0);
+
+void splitAndParseSVGPaths(const std::string & text, ShapeList & shapes);
+void parseSVGPath(const std::string & text, ShapeList & paths);
+void flush(const std::vector<Point> & points, const std::vector<Point> & controls, ShapeList & paths);
+
+// Inline methods and functions
+
+} // namespace LibBoard
+
+#endif /* BOARD_BOARD_FONT_TEXT_H */

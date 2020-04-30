@@ -23,52 +23,66 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_TRANSFORM_MATRIX_H_
-#define _BOARD_TRANSFORM_MATRIX_H_
+#ifndef BOARD_TRANSFORM_MATRIX_H
+#define BOARD_TRANSFORM_MATRIX_H
 
 #include <cmath>
 #include <iostream>
 #include "Point.h"
 
-namespace LibBoard {
+namespace LibBoard
+{
 
 class TransformMatrix {
 public:
-
-  enum Type { SVG, Postscript };
+  enum Type
+  {
+    SVG,
+    Postscript
+  };
 
   inline TransformMatrix();
-  inline TransformMatrix(double m11, double m12, double m13,
-                         double m21, double m22, double m23);
+  inline TransformMatrix(double m11, double m12, double m13, double m21, double m22, double m23);
 
   static TransformMatrix translation(double dx, double dy);
   static TransformMatrix translation(const Point &);
   static TransformMatrix scaling(double sx, double sy);
-  static TransformMatrix rotation(double angle, Type type );
-  static TransformMatrix rotation(double angle, const Point & center, Type type );
+  static TransformMatrix rotation(double angle, Type type);
+  static TransformMatrix rotation(double angle, const Point & center, Type type);
 
-  TransformMatrix operator*(const TransformMatrix & ) const;
+  TransformMatrix operator*(const TransformMatrix &)const;
 
-  TransformMatrix & operator*=(const TransformMatrix & );
+  TransformMatrix & operator*=(const TransformMatrix &);
 
-  Point operator*( const Point & point ) const;
+  Point operator*(const Point & point) const;
 
-  TransformMatrix operator+( const Point & ) const;
+  TransformMatrix operator+(const Point &) const;
 
-  TransformMatrix & operator+=( const Point & );
+  TransformMatrix & operator+=(const Point &);
 
-  void flushSVG(std::ostream & ) const;
+  void flushSVG(std::ostream &) const;
 
-  void flushEPS(std::ostream & ) const;
-
+  void flushEPS(std::ostream &) const;
 
 private:
   double _m11, _m12, _m13;
   double _m21, _m22, _m23;
 };
 
+// inline methods
+
+TransformMatrix::TransformMatrix()
+{
+  _m11 = 1.0;
+  _m12 = 0.0;
+  _m13 = 0.0;
+  _m21 = 0.0;
+  _m22 = 1.0;
+  _m23 = 0.0;
+}
+
+TransformMatrix::TransformMatrix(double m11, double m12, double m13, double m21, double m22, double m23) : _m11(m11), _m12(m12), _m13(m13), _m21(m21), _m22(m22), _m23(m23) {}
+
 } // namespace LibBoard
 
-#include "TransformMatrix.ih"
-
-#endif /* _TRANSFORMS_MATRIX_H_ */
+#endif /* BOARD_TRANSFORM_MATRIX_H */

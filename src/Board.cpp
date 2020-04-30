@@ -25,832 +25,548 @@
  */
 
 #include "Board.h"
-#include "board/Point.h"
-#include "board/Rect.h"
-#include "board/Shapes.h"
-#include "board/Tools.h"
-#include "board/PSFonts.h"
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-#include <typeinfo>
-#include <ctime>
-#include <cstring>
-#include <map>
 #include <algorithm>
 #include <cstdio>
-#include <algorithm>
+#include <cstring>
+#include <ctime>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <typeinfo>
+#include "board/PSFonts.h"
+#include "board/Point.h"
+#include "board/Rect.h"
+#include "board/Shape.h"
+#include "board/ShapeVisitor.h"
+#include "board/Tools.h"
 
-#if defined( max )
+#if defined(max)
 #undef max
 #endif
 
-namespace {
+namespace
+{
 
-const float pageSizes[][2] = { { 0.0f, 0.0f },               // BoundingBox
-                               { 841.0f, 1189.0f },          // A0
-                               { 594.0f, 841.0f },           // A1
-                               { 420.0f, 594.0f },           // A2
-                               { 297.0f, 420.0f },           // A3
-                               { 210.0f, 297.0f },           // A4
-                               { 148.0f, 210.0f },           // A5
-                               { 105.0f, 148.0f },           // A6
-                               { 74.0f, 105.0f },            // A7
-                               { 52.0f, 74.0f },             // A8
-                               { 37.0f, 52.0f },             // A9
-                               { 26.0f, 37.0f },             // A10
-                               { 8.5f*25.4f, 11.0f*25.4f },  // Letter
-                               { 8.5f*25.4f, 14.0f*25.4f },  // Legal
-                               { 7.2f*25.4f, 10.5f*25.4f }   // Executive
-                             };
+const double pageSizes[][2] = {
+    {0.0, 0.0},                // BoundingBox
+    {841.0, 1189.0},           // A0
+    {594.0, 841.0},            // A1
+    {420.0, 594.0},            // A2
+    {297.0, 420.0},            // A3
+    {210.0, 297.0},            // A4
+    {148.0, 210.0},            // A5
+    {105.0, 148.0},            // A6
+    {74.0, 105.0},             // A7
+    {52.0, 74.0},              // A8
+    {37.0, 52.0},              // A9
+    {26.0, 37.0},              // A10
+    {8.5 * 25.4, 11.0 * 25.4}, // Letter
+    {8.5 * 25.4, 14.0 * 25.4}, // Legal
+    {7.2 * 25.4, 10.5 * 25.4}  // Executive
+};
 
-const float ppmm = 72.0f / 25.4f;
+const double ppmm = 72.0 / 25.4;
+
+struct ShapeRectDepth {
+  const LibBoard::Shape * shape;
+  const LibBoard::Rect bbox;
+  const unsigned int depth;
+};
+
+unsigned int findNextDepth(const LibBoard::Rect & bbox, const std::vector<ShapeRectDepth> & depths)
+{
+  // FIXME : Improve intersection detection
+
+  unsigned int next = std::numeric_limits<unsigned int>::max();
+  for (const ShapeRectDepth & srd : depths) {
+    if (bbox.strictlyIntersects(srd.bbox) && srd.depth <= next) {
+      next = srd.depth - 1;
+    }
+  }
+  return next;
 }
 
-namespace LibBoard {
+} // namespace
 
-const double Board::Degree =  3.14159265358979323846 / 180.0;
+namespace LibBoard
+{
+
+const double Board::Degree = 3.14159265358979323846 / 180.0;
 
 Board::State::State()
 {
-  penColor = Color::Black;
-  fillColor =  Color::Null;
-  lineWidth = 0.5;
-  lineStyle = Shape::SolidStyle;
-  lineCap = Shape::ButtCap;
-  lineJoin = Shape::MiterJoin;
+  style = Style{Color::Black, Color::Null, 0.5, SolidStyle, ButtCap, MiterJoin};
   font = Fonts::TimesRoman;
   fontSize = 11.0;
 }
 
-Board::Board( const Color & backgroundColor )
-  : _backgroundColor( backgroundColor )
-{
-}
+Board::Board(const Color & backgroundColor) : _backgroundColor(backgroundColor) {}
 
-Board::Board( const Board & other )
-  : ShapeList( other ),
-    _state( other._state ),
-    _backgroundColor( other._backgroundColor )
-{
-}
+Board::Board(const Board & other) : ShapeList(other), _state(other._state), _backgroundColor(other._backgroundColor) {}
 
-Board &
-Board::operator=( const Board & other )
+Board & Board::operator=(const Board & other)
 {
-  free();
-  if ( ! other._shapes.size() ) return (*this);
-  _shapes.resize( other._shapes.size(), 0 );
-  std::vector<Shape*>::iterator t = _shapes.begin();
-  std::vector<Shape*>::const_iterator i = other._shapes.begin();
-  std::vector<Shape*>::const_iterator end = other._shapes.end();
-  while ( i != end ) {
+  deleteShapes();
+  if (!other._shapes.size()) {
+    return (*this);
+  }
+  _shapes.resize(other._shapes.size(), nullptr);
+  std::vector<Shape *>::iterator t = _shapes.begin();
+  std::vector<Shape *>::const_iterator i = other._shapes.begin();
+  std::vector<Shape *>::const_iterator end = other._shapes.end();
+  while (i != end) {
     *t = (*i)->clone();
-    ++i; ++t;
+    ++i;
+    ++t;
   }
   return *this;
 }
 
-Board &
-Board::operator<<( const Shape & shape )
+Board & Board::operator<<(const Shape & shape)
 {
-  ShapeList::addShape( shape, 1.0 );
+  ShapeList::addShape(shape, 1.0);
   return *this;
 }
 
-Board::~Board()
+Board::~Board() {}
+
+void Board::enableLineWidthScaling()
 {
+  ShapeWithStyle::setLineWidthScaling(true);
 }
 
-void
-Board::clear( const Color & color )
+void Board::disableLineWidthScaling()
+{
+  ShapeWithStyle::setLineWidthScaling(false);
+}
+
+void Board::setLineWidthScaling(bool on)
+{
+  ShapeWithStyle::setLineWidthScaling(on);
+}
+
+void Board::clear(const Color & color)
 {
   ShapeList::clear();
   _backgroundColor = color;
 }
 
-Board &
-Board::rotate( double angle, const Point & center )
+Board & Board::rotate(double angle, const Point & center)
 {
-  ShapeList::rotate( angle, center );
-  _clippingPath.rotate( angle, center );
+  ShapeList::rotate(angle, center);
+  _clippingPath.rotate(angle, center);
   return (*this);
 }
 
-Board &
-Board::rotate( double angle )
+Board & Board::rotate(double angle)
 {
-  ShapeList::rotate( angle );
-  _clippingPath.rotate( angle, center() );
+  ShapeList::rotate(angle);
+  _clippingPath.rotate(angle, center());
   return (*this);
 }
 
-Board &
-Board::translate( double dx, double dy )
+Board & Board::translate(double dx, double dy)
 {
-  ShapeList::translate( dx, dy );
-  _clippingPath.translate( dx, dy );
+  ShapeList::translate(dx, dy);
+  _clippingPath.translate(dx, dy);
   return (*this);
 }
 
-Board &
-Board::scale( double sx, double sy )
+Board & Board::scale(double sx, double sy)
 {
-  if ( _clippingPath.size() ) {
+  if (_clippingPath.size()) {
     Point delta = _clippingPath.center() - center();
     delta.x *= sx;
     delta.y *= sy;
-    _clippingPath.scale( sx, sy );
-    ShapeList::scale( sx, sy );
-    delta = ( center() + delta ) - _clippingPath.center();
-    _clippingPath.translate( delta.x, delta.y );
+    _clippingPath.scale(sx, sy);
+    ShapeList::scale(sx, sy);
+    delta = (center() + delta) - _clippingPath.center();
+    _clippingPath.translate(delta.x, delta.y);
   } else {
-    ShapeList::scale( sx, sy );
+    ShapeList::scale(sx, sy);
   }
   return (*this);
 }
 
-Board &
-Board::scale( double s )
+Board & Board::scale(double s)
 {
-  if ( _clippingPath.size() ) {
+  if (_clippingPath.size()) {
     Point delta = _clippingPath.center() - center();
     delta *= s;
-    _clippingPath.scale( s );
-    ShapeList::scale( s );
-    delta = ( center() + delta ) - _clippingPath.center();
-    _clippingPath.translate( delta.x, delta.y );
+    _clippingPath.scale(s);
+    ShapeList::scale(s);
+    delta = (center() + delta) - _clippingPath.center();
+    _clippingPath.translate(delta.x, delta.y);
   } else {
-    ShapeList::scale( s );
+    ShapeList::scale(s);
   }
   return (*this);
 }
 
-Board
-Board::rotated( double angle, const Point & center )
+Board Board::rotated(double angle, const Point & center)
 {
-  return static_cast<const Board &>( Board( *this ).rotate( angle, center ) );
+  return static_cast<const Board &>(Board(*this).rotate(angle, center));
 }
 
-Board
-Board::rotated( double angle )
+Board Board::rotated(double angle)
 {
-  return static_cast<const Board &>( Board( *this ).rotate( angle ) );
+  return static_cast<const Board &>(Board(*this).rotate(angle));
 }
 
-Board
-Board::translated( double dx, double dy )
+Board Board::translated(double dx, double dy)
 {
-  return static_cast<const Board &>( Board( *this ).translate( dx, dy ) );
+  return static_cast<const Board &>(Board(*this).translate(dx, dy));
 }
 
-Board
-Board::scaled( double sx, double sy )
+Board Board::scaled(double sx, double sy)
 {
-  return static_cast<const Board &>( Board( *this ).scale( sx, sy ) );
+  return static_cast<const Board &>(Board(*this).scale(sx, sy));
 }
 
-Board
-Board::scaled( double s )
+Board Board::scaled(double s)
 {
-  return static_cast<const Board &>( Board( *this ).scale( s ) );
+  return static_cast<const Board &>(Board(*this).scale(s));
 }
 
-Board &
-Board::setPenColorRGBi( unsigned char red,
-                        unsigned char green,
-                        unsigned char blue,
-                        unsigned char alpha )
+Board & Board::setPenColorRGBi(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
 {
-  _state.penColor.setRGBi( red, green, blue, alpha );
+  _state.style.penColor.setRGBi(red, green, blue, alpha);
   return *this;
 }
 
-Board &
-Board::setPenColorRGBf(  float red,
-                         float green,
-                         float blue,
-                         float alpha )
+Board & Board::setPenColorRGBf(float red, float green, float blue, float alpha)
 {
-  _state.penColor.setRGBf( red, green, blue, alpha );
+  _state.style.penColor.setRGBf(red, green, blue, alpha);
   return *this;
 }
 
-Board &
-Board::setPenColor( const Color & color )
+Board & Board::setPenColor(const Color & color)
 {
-  _state.penColor = color;
+  _state.style.penColor = color;
   return *this;
 }
 
-Board &
-Board::setFillColorRGBi( unsigned char red,
-                         unsigned char green,
-                         unsigned char blue,
-                         unsigned char alpha )
+Board & Board::setFillColorRGBi(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
 {
-  _state.fillColor.setRGBi( red, green, blue, alpha );
+  _state.style.fillColor.setRGBi(red, green, blue, alpha);
   return *this;
 }
 
-Board &
-Board::setFillColorRGBf( float red, float green, float blue, float alpha )
+Board & Board::setFillColorRGBf(float red, float green, float blue, float alpha)
 {
-  _state.fillColor.setRGBf( red, green, blue, alpha );
+  _state.style.fillColor.setRGBf(red, green, blue, alpha);
   return *this;
 }
 
-Board &
-Board::setFillColor( const Color & color )
+Board & Board::setFillColorHSV(float hue, float saturation, float value, float alpha)
 {
-  _state.fillColor = color;
+  _state.style.fillColor.setHSV(hue, saturation, value, alpha);
   return *this;
 }
 
-Board &
-Board::setLineWidth( double width )
+Board & Board::setFillColor(const Color & color)
 {
-  _state.lineWidth = width;
+  _state.style.fillColor = color;
   return *this;
 }
 
-Board &
-Board::setFont( const Fonts::Font font, double fontSize )
+Board & Board::setLineWidth(double width)
+{
+  _state.style.lineWidth = width;
+  return *this;
+}
+
+Board & Board::setFont(const Fonts::Font font, double fontSize)
 {
   _state.font = font;
   _state.fontSize = fontSize;
   return *this;
 }
 
-Board &
-Board::setFontSize( double fontSize )
+Board & Board::setFontSize(double fontSize)
 {
   _state.fontSize = fontSize;
   return *this;
 }
 
-void
-Board::backgroundColor( const Color & color )
+void Board::backgroundColor(const Color & color)
 {
   _backgroundColor = color;
 }
 
-void
-Board::drawDot( double x, double y, int depth )
+void Board::drawDot(double x, double y)
 {
-  if ( depth != -1 )
-    _shapes.push_back( new Dot( x, y, _state.penColor, _state.lineWidth, depth ) );
-  else
-    _shapes.push_back( new Dot( x, y, _state.penColor, _state.lineWidth, _nextDepth-- ) );
+  _shapes.push_back(new Dot(x, y, _state.style.penColor, _state.style.lineWidth));
 }
 
-void
-Board::drawLine( double x1, double y1, double x2, double y2,
-                 int depth /* = -1 */  )
+void Board::drawLine(double x1, double y1, double x2, double y2)
 {
-  if ( depth != -1 )
-    _shapes.push_back( new Line( x1, y1,
-                                 x2, y2,
-                                 _state.penColor, _state.lineWidth,
-                                 _state.lineStyle, _state.lineCap,
-                                 _state.lineJoin, depth ) );
-  else
-    _shapes.push_back( new Line( x1, y1,
-                                 x2, y2,
-                                 _state.penColor, _state.lineWidth,
-                                 _state.lineStyle, _state.lineCap,
-                                 _state.lineJoin, _nextDepth-- ) );
+  _shapes.push_back(new Line(x1, y1, x2, y2, _state.style));
 }
 
-void
-Board::drawLine( Point p, Point q, int depth /* = -1 */  )
+void Board::drawLine(Point p, Point q)
 {
-  if ( depth != -1 )
-    _shapes.push_back( new Line( p.x, p.y,
-                                 q.x, q.y,
-                                 _state.penColor, _state.lineWidth,
-                                 _state.lineStyle, _state.lineCap,
-                                 _state.lineJoin, depth ) );
-  else
-    _shapes.push_back( new Line( p.x, p.y,
-                                 q.x, q.y,
-                                 _state.penColor, _state.lineWidth,
-                                 _state.lineStyle, _state.lineCap,
-                                 _state.lineJoin, _nextDepth-- ) );
+  _shapes.push_back(new Line(p, q, _state.style));
 }
 
-void
-Board::drawArrow( double x1, double y1, double x2, double y2, int depth /* = -1 */  )
+void Board::drawArrow(double x1, double y1, double x2, double y2, Arrow::Type type)
 {
-  if ( depth != -1 )
-    _shapes.push_back( new Arrow( x1, y1,
-                                  x2, y2,
-                                  _state.penColor,
-                                  _state.fillColor,
-                                  _state.lineWidth, _state.lineStyle,
-                                  _state.lineCap, _state.lineJoin, depth ) );
-  else
-    _shapes.push_back( new Arrow( x1, y1,
-                                  x2, y2,
-                                  _state.penColor,
-                                  _state.fillColor,
-                                  _state.lineWidth, _state.lineStyle,
-                                  _state.lineCap, _state.lineJoin,
-                                  _nextDepth-- ) );
+  _shapes.push_back(new Arrow(x1, y1, x2, y2, type, _state.style));
 }
 
-void
-Board::drawArrow( Point p, Point q, int depth /* = -1 */  )
+void Board::drawArrow(Point p, Point q, Arrow::Type type)
 {
-  if ( depth != -1 )
-    _shapes.push_back( new Arrow( p.x, p.y,
-                                  q.x, q.y,
-                                  _state.penColor,
-                                  _state.fillColor,
-                                  _state.lineWidth, _state.lineStyle,
-                                  _state.lineCap, _state.lineJoin, depth ) );
-  else
-    _shapes.push_back( new Arrow( p.x, p.y,
-                                  q.x, q.y,
-                                  _state.penColor,
-                                  _state.fillColor,
-                                  _state.lineWidth, _state.lineStyle,
-                                  _state.lineCap, _state.lineJoin,
-                                  _nextDepth-- ) );
+  _shapes.push_back(new Arrow(p, q, type, _state.style));
 }
 
-void
-Board::drawRectangle( double left, double top,
-                      double width, double height,
-                      int depth /* = -1 */ )
+void Board::drawRectangle(double left, double top, double width, double height)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Rectangle( left,
-                                    top,
-                                    width,
-                                    height,
-                                    _state.penColor, _state.fillColor,
-                                    _state.lineWidth, _state.lineStyle,
-                                    _state.lineCap, _state.lineJoin, d ) );
+  _shapes.push_back(LibBoard::rectangle(left, top, width, height, _state.style).clone());
 }
 
-void
-Board::drawRectangle(const Rect & r, int depth)
+void Board::drawRectangle(const Rect & rect)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Rectangle( r.left,
-                                    r.top,
-                                    r.width,
-                                    r.height,
-                                    _state.penColor, _state.fillColor,
-                                    _state.lineWidth, _state.lineStyle,
-                                    _state.lineCap, _state.lineJoin, d ) );
+  _shapes.push_back(LibBoard::rectangle(rect.left, rect.top, rect.width, rect.height, _state.style).clone());
 }
 
-void
-Board::fillRectangle( double left, double top,
-                      double width, double height,
-                      int depth /* = -1 */ )
+void Board::fillRectangle(double left, double top, double width, double height)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Rectangle( left,
-                                    top,
-                                    width,
-                                    height,
-                                    Color::Null, _state.penColor,
-                                    0.0f, _state.lineStyle,
-                                    _state.lineCap, _state.lineJoin,
-                                    d ) );
+  Style style = _state.style;
+  style.lineWidth = 0.0;
+  style.fillColor = style.penColor;
+  style.penColor = Color::Null;
+  _shapes.push_back(LibBoard::rectangle(left, top, width, height, style).clone());
 }
 
-void
-Board::fillRectangle(const Rect & r, int depth)
+void Board::fillRectangle(const Rect & rect)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Rectangle( r.left,
-                                    r.top,
-                                    r.width,
-                                    r.height,
-                                    Color::Null, _state.penColor,
-                                    0.0f, _state.lineStyle,
-                                    _state.lineCap, _state.lineJoin,
-                                    d ) );
+  fillRectangle(rect.left, rect.top, rect.width, rect.height);
 }
 
-void
-Board::drawCircle( double x, double y, double radius,
-                   int depth /* = -1 */  )
+void Board::drawCircle(double x, double y, double radius)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Circle( x, y,
-                                 radius,
-                                 _state.penColor, _state.fillColor,
-                                 _state.lineWidth, _state.lineStyle, d ) );
+  _shapes.push_back(LibBoard::circle(x, y, radius, _state.style.penColor, _state.style.fillColor, _state.style.lineWidth, _state.style.lineStyle).clone());
 }
 
-void
-Board::fillCircle( double x, double y, double radius,
-                   int depth /* = -1 */ )
+void Board::fillCircle(double x, double y, double radius)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Circle( x, y, radius,
-                                 Color::Null, _state.penColor,
-                                 0.0f, _state.lineStyle, d ) );
+  _shapes.push_back(LibBoard::circle(x, y, radius, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle).clone());
 }
 
-void
-Board::drawEllipse( double x, double y,
-                    double xRadius, double yRadius,
-                    int depth /* = -1 */  )
+void Board::drawEllipse(double x, double y, double xRadius, double yRadius)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Ellipse( x, y,
-                                  xRadius, yRadius,
-                                  _state.penColor,
-                                  _state.fillColor,
-                                  _state.lineWidth,
-                                  _state.lineStyle,
-                                  d ) );
+  _shapes.push_back(new Ellipse(x, y, xRadius, yRadius, _state.style.penColor, _state.style.fillColor, _state.style.lineWidth, _state.style.lineStyle));
 }
 
-void
-Board::fillEllipse( double x, double y,
-                    double xRadius, double yRadius,
-                    int depth /* = -1 */ )
+void Board::fillEllipse(double x, double y, double xRadius, double yRadius)
 {
-  int d = depth ? depth : _nextDepth--;
-  _shapes.push_back( new Ellipse( x, y,
-                                  xRadius, yRadius,
-                                  Color::Null,
-                                  _state.penColor,
-                                  0.0f,
-                                  _state.lineStyle,
-                                  d ) );
+  _shapes.push_back(new Ellipse(x, y, xRadius, yRadius, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle));
 }
 
-void
-Board::drawPolyline( const std::vector<Point> & points,
-                     int depth /* = -1 */ )
+void Board::drawPolyline(const std::vector<Point> & points)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Polyline( points,
-                                   false,
-                                   _state.penColor,
-                                   _state.fillColor,
-                                   _state.lineWidth,
-                                   _state.lineStyle,
-                                   _state.lineCap,
-                                   _state.lineJoin,
-                                   d ) );
+  _shapes.push_back(new Polyline(points, Path::OpenPath, _state.style));
 }
 
-void
-Board::drawClosedPolyline( const std::vector<Point> & points,
-                           int depth /* = -1 */ )
+void Board::drawClosedPolyline(const std::vector<Point> & points)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Polyline( points, true, _state.penColor, _state.fillColor,
-                                   _state.lineWidth,
-                                   _state.lineStyle,
-                                   _state.lineCap,
-                                   _state.lineJoin,
-                                   d ) );
+  _shapes.push_back(new Polyline(points, Path::ClosedPath, _state.style));
 }
 
-void
-Board::fillPolyline( const std::vector<Point> & points,
-                     int depth /* = -1 */ )
+void Board::fillPolyline(const std::vector<Point> & points)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Polyline( points, true, Color::Null, _state.penColor,
-                                   0.0f,
-                                   _state.lineStyle,
-                                   _state.lineCap,
-                                   _state.lineJoin,
-                                   d ) );
+  _shapes.push_back(new Polyline(points, Path::ClosedPath, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle, _state.style.lineCap, _state.style.lineJoin));
 }
 
-void
-Board::drawTriangle( double x1, double y1,
-                     double x2, double y2,
-                     double x3, double y3,
-                     int depth /* = -1 */ )
+void Board::drawTriangle(double x1, double y1, double x2, double y2, double x3, double y3)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  std::vector<Point> points;
-  points.push_back( Point( x1, y1 ) );
-  points.push_back( Point( x2, y2 ) );
-  points.push_back( Point( x3, y3 ) );
-  _shapes.push_back( new Polyline( points, true, _state.penColor, _state.fillColor,
-                                   _state.lineWidth,
-                                   _state.lineStyle,
-                                   _state.lineCap,
-                                   _state.lineJoin,
-                                   d ) );
+  std::vector<Point> points = {Point(x1, y1), Point(x2, y2), Point(x3, y3)};
+  _shapes.push_back(new Polyline(points, Path::ClosedPath, _state.style));
 }
 
-void
-Board::drawTriangle( const Point & p1,
-                     const Point & p2,
-                     const Point & p3,
-                     int depth /* = -1 */ )
+void Board::drawTriangle(const Point & p1, const Point & p2, const Point & p3)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  std::vector<Point> points;
-  points.push_back( Point( p1.x, p1.y ) );
-  points.push_back( Point( p2.x, p2.y ) );
-  points.push_back( Point( p3.x, p3.y ) );
-  _shapes.push_back( new Polyline( points, true,
-                                   _state.penColor, _state.fillColor,
-                                   _state.lineWidth,
-                                   _state.lineStyle,
-                                   _state.lineCap,
-                                   _state.lineJoin,
-                                   d ) );
+  std::vector<Point> points = {p1, p2, p3};
+  _shapes.push_back(new Polyline(points, Path::ClosedPath, _state.style));
 }
 
-void
-Board::fillTriangle( double x1, double y1,
-                     double x2, double y2,
-                     double x3, double y3,
-                     int depth /* = -1 */ )
+void Board::fillTriangle(double x1, double y1, double x2, double y2, double x3, double y3)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  std::vector<Point> points;
-  points.push_back( Point( x1, y1 ) );
-  points.push_back( Point( x2, y2 ) );
-  points.push_back( Point( x3, y3 ) );
-  _shapes.push_back( new Polyline( points, true, Color::Null, _state.penColor,
-                                   0.0f,
-                                   _state.lineStyle,
-                                   _state.lineCap,
-                                   _state.lineJoin,
-                                   d ) );
+  std::vector<Point> points = {Point(x1, y1), Point(x2, y2), Point(x3, y3)};
+  _shapes.push_back(new Polyline(points, Path::ClosedPath, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle, _state.style.lineCap, _state.style.lineJoin));
 }
 
-void
-Board::fillTriangle( const Point & p1,
-                     const Point & p2,
-                     const Point & p3,
-                     int depth /* = -1 */ )
+void Board::fillTriangle(const Point & p1, const Point & p2, const Point & p3)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  std::vector<Point> points;
-  points.push_back( Point( p1.x, p1.y ) );
-  points.push_back( Point( p2.x, p2.y ) );
-  points.push_back( Point( p3.x, p3.y ) );
-  _shapes.push_back( new Polyline( points, true, Color::Null, _state.penColor,
-                                   0.0f,
-                                   _state.lineStyle,
-                                   _state.lineCap,
-                                   _state.lineJoin,
-                                   d ) );
+  std::vector<Point> points = {p1, p2, p3};
+  _shapes.push_back(new Polyline(points, Path::ClosedPath, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle, _state.style.lineCap, _state.style.lineJoin));
 }
 
-void
-Board::fillGouraudTriangle( const Point & p1,
-                            const Color & color1,
-                            const Point & p2,
-                            const Color & color2,
-                            const Point & p3,
-                            const Color & color3,
-                            unsigned char divisions,
-                            int depth /* = -1 */ )
+void Board::fillGouraudTriangle(const Point & p1, const Color & color1, const Point & p2, const Color & color2, const Point & p3, const Color & color3, unsigned char divisions)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new GouraudTriangle( p1, color1,
-                                          p2, color2,
-                                          p3, color3,
-                                          divisions, d ) );
+  _shapes.push_back(new GouraudTriangle(p1, color1, p2, color2, p3, color3, divisions));
 }
 
-void
-Board::fillGouraudTriangle( const Point & p1,
-                            const float brightness1,
-                            const Point & p2,
-                            const float brightness2,
-                            const Point & p3,
-                            const float brightness3,
-                            unsigned char divisions,
-                            int depth /* = -1 */ )
+void Board::fillGouraudTriangle(const Point & p1, const float brightness1, const Point & p2, const float brightness2, const Point & p3, const float brightness3, unsigned char divisions)
 {
-  Color color1( _state.penColor );
-  Color color2( _state.penColor );
-  Color color3( _state.penColor );
-  color1.red( static_cast<unsigned char>( std::min( 255.0f, color1.red() * brightness1 ) ) );
-  color1.green( static_cast<unsigned char>( std::min( 255.0f, color1.green() * brightness1 ) ) );
-  color1.blue( static_cast<unsigned char>( std::min( 255.0f, color1.blue() * brightness1 ) ) );
-  color2.red( static_cast<unsigned char>( std::min( 255.0f, color2.red() * brightness2 ) ) );
-  color2.green( static_cast<unsigned char>( std::min( 255.0f, color2.green() * brightness2 ) ) );
-  color2.blue( static_cast<unsigned char>( std::min( 255.0f, color2.blue() * brightness2 ) ) );
-  color3.red( static_cast<unsigned char>( std::min( 255.0f, color3.red() * brightness3 ) ) );
-  color3.green( static_cast<unsigned char>( std::min( 255.0f, color3.green() * brightness3 ) ) );
-  color3.blue( static_cast<unsigned char>( std::min( 255.0f, color3.blue() * brightness3 ) ) );
-  fillGouraudTriangle( p1, color1,
-                       p2, color2,
-                       p3, color3,
-                       divisions,
-                       depth );
+  Color color1(_state.style.penColor);
+  Color color2(_state.style.penColor);
+  Color color3(_state.style.penColor);
+  color1.red(static_cast<unsigned char>(std::min(255.0f, color1.red() * brightness1)));
+  color1.green(static_cast<unsigned char>(std::min(255.0f, color1.green() * brightness1)));
+  color1.blue(static_cast<unsigned char>(std::min(255.0f, color1.blue() * brightness1)));
+  color2.red(static_cast<unsigned char>(std::min(255.0f, color2.red() * brightness2)));
+  color2.green(static_cast<unsigned char>(std::min(255.0f, color2.green() * brightness2)));
+  color2.blue(static_cast<unsigned char>(std::min(255.0f, color2.blue() * brightness2)));
+  color3.red(static_cast<unsigned char>(std::min(255.0f, color3.red() * brightness3)));
+  color3.green(static_cast<unsigned char>(std::min(255.0f, color3.green() * brightness3)));
+  color3.blue(static_cast<unsigned char>(std::min(255.0f, color3.blue() * brightness3)));
+  fillGouraudTriangle(p1, color1, p2, color2, p3, color3, divisions);
 }
 
-void
-Board::drawText( double x, double y, const char * text, int depth /* = -1 */ )
+void Board::drawText(double x, double y, const char * text)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Text( x, y, text,
-                               _state.font, _state.fontSize,
-                               _state.penColor, d ) );
+  _shapes.push_back(new Text(x, y, text, _state.font, _state.fontSize, _state.style.penColor));
 }
 
-void Board::drawText( Point p, const char *text, int depth )
+void Board::drawText(Point p, const char * text)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Text( p, text, _state.font, _state.fontSize, _state.penColor, d ) );
+  _shapes.push_back(new Text(p, text, _state.font, _state.fontSize, _state.style.penColor));
 }
 
-void
-Board::drawText( double x, double y, const std::string & str, int depth /* = -1 */ )
+void Board::drawText(double x, double y, const std::string & text)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Text( x,
-                               y,
-                               str,
-                               _state.font,
-                               _state.fontSize,
-                               _state.penColor, d ) );
+  _shapes.push_back(new Text(x, y, text, _state.font, _state.fontSize, _state.style.penColor));
 }
 
-void Board::drawText( Point p, const std::string & str, int depth )
+void Board::drawText(Point p, const std::string & str)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
-  _shapes.push_back( new Text( p,
-                               str,
-                               _state.font,
-                               _state.fontSize,
-                               _state.penColor, d ) );
+  _shapes.push_back(new Text(p, str, _state.font, _state.fontSize, _state.style.penColor));
 }
 
-void
-Board::drawBoundingBox( LineWidthFlag lineWidthFlag, int depth )
+void Board::drawBoundingBox(LineWidthFlag lineWidthFlag)
 {
-  int d = (depth!=-1) ? depth : _nextDepth--;
   Rect bbox = boundingBox(lineWidthFlag);
-  _shapes.push_back( new Rectangle( bbox.left,
-                                    bbox.top,
-                                    bbox.width,
-                                    bbox.height,
-                                    _state.penColor,
-                                    _state.fillColor,
-                                    _state.lineWidth,
-                                    _state.lineStyle,
-                                    _state.lineCap,
-                                    _state.lineJoin,
-                                    d ) );
+  Polyline rectangle = LibBoard::rectangle(bbox.left, bbox.top, bbox.width, bbox.height, _state.style);
+  _shapes.push_back(rectangle.clone());
 }
 
-void
-Board::setClippingRectangle( double x, double y, double width, double height )
+void Board::setClippingRectangle(double x, double y, double width, double height)
 {
   _clippingPath.clear();
-  _clippingPath <<  Point( x, y  );
-  _clippingPath <<  Point( x + width, y  );
-  _clippingPath <<  Point( x + width, y - height );
-  _clippingPath <<  Point( x , y - height  );
+  _clippingPath << Point(x, y);
+  _clippingPath << Point(x + width, y);
+  _clippingPath << Point(x + width, y - height);
+  _clippingPath << Point(x, y - height);
 }
 
-void
-Board::setClippingRectangle( const Rect & rect)
+void Board::setClippingRectangle(const Rect & rect)
 {
-  setClippingRectangle(rect.left,rect.top,rect.width,rect.height);
+  setClippingRectangle(rect.left, rect.top, rect.width, rect.height);
 }
 
-void
-Board::setClippingPath(  const std::vector<Point> & points  )
+void Board::setClippingPath(const std::vector<Point> & points)
 {
   _clippingPath.clear();
   std::vector<Point>::const_iterator it = points.begin();
   std::vector<Point>::const_iterator end = points.end();
-  while ( it != end ) {
-    _clippingPath <<  *it ;
+  while (it != end) {
+    _clippingPath << *it;
     ++it;
   }
 }
 
-void
-Board::setClippingPath(  const Path & path  )
+void Board::setClippingPath(const Path & path)
 {
   _clippingPath = path;
-  _clippingPath.setClosed( true );
-  if ( _clippingPath.size() > 1 ) {
-    if ( _clippingPath[0] == _clippingPath[ _clippingPath.size() - 1 ] )
+  _clippingPath.close();
+  if (_clippingPath.size() > 1) {
+    if (_clippingPath[0] == _clippingPath[_clippingPath.size() - 1])
       _clippingPath.pop_back();
   }
 }
 
-void
-Board::addDuplicates( const Shape & shape, std::size_t times, double dx, double dy, double scale )
+void Board::addDuplicates(const Shape & shape, std::size_t times, double dx, double dy, double scale)
 {
   Shape * s = shape.clone();
-  while ( times-- ) {
+  while (times--) {
     (*this) << (*s);
-    if ( scale != 1.0 )
-      s->scale( scale );
-    s->translate( dx, dy );
+    if (scale != 1.0)
+      s->scale(scale);
+    s->translate(dx, dy);
   }
   delete s;
 }
 
-void
-Board::addDuplicates( const Shape & shape,
-                      std::size_t times,
-                      double dx, double dy,
-                      double scaleX, double scaleY,
-                      double angle )
+void Board::addDuplicates(const Shape & shape, std::size_t times, double dx, double dy, double scaleX, double scaleY, double angle)
 {
   Shape * s = shape.clone();
-  while ( times-- ) {
+  while (times--) {
     (*this) << (*s);
-    if ( scaleX != 1.0 || scaleY != 1.0 ) s->scale( scaleX, scaleY );
-    if ( dx != 0.0 || dy != 0.0 ) s->translate( dx, dy );
-    if ( angle != 0.0 ) s->rotate( angle );
+    if (scaleX != 1.0 || scaleY != 1.0)
+      s->scale(scaleX, scaleY);
+    if (dx != 0.0 || dy != 0.0)
+      s->translate(dx, dy);
+    if (angle != 0.0)
+      s->rotate(angle);
   }
   delete s;
 }
 
-void
-Board::saveEPS( const char * filename, PageSize size, double margin, Unit unit, const std::string & title  ) const
+void Board::saveEPS(const char * filename, PageSize size, double margin, Unit unit, const std::string & title) const
 {
-  if ( size == BoundingBox ) {
-    if ( title == std::string() )
-      saveEPS( filename, 0.0, 0.0, margin, unit, filename );
+  if (size == BoundingBox) {
+    if (title == std::string())
+      saveEPS(filename, 0.0, 0.0, margin, unit, filename);
     else
-      saveEPS( filename, 0.0, 0.0, margin, unit, title );
+      saveEPS(filename, 0.0, 0.0, margin, unit, title);
   } else {
-    if ( title == std::string() )
-      saveEPS( filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin,unit), UMillimeter, filename );
+    if (title == std::string())
+      saveEPS(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter, filename);
     else
-      saveEPS( filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin,unit), UMillimeter, title );
+      saveEPS(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter, title);
   }
 }
 
-void
-Board::saveEPS(std::ostream & out, PageSize size, double margin, Unit unit, const std::string & title  ) const
+void Board::saveEPS(std::ostream & out, PageSize size, double margin, Unit unit, const std::string & title) const
 {
-  if ( size == BoundingBox ) {
-    saveEPS( out, 0.0, 0.0, margin, unit, title );
+  if (size == BoundingBox) {
+    saveEPS(out, 0.0, 0.0, margin, unit, title);
   } else {
-    saveEPS( out, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin,unit), UMillimeter, title );
+    saveEPS(out, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter, title);
   }
 }
 
-void
-Board::saveEPS( std::ostream & out, double pageWidth, double pageHeight, double margin, Unit unit, const std::string & title ) const
+void Board::saveEPS(std::ostream & out, double pageWidth, double pageHeight, double margin, Unit unit, const std::string & title) const
 {
   out << "%!PS-Adobe-2.0 EPSF-2.0" << std::endl;
   out << "%%Title: " << title << std::endl;
-  out << "%%Creator: Board library (v" << _BOARD_VERSION_STRING_ << ") Copyleft 2007 Sebastien Fourey" << std::endl;
+  out << "%%Creator: Board library (v" << BOARD_VERSION_STRING << ") Copyleft 2007 Sebastien Fourey" << std::endl;
   {
-    time_t t = time(0);
+    time_t t = time(nullptr);
     char str_time[255];
-    Tools::secured_ctime( str_time, &t, 255 );
+    Tools::secured_ctime(str_time, &t, 255);
     out << "%%CreationDate: " << str_time;
   }
 
   Rect bbox = boundingBox(UseLineWidth);
   bool clipping = _clippingPath.size() > 2;
-  if ( clipping ) {
+  if (clipping) {
     bbox = bbox && _clippingPath.boundingBox();
   }
   TransformEPS transform;
-  if ( pageWidth == 0.0 && pageHeight == 0.0 ) { // Fit to bounding box using given unit.
-    transform.setBoundingBox( bbox,
-                              toMillimeter(bbox.width,unit),
-                              toMillimeter(bbox.height,unit),
-                              -toMillimeter(margin,unit) );
+  if (pageWidth == 0.0 && pageHeight == 0.0) { // Fit to bounding box using given unit.
+    transform.setBoundingBox(bbox, toMillimeter(bbox.width, unit), toMillimeter(bbox.height, unit), -toMillimeter(margin, unit));
 
     Rect page = transform.pageBoundingBox();
-    out << "%%BoundingBox: "
-        << std::setprecision( 8 )
-        << page.left << " "
-        << page.bottom() << " "
-        << page.right() << " "
-        << page.top << std::endl;
-
+    out << "%%BoundingBox: " << std::setprecision(8) << page.left << " " << page.bottom() << " " << page.right() << " " << page.top << std::endl;
 
   } else {
-    transform.setBoundingBox( bbox,
-                              toMillimeter(pageWidth,unit),
-                              toMillimeter(pageHeight,unit),
-                              toMillimeter(margin,unit) );
+    transform.setBoundingBox(bbox, toMillimeter(pageWidth, unit), toMillimeter(pageHeight, unit), toMillimeter(margin, unit));
     Rect page = transform.pageBoundingBox();
-    out << "%%BoundingBox: "
-        << std::setprecision( 8 )
-        << page.left << " "
-        << page.bottom() << " "
-        << page.right() << " "
-        << page.top << std::endl;
+    out << "%%BoundingBox: " << std::setprecision(8) << page.left << " " << page.bottom() << " " << page.right() << " " << page.top << std::endl;
   }
-
 
   out << "%Magnification: 1.0000" << std::endl;
   out << "%%EndComments" << std::endl;
@@ -884,85 +600,62 @@ Board::saveEPS( std::ostream & out, double pageWidth, double pageHeight, double 
          "/tr {translate} bind def\n"
          " 0.5 setlinewidth\n";
 
-  if ( clipping ) {
+  if (clipping) {
     out << " newpath ";
-    _clippingPath.flushPostscript( out, transform );
+    _clippingPath.flushPostscript(out, transform);
     out << " 0 slw clip " << std::endl;
   }
 
   // Draw the background color if needed.
-  if ( _backgroundColor != Color::Null ) {
-    Rectangle r( bbox, Color::Null, _backgroundColor, 0.0f );
-    r.flushPostscript( out, transform );
+  if (_backgroundColor != Color::Null) {
+    LibBoard::rectangle(bbox, Color::Null, _backgroundColor, 0.0).flushPostscript(out, transform);
   }
 
-  // Draw the shapes
-  std::vector< Shape* > shapes = _shapes;
-
-  stable_sort( shapes.begin(), shapes.end(), shapeGreaterDepth );
-  std::vector< Shape* >::const_iterator i = shapes.begin();
-  std::vector< Shape* >::const_iterator end = shapes.end();
-
-  while ( i != end ) {
-    (*i)->flushPostscript( out, transform );
-    ++i;
+  for (const Shape * shape : _shapes) {
+    shape->flushPostscript(out, transform);
   }
   out << "showpage" << std::endl;
   out << "%%Trailer" << std::endl;
   out << "%EOF" << std::endl;
 }
 
-void
-Board::saveEPS( const char * filename, double pageWidth, double pageHeight, double margin, Unit unit, const std::string & title ) const
+void Board::saveEPS(const char * filename, double pageWidth, double pageHeight, double margin, Unit unit, const std::string & title) const
 {
   std::ofstream out(filename);
-  saveEPS(out,pageWidth,pageHeight,margin,unit,title);
+  saveEPS(out, pageWidth, pageHeight, margin, unit, title);
   out.close();
 }
 
-void
-Board::saveFIG( const char * filename, PageSize size, double margin, Unit unit ) const
+void Board::saveFIG(const char * filename, PageSize size, double margin, Unit unit) const
 {
-  if ( size == BoundingBox ) {
-    saveFIG( filename, 0.0, 0.0, margin, unit );
+  if (size == BoundingBox) {
+    saveFIG(filename, 0.0, 0.0, margin, unit);
   } else {
-    saveFIG( filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin,unit), UMillimeter );
+    saveFIG(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
   }
 }
 
-void
-Board::saveFIG( std::ostream & out, PageSize size, double margin, Unit unit ) const
+void Board::saveFIG(std::ostream & out, PageSize size, double margin, Unit unit) const
 {
-  if ( size == BoundingBox ) {
-    saveFIG( out, 0.0, 0.0, margin, unit );
+  if (size == BoundingBox) {
+    saveFIG(out, 0.0, 0.0, margin, unit);
   } else {
-    saveFIG( out, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin,unit), UMillimeter );
+    saveFIG(out, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
   }
 }
 
-void
-Board::saveFIG( std::ostream & out, double pageWidth, double pageHeight, double margin, Unit unit ) const
+void Board::saveFIG(std::ostream & out, double pageWidth, double pageHeight, double margin, Unit unit) const
 {
   Rect bbox = boundingBox(UseLineWidth);
   TransformFIG transform;
 
-  if ( pageWidth == 0.0 && pageHeight == 0.0 ) {
-    transform.setBoundingBox( bbox,
-                              toMillimeter(bbox.width,unit),
-                              toMillimeter(bbox.height,unit),
-                              -toMillimeter(margin,unit) );
+  if (pageWidth == 0.0 && pageHeight == 0.0) {
+    transform.setBoundingBox(bbox, toMillimeter(bbox.width, unit), toMillimeter(bbox.height, unit), -toMillimeter(margin, unit));
   } else {
-    transform.setBoundingBox( bbox,
-                              toMillimeter(pageWidth,unit),
-                              toMillimeter(pageHeight,unit),
-                              toMillimeter(margin,unit) );
+    transform.setBoundingBox(bbox, toMillimeter(pageWidth, unit), toMillimeter(pageHeight, unit), toMillimeter(margin, unit));
   }
 
-  transform.setDepthRange( *this );
-
-  out << "#FIG 3.2  Produced by the Board library (v"
-         _BOARD_VERSION_STRING_
-         ") Copyleft 2007 Sebastien Fourey\n";
+  out << "#FIG 3.2  Produced by the Board library (v" BOARD_VERSION_STRING ") Copyleft 2007 Sebastien Fourey\n";
   out << "Portrait\n"
          "Center\n"
          "Metric\n"
@@ -972,111 +665,127 @@ Board::saveFIG( std::ostream & out, double pageWidth, double pageHeight, double 
          "-2\n"
          "1200 2\n";
 
-  std::map<Color,int> colormap;
+  std::map<Color, int> colormap;
   int maxColor = 32;
 
+  colormap[Color(0, 0, 0)] = 0;
+  colormap[Color(0, 0, 255)] = 1;
+  colormap[Color(0, 255, 0)] = 2;
+  colormap[Color(0, 255, 255)] = 0;
+  colormap[Color(255, 0, 0)] = 4;
+  colormap[Color(255, 0, 255)] = 0;
+  colormap[Color(255, 255, 0)] = 6;
+  colormap[Color(255, 255, 255)] = 7;
 
-  colormap[Color(0,0,0)] = 0;
-  colormap[Color(0,0,255)] = 1;
-  colormap[Color(0,255,0)] = 2;
-  colormap[Color(0,255,255)] = 0;
-  colormap[Color(255,0,0)] = 4;
-  colormap[Color(255,0,255)] = 0;
-  colormap[Color(255,255,0)] = 6;
-  colormap[Color(255,255,255)] = 7;
+  PenColorExtractor penColorExtractor;
+  accept(penColorExtractor);
+  FillColorExtractor fillColorExtractor;
+  accept(fillColorExtractor);
 
+  // TODO : Color quantization
 
-  std::vector< Shape* > shapes = _shapes;
-  stable_sort( shapes.begin(), shapes.end(), shapeGreaterDepth );
-  std::vector< Shape* >::const_iterator i = shapes.begin();
-  std::vector< Shape* >::const_iterator end = shapes.end();
-  while ( i != end ) {
-    if ( colormap.find( (*i)->penColor() ) == colormap.end()
-         && (*i)->penColor().valid() )
-      colormap[ (*i)->penColor() ] = maxColor++;
-    if ( colormap.find( (*i)->fillColor() ) == colormap.end()
-         && (*i)->fillColor().valid() )
-      colormap[ (*i)->fillColor() ] = maxColor++;
-    ++i;
+  for (const Color & color : penColorExtractor.colors()) {
+    if (colormap.find(color) == colormap.end() && color.valid()) {
+      colormap[color] = maxColor++;
+    }
+  }
+  for (const Color & color : fillColorExtractor.colors()) {
+    if (colormap.find(color) == colormap.end() && color.valid()) {
+      colormap[color] = maxColor++;
+    }
   }
 
-  if ( colormap.find( _backgroundColor ) == colormap.end()
-       && _backgroundColor.valid() )
-    colormap[ _backgroundColor ] = maxColor++;
+  if (colormap.find(_backgroundColor) == colormap.end() && _backgroundColor.valid()) {
+    colormap[_backgroundColor] = maxColor++;
+  }
 
   // Write the colormap
-  std::map<Color,int>::const_iterator iColormap = colormap.begin();
-  std::map<Color,int>::const_iterator endColormap = colormap.end();
+  std::map<Color, int>::const_iterator iColormap = colormap.begin();
+  std::map<Color, int>::const_iterator endColormap = colormap.end();
   char colorString[255];
-  while ( iColormap != endColormap ) {
-    secured_sprintf( colorString, 255,
-                     "0 %d #%02x%02x%02x\n",
-                     iColormap->second,
-                     iColormap->first.red(),
-                     iColormap->first.green(),
-                     iColormap->first.blue() );
-    if ( iColormap->second >= 32 ) out << colorString;
+  while (iColormap != endColormap) {
+    secured_sprintf(colorString, 255, "0 %d #%02x%02x%02x\n", iColormap->second, iColormap->first.red(), iColormap->first.green(), iColormap->first.blue());
+    if (iColormap->second >= 32) {
+      out << colorString;
+    }
     ++iColormap;
   }
 
   // Draw the background color if needed.
-  if ( _backgroundColor != Color::Null ) {
-    Rectangle r( bbox, Color::Null, _backgroundColor, 0.0f );
-    r.depth( std::numeric_limits<int>::max() );
-    r.flushFIG( out, transform, colormap );
+  if (_backgroundColor != Color::Null) {
+    Polyline r = LibBoard::rectangle(bbox, Color::Null, _backgroundColor, 0.0);
+    r.flushFIG(out, transform, colormap);
   }
 
   // Draw the shapes.
-  i = shapes.begin();
-  while ( i != end ) {
-    (*i)->flushFIG( out, transform, colormap );
-    ++i;
+  // FIXME : Handle depth
+
+  std::vector<ShapeRectDepth> depths;
+  unsigned int minDepth = std::numeric_limits<unsigned int>::max();
+  ConstLeafVisitor::Function countShapes = [&depths, &minDepth](const Shape & shape) { //
+    const Rect bbox = shape.bbox(UseLineWidth);
+    const unsigned int depth = findNextDepth(bbox, depths);
+    const ShapeRectDepth srd{&shape, bbox, depth};
+    depths.emplace_back(srd);
+    if (depth < minDepth) {
+      minDepth = depth;
+    }
+  };
+  ConstLeafVisitor visitor(countShapes);
+  accept(visitor);
+
+  std::map<const Shape *, unsigned int> depthMap;
+  for (const auto & srd : depths) {
+    depthMap[srd.shape] = srd.depth;
+  }
+  depths.clear();
+  transform.setDepthMap(&depthMap, minDepth);
+
+  // std::cout << depthMap.size() << " leaves\n";
+
+  for (const Shape * shape : _shapes) {
+    shape->flushFIG(out, transform, colormap);
   }
 }
 
-void
-Board::saveFIG( const char * filename, double pageWidth, double pageHeight, double margin, Unit unit ) const
+void Board::saveFIG(const char * filename, double pageWidth, double pageHeight, double margin, Unit unit) const
 {
-  std::ofstream out( filename );
-  saveFIG(out,pageWidth,pageHeight,margin,unit);
+  std::ofstream out(filename);
+  saveFIG(out, pageWidth, pageHeight, margin, unit);
   out.close();
 }
 
-void
-Board::saveSVG( const char * filename, PageSize size, double margin, Unit unit ) const
+void Board::saveSVG(const char * filename, PageSize size, double margin, Unit unit) const
 {
-  if ( size == BoundingBox ) {
-    saveSVG( filename, 0.0, 0.0, margin, unit );
+  if (size == BoundingBox) {
+    saveSVG(filename, 0.0, 0.0, margin, unit);
   } else {
-    saveSVG( filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin,unit), UMillimeter );
+    saveSVG(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
   }
 }
 
-void
-Board::saveSVG( std::ostream & out, PageSize size, double margin, Unit unit ) const
+void Board::saveSVG(std::ostream & out, PageSize size, double margin, Unit unit) const
 {
-  if ( size == BoundingBox ) {
-    saveSVG( out, 0.0, 0.0, margin, unit );
+  if (size == BoundingBox) {
+    saveSVG(out, 0.0, 0.0, margin, unit);
   } else {
-    saveSVG( out, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin,unit), UMillimeter );
+    saveSVG(out, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
   }
 }
 
-void
-Board::saveSVG( const char * filename, double pageWidth, double pageHeight, double margin, Unit unit ) const
+void Board::saveSVG(const char * filename, double pageWidth, double pageHeight, double margin, Unit unit) const
 {
-  std::ofstream out( filename );
-  saveSVG(out,pageWidth,pageHeight,margin,unit);
+  std::ofstream out(filename);
+  saveSVG(out, pageWidth, pageHeight, margin, unit);
   out.close();
 }
 
-void
-Board::saveSVG( std::ostream & out, double pageWidth, double pageHeight, double margin, Unit unit ) const
+void Board::saveSVG(std::ostream & out, double pageWidth, double pageHeight, double margin, Unit unit) const
 {
   Rect bbox = boundingBox(UseLineWidth);
   TransformSVG transform;
   bool clipping = _clippingPath.size() > 2;
-  if ( clipping ) {
+  if (clipping) {
     bbox = bbox && _clippingPath.boundingBox();
   }
 
@@ -1084,238 +793,267 @@ Board::saveSVG( std::ostream & out, double pageWidth, double pageHeight, double 
   out << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"" << std::endl;
   out << " \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << std::endl;
 
-  if ( pageWidth == 0.0 && pageHeight == 0.0 ) {
-    transform.setBoundingBox( bbox,
-                              toMillimeter(bbox.width,unit),
-                              toMillimeter(bbox.height,unit),
-                              -toMillimeter(margin,unit) );
-    out << "<svg width=\""
-        << toMillimeter(bbox.width+2*margin,unit) << "mm"
-        << "\" height=\""
-        << toMillimeter(bbox.height+2*margin,unit)  << "mm"
+  if (pageWidth == 0.0 && pageHeight == 0.0) {
+    transform.setBoundingBox(bbox, toMillimeter(bbox.width, unit), toMillimeter(bbox.height, unit), -toMillimeter(margin, unit));
+    out << "<svg width=\"" << toMillimeter(bbox.width + 2 * margin, unit) << "mm"
+        << "\" height=\"" << toMillimeter(bbox.height + 2 * margin, unit) << "mm"
         << "\" " << std::endl;
-    out << "     viewBox=\"0 0 "
-        << toMillimeter(bbox.width+2*margin,unit) * ppmm   << " "
-        << toMillimeter(bbox.height+2*margin,unit) * ppmm << "\" " << std::endl;
+    out << "     viewBox=\"0 0 " << toMillimeter(bbox.width + 2 * margin, unit) * ppmm << " " << toMillimeter(bbox.height + 2 * margin, unit) * ppmm << "\" " << std::endl;
     out << "     xmlns=\"http://www.w3.org/2000/svg\""
         << " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-        << " version=\"1.1\" >"
-        << std::endl;
+        << " version=\"1.1\" >" << std::endl;
   } else {
-    transform.setBoundingBox( bbox,
-                              toMillimeter(pageWidth,unit),
-                              toMillimeter(pageHeight,unit),
-                              toMillimeter(margin,unit) );
+    transform.setBoundingBox(bbox, toMillimeter(pageWidth, unit), toMillimeter(pageHeight, unit), toMillimeter(margin, unit));
 
-    out << "<svg width=\""
-        << toMillimeter(pageWidth,unit) << "mm\" height=\""
-        << toMillimeter(pageHeight,unit) << "mm\" " << std::endl;
-    out << "     viewBox=\"0 0 "
-        << toMillimeter(pageWidth,unit) * ppmm  << " "
-        << toMillimeter(pageHeight,unit) * ppmm  << "\" " << std::endl;
+    out << "<svg width=\"" << toMillimeter(pageWidth, unit) << "mm\" height=\"" << toMillimeter(pageHeight, unit) << "mm\" " << std::endl;
+    out << "     viewBox=\"0 0 " << toMillimeter(pageWidth, unit) * ppmm << " " << toMillimeter(pageHeight, unit) * ppmm << "\" " << std::endl;
     out << "     xmlns=\"http://www.w3.org/2000/svg\""
         << " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-        << " version=\"1.1\" >"
-        << std::endl;
+        << " version=\"1.1\" >" << std::endl;
   }
 
   out << "<desc>"
-         "Drawing created with the Board library (v" << _BOARD_VERSION_STRING_ << ") Copyleft 2007 Sebastien Fourey"
-         "</desc>" << std::endl;
+         "Drawing created with the Board library (v"
+      << BOARD_VERSION_STRING
+      << ") Copyleft 2007 Sebastien Fourey"
+         "</desc>"
+      << std::endl;
 
-  if ( clipping  ) {
+  if (clipping) {
     out << "<g clip-rule=\"nonzero\">\n"
            " <clipPath id=\"GlobalClipPath\">\n"
            "  <path clip-rule=\"evenodd\"  d=\"";
-    _clippingPath.flushSVGCommands( out, transform );
+    _clippingPath.flushSVGCommands(out, transform);
     out << "\" />\n"
            " </clipPath>\n"
            "<g clip-path=\"url(#GlobalClipPath)\">\n";
   }
 
   // Draw the background color if needed.
-  if ( _backgroundColor != Color::Null ) {
-    Rectangle r( bbox, Color::Null, _backgroundColor, 0.0 );
-    r.flushSVG( out, transform );
+  if (_backgroundColor != Color::Null) {
+    Polyline r = LibBoard::rectangle(bbox, Color::Null, _backgroundColor, 0.0);
+    r.flushSVG(out, transform);
   }
 
   // Draw the shapes.
-  std::vector< Shape* > shapes = _shapes;
-  stable_sort( shapes.begin(), shapes.end(), shapeGreaterDepth );
-  std::vector< Shape* >::const_iterator i = shapes.begin();
-  std::vector< Shape* >::const_iterator end = shapes.end();
-  while ( i != end ) {
-    (*i)->flushSVG( out, transform );
-    ++i;
+  for (const Shape * shape : _shapes) {
+    shape->flushSVG(out, transform);
   }
 
-  if ( clipping )
+  if (clipping) {
     out << "</g>\n</g>";
+  }
   out << "</svg>" << std::endl;
 }
 
-void
-Board::saveTikZ( const char * filename, PageSize size, double margin ) const
+void Board::saveTikZ(const char * filename, PageSize size, double margin) const
 {
-  saveTikZ( filename, pageSizes[size][0], pageSizes[size][1], margin );
+  saveTikZ(filename, pageSizes[size][0], pageSizes[size][1], margin);
 }
 
-void
-Board::saveTikZ( std::ostream & out, PageSize size, double margin ) const
+void Board::saveTikZ(std::ostream & out, PageSize size, double margin) const
 {
-  saveTikZ( out, pageSizes[size][0], pageSizes[size][1], margin );
+  saveTikZ(out, pageSizes[size][0], pageSizes[size][1], margin);
 }
 
-void
-Board::saveTikZ( std::ostream & out, double pageWidth, double pageHeight, double margin ) const
+void Board::saveTikZ(std::ostream & out, double pageWidth, double pageHeight, double margin) const
 {
   TransformTikZ transform;
   Rect box = boundingBox(UseLineWidth);
   bool clipping = _clippingPath.size() > 2;
-  if ( clipping )
+  if (clipping)
     box = box && _clippingPath.boundingBox();
-  transform.setBoundingBox( box, pageWidth, pageHeight, margin );
+  transform.setBoundingBox(box, pageWidth, pageHeight, margin);
 
   out << "\\begin{tikzpicture}[anchor=south west,text depth=0,x={(1pt,0pt)},y={(0pt,-1pt)}]" << std::endl;
 
-  if ( clipping  ) {
+  if (clipping) {
     out << "\\clip ";
-    _clippingPath.flushTikZPoints( out, transform );
+    _clippingPath.flushTikZPoints(out, transform);
     out << "\n";
   }
 
   // Draw the background color if needed.
-  if ( _backgroundColor != Color::Null ) {
-    Rectangle r( box, Color::Null, _backgroundColor, 0.0 );
-    r.flushTikZ( out, transform );
+  if (_backgroundColor != Color::Null) {
+    LibBoard::rectangle(box, Color::Null, _backgroundColor, 0.0).flushTikZ(out, transform);
   }
 
   // Draw the shapes.
-  std::vector< Shape* > shapes = _shapes;
-  stable_sort( shapes.begin(), shapes.end(), shapeGreaterDepth );
-  std::vector< Shape* >::const_iterator i = shapes.begin();
-  std::vector< Shape* >::const_iterator end = shapes.end();
-  while ( i != end ) {
-    (*i)->flushTikZ( out, transform );
-    ++i;
+  for (const Shape * shape : _shapes) {
+    shape->flushTikZ(out, transform);
   }
+
   out << "\\end{tikzpicture}" << std::endl;
 }
 
-Group
-Board::makeGrid( Point topLeft,
-                 size_t columns, size_t rows,
-                 double width, double height,
-                 Color penColor, Color fillColor, double lineWidth,
-                 const LineStyle style,
-                 const LineCap cap,
-                 const LineJoin join,
-                 int depth )
-{
-  Group group;
-  double cellSide = width / columns;
-  group << Rectangle(topLeft.x,topLeft.y,width,height,penColor,fillColor,lineWidth,style,cap,join,depth);
-  Line vLine(topLeft.x+cellSide,topLeft.y,topLeft.x+cellSide,topLeft.y-height,penColor,lineWidth,style,Shape::RoundCap,join,depth);
-  while ( --columns ) {
-    group << vLine;
-    vLine.translate(cellSide,0);
-  }
-  cellSide = height / rows;
-  Line hLine(topLeft.x,topLeft.y-cellSide,topLeft.x+width,topLeft.y-cellSide,penColor,lineWidth,style,Shape::RoundCap,join,depth);
-  while ( --rows ) {
-    group << hLine;
-    hLine.translate(0,-cellSide);
-  }
-
-  return group;
-}
-
-Color Board::penColor() const
-{
-  return _state.penColor;
-}
-
-Color Board::fillColor() const
-{
-  return _state.fillColor;
-}
-
-double
-Board::toMillimeter(double x, Board::Unit unit)
+double Board::toMillimeter(double x, Board::Unit unit)
 {
   // enum Unit { UPoint, UInche, UCentimeter, UMillimeter };
   switch (unit) {
   case UPoint:
     return x * 25.4 / 72.0;
-    break;
   case UInche:
     return x * 25.4;
-    break;
   case UCentimeter:
     return x * 10.0;
-    break;
   case UMillimeter:
     return x;
-    break;
-  default:
-    Tools::error << "toMillimeter(): bad unit (" << unit << ")\n";
-    return 0;
-    break;
   }
+  Tools::error << "toMillimeter(): bad unit (" << unit << ")\n";
+  return 0;
 }
 
-void
-Board::saveTikZ( const char * filename, double pageWidth, double pageHeight, double margin ) const
+void Board::saveTikZ(const char * filename, double pageWidth, double pageHeight, double margin) const
 {
-  std::ofstream out( filename );
-  saveTikZ(out,pageWidth,pageHeight,margin);
+  std::ofstream out(filename);
+  saveTikZ(out, pageWidth, pageHeight, margin);
   out.close();
 }
 
-void
-Board::save(const char * filename, double pageWidth, double pageHeight, double margin , Unit unit) const
+void Board::save(const char * filename, double pageWidth, double pageHeight, double margin, Unit unit) const
 {
-  if ( Tools::stringEndsWith(filename,".eps", Tools::CaseInsensitive) ) {
-    saveEPS( filename, pageWidth, pageHeight, margin, unit );
+  if (Tools::stringEndsWith(filename, ".eps", Tools::CaseInsensitive)) {
+    saveEPS(filename, pageWidth, pageHeight, margin, unit);
     return;
   }
-  if ( Tools::stringEndsWith(filename,".fig", Tools::CaseInsensitive) ) {
-    saveFIG( filename, pageWidth, pageHeight, margin, unit );
+  if (Tools::stringEndsWith(filename, ".fig", Tools::CaseInsensitive)) {
+    saveFIG(filename, pageWidth, pageHeight, margin, unit);
     return;
   }
-  if ( Tools::stringEndsWith(filename,".svg", Tools::CaseInsensitive) ) {
-    saveSVG( filename, pageWidth, pageHeight, margin, unit );
+  if (Tools::stringEndsWith(filename, ".svg", Tools::CaseInsensitive)) {
+    saveSVG(filename, pageWidth, pageHeight, margin, unit);
     return;
   }
-  if ( Tools::stringEndsWith(filename,".tikz", Tools::CaseInsensitive) ) {
-    saveTikZ( filename, pageWidth, pageHeight, margin );
+  if (Tools::stringEndsWith(filename, ".tikz", Tools::CaseInsensitive)) {
+    saveTikZ(filename, pageWidth, pageHeight, margin);
     return;
   }
 }
 
-void
-Board::save(const char * filename, PageSize size, double margin , Unit unit) const
+void Board::save(const char * filename, PageSize size, double margin, Unit unit) const
 {
-  if ( size == BoundingBox ) {
-    save( filename, 0.0, 0.0, margin, unit );
+  if (size == BoundingBox) {
+    save(filename, 0.0, 0.0, margin, unit);
   } else {
-    save( filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin,unit), UMillimeter );
+    save(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
   }
 }
 
-} // namespace LibBoard;
+Group grid(Point topLeft, size_t columns, size_t rows, double width, double height, Color penColor, Color fillColor, double lineWidth, const LineStyle lineStyle, const LineCap cap,
+           const LineJoin join)
+{
+  Group group;
+  double cellSide = width / columns;
+  group << rectangle(topLeft.x, topLeft.y, width, height, penColor, fillColor, lineWidth, lineStyle, cap, join);
+  Line vLine(topLeft.x + cellSide, topLeft.y, topLeft.x + cellSide, topLeft.y - height, penColor, lineWidth, lineStyle, RoundCap, join);
+  while (--columns) {
+    group << vLine;
+    vLine.translate(cellSide, 0);
+  }
+  cellSide = height / rows;
+  Line hLine(topLeft.x, topLeft.y - cellSide, topLeft.x + width, topLeft.y - cellSide, penColor, lineWidth, lineStyle, RoundCap, join);
+  while (--rows) {
+    group << hLine;
+    hLine.translate(0, -cellSide);
+  }
+
+  return group;
+}
+
+Group grid(Point topLeft, size_t columns, size_t rows, double width, double height, const Style & style)
+{
+  return grid(topLeft, columns, rows, width, height, style.penColor, style.fillColor, style.lineWidth, style.lineStyle, style.lineCap, style.lineJoin);
+}
+
+Group cross(Point p, const Style & style)
+{
+  Group cross;
+  double half = std::max(style.lineWidth * 2.5, 0.1);
+  cross << Line(p.translated(-half, 0), p.translated(half, 0), style) << Line(p.translated(0, -half), p.translated(0, half), style);
+  return cross;
+}
+
+Polyline bezierControls(const Bezier & bezier, const Style & style)
+{
+  std::vector<Point> path;
+  std::vector<Point>::const_iterator iPoint = bezier.path().points().begin();
+  std::vector<Point>::const_iterator endPoint = bezier.path().points().end();
+  std::vector<Point>::const_iterator iControl = bezier.controls().begin();
+  Point a = *iPoint;
+  ++iPoint;
+  while (iPoint != endPoint) {
+    Point b = *iPoint;
+    path.push_back(a);
+    path.push_back(iControl[0]);
+    path.push_back(iControl[1]);
+    ++iPoint;
+    iControl += 2;
+    a = b;
+  }
+  path.push_back(bezier.path().back());
+  return Polyline(path, Path::OpenPath, style);
+}
+
+Group array(Point topLeft, const std::vector<Color> & colors, unsigned int columns, unsigned int rows, double pixelWidth, double pixelHeight, double lineWidth)
+{
+  if (colors.size() < rows * columns) {
+    throw Exception("array(): not enough colors cells for requested array size");
+  }
+  if (pixelHeight == 0.0) {
+    pixelHeight = pixelWidth;
+  }
+  Group result;
+  Style style(Color::Null, Color::Null, lineWidth, SolidStyle, SquareCap, MiterJoin);
+  const bool WithLine = (lineWidth != 0.0);
+  for (unsigned int i = 0; i < rows; i++) {
+    const double y = topLeft.y - i * pixelHeight;
+    const unsigned int skip_lines = i * columns;
+    for (unsigned int j = 0; j < columns; j++) {
+      double x = topLeft.x + j * pixelWidth;
+      style.fillColor = colors[j + skip_lines];
+      if (WithLine) {
+        style.penColor = style.fillColor;
+      }
+      result << rectangle(x, y, pixelWidth, pixelHeight, style);
+    }
+  }
+  return result;
+}
+
+Group framed(const Shape & shape, const Color & color, double lineWidth, double margin, int sketchyCount)
+{
+  Group result;
+  result << shape;
+  Rect bbox = shape.bbox(UseLineWidth);
+  if (margin != 0.0) {
+    bbox.grow(margin);
+  }
+  Polyline r = rectangle(bbox, color, Color::Null, lineWidth);
+  if (sketchyCount > 0) {
+    result << makeRough(r, sketchyCount, NoFilling);
+  } else {
+    result << r;
+  }
+  return result;
+}
+
+} // namespace LibBoard
 
 /**
  * @example examples/arithmetic.cpp
  * @example examples/arrows.cpp
+ * @example examples/bezier.cpp
  * @example examples/clipping.cpp
  * @example examples/ellipse.cpp
  * @example examples/example1.cpp
  * @example examples/example2.cpp
  * @example examples/example3.cpp
  * @example examples/example4.cpp
+ * @example examples/fern.cpp
  * @example examples/flag.cpp
  * @example examples/graph.cpp
+ * @example examples/holes.cpp
+ * @example examples/hull.cpp
  * @example examples/images.cpp
  * @example examples/koch.cpp
  * @example examples/line_segment.cpp

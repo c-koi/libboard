@@ -1,10 +1,10 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   TransformMatrix.ih
+ * @file   ShapeWithStyle.cpp
  * @author Sebastien Fourey (GREYC)
- * @date   June 2014
- * 
- * @brief  Inline methods of the Transform classes.
+ * @date   Aug 2007
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -23,20 +23,33 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "board/ShapeWithStyle.h"
 
-namespace LibBoard {
-
-TransformMatrix::TransformMatrix()
+namespace LibBoard
 {
-   _m11 = 1.0; _m12 = 0.0; _m13 = 0.0;
-   _m21 = 0.0; _m22 = 1.0; _m23 = 0.0;
+
+bool ShapeWithStyle::_lineWidthScaling = true;
+
+const std::string ShapeWithStyle::_name("ShapeWithStyle");
+
+ShapeWithStyle::~ShapeWithStyle() {}
+
+const std::string & ShapeWithStyle::name() const
+{
+  return _name;
 }
 
-TransformMatrix::TransformMatrix( double m11, double m12, double m13,
-                                  double m21, double m22, double m23 )
-   : _m11(m11), _m12(m12), _m13(m13),
-     _m21(m21), _m22(m22), _m23(m23)
+void ShapeWithStyle::setLineWidthScaling(bool on)
 {
+  _lineWidthScaling = on;
 }
 
-} // namespace LibBoard;
+ShapeWithStyle & ShapeWithStyle::operator=(const ShapeWithStyle & other)
+{
+  _style = other._style;
+  return *this;
+}
+
+ShapeWithStyle::ShapeWithStyle(const ShapeWithStyle & other) : Shape(other), _style(other._style) {}
+
+} // namespace LibBoard

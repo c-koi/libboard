@@ -17,6 +17,13 @@
   [GitHub](examples/arrows.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/arrows.svg)
 
+### bezier.cpp
+
+* ![bezier](http://foureys.users.greyc.fr/board/examples/0.9.5/bezier.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2bezier_8cpp-example.html) doc or on
+  [GitHub](examples/bezier.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/bezier.svg)
+
 ### clipping.cpp
 
 * ![clipping](http://foureys.users.greyc.fr/board/examples/0.9.5/clipping.png)
@@ -59,6 +66,13 @@
   [GitHub](examples/example4.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/example4.svg)
 
+### fern.cpp
+
+* ![fern](http://foureys.users.greyc.fr/board/examples/0.9.5/fern.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2fern_8cpp-example.html) doc or on
+  [GitHub](examples/fern.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/fern.svg)
+
 ### flag.cpp
 
 * ![flag](http://foureys.users.greyc.fr/board/examples/0.9.5/flag.png)
@@ -72,6 +86,20 @@
 * C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2graph_8cpp-example.html) doc or on
   [GitHub](examples/graph.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/graph.svg)
+
+### holes.cpp
+
+* ![holes](http://foureys.users.greyc.fr/board/examples/0.9.5/holes.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2holes_8cpp-example.html) doc or on
+  [GitHub](examples/holes.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/holes.svg)
+
+### hull.cpp
+
+* ![hull](http://foureys.users.greyc.fr/board/examples/0.9.5/hull.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2hull_8cpp-example.html) doc or on
+  [GitHub](examples/hull.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/hull.svg)
 
 ### images.cpp
 

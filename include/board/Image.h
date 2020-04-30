@@ -22,14 +22,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_IMAGE_H_
-#define _BOARD_IMAGE_H_
+#ifndef BOARD_IMAGE_H
+#define BOARD_IMAGE_H
 
-#include "board/Shapes.h"
-#include "board/TransformMatrix.h"
 #include <string>
+#include "board/Polyline.h"
+#include "board/Shape.h"
+#include "board/TransformMatrix.h"
 
-namespace LibBoard {
+namespace LibBoard
+{
 
 /**
  * Image structure.
@@ -50,12 +52,9 @@ struct Image : public Shape {
    * @param top
    * @param width
    * @param height
-   * @param depth
    *
    */
-  Image( const char * filename,
-         double left, double top, double width, double height = 0.0,
-         int depth = -1 );
+  Image(const char * filename, double left, double top, double width, double height = 0.0);
 
   /**
    *
@@ -63,29 +62,22 @@ struct Image : public Shape {
    *
    * @param filename The image filename
    * @param rect The position and size of the image
-   * @param depth The depth (default -1)
-   *
    */
-  Image( const char * filename, const Rect & rect, int depth = -1 );
-
-  /**
-   * Image destructor.
-   */
-  inline ~Image();
+  Image(const char * filename, const Rect & rect);
 
   /**
    * Returns the generic name of the shape (Image)
    *
    * @return
    */
-  const std::string & name() const;
+  const std::string & name() const override;
 
   /**
    * Return a copy of the shape.
    *
    * @return
    */
-  Image * clone() const;
+  Image * clone() const override;
 
   /**
    * Rotate the shape around a given center of rotation.
@@ -95,7 +87,7 @@ struct Image : public Shape {
    *
    * @return A reference to the shape itself.
    */
-  Shape & rotate( double angle, const Point & center );
+  Shape & rotate(double angle, const Point & center) override;
 
   /**
    * Rotate the shape around its center.
@@ -104,26 +96,26 @@ struct Image : public Shape {
    *
    * @return A reference to the shape itself.
    */
-  Shape & rotate( double angle );
+  Shape & rotate(double angle) override;
 
   /**
-    * Returns a rotated copy of the image.
-    *
-    * @param angle The rotation angle in radian.
-    *
-    * @return A rotated copy of the image.
-    */
+   * Returns a rotated copy of the image.
+   *
+   * @param angle The rotation angle in radian.
+   *
+   * @return A rotated copy of the image.
+   */
   Image rotated(double angle) const;
 
   /**
-    * Returns a rotated copy of the image.
-    *
-    * @param angle The rotation angle in radian.
-    * @param center The center of rotation.
-    *
-    * @return A rotated copy of the image.
-    */
-  Image rotated(double angle, const Point & ) const;
+   * Returns a rotated copy of the image.
+   *
+   * @param angle The rotation angle in radian.
+   * @param center The center of rotation.
+   *
+   * @return A rotated copy of the image.
+   */
+  Image rotated(double angle, const Point &) const;
 
   /**
    * Translate the shape by a given offset.
@@ -133,16 +125,16 @@ struct Image : public Shape {
    *
    * @return A reference to the shape itself.
    */
-  Shape & translate( double dx, double dy );
+  Shape & translate(double dx, double dy) override;
 
   /**
-    * Returns a translated copy of the image.
-    *
-    * @param dx The x offset.
-    * @param dy The y offset.
-    *
-    * @return A translated copy of the image.
-    */
+   * Returns a translated copy of the image.
+   *
+   * @param dx The x offset.
+   * @param dy The y offset.
+   *
+   * @return A translated copy of the image.
+   */
   Image translated(double dx, double dy) const;
 
   /**
@@ -153,7 +145,7 @@ struct Image : public Shape {
    *
    * @return The shape itself.
    */
-  Shape & scale( double sx, double sy );
+  Shape & scale(double sx, double sy) override;
 
   /**
    * Scale the shape along both axis.
@@ -162,16 +154,16 @@ struct Image : public Shape {
    *
    * @return The shape itself.
    */
-  Shape & scale( double s );
+  Shape & scale(double s) override;
 
   /**
-    * Returns a scaled copy of the image.
-    *
-    * @param sx Scale factor along the x axis.
-    * @param sy Scale factor along the y axis.
-    *
-    * @return A scaled copy of the image.
-    */
+   * Returns a scaled copy of the image.
+   *
+   * @param sx Scale factor along the x axis.
+   * @param sy Scale factor along the y axis.
+   *
+   * @return A scaled copy of the image.
+   */
   Image scaled(double sx, double sy);
 
   /**
@@ -180,7 +172,7 @@ struct Image : public Shape {
    * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    * @return The rectangle of the bounding box.
    */
-  Rect boundingBox(LineWidthFlag lineWidthFlag) const;
+  Rect boundingBox(LineWidthFlag lineWidthFlag) const override;
 
   /**
    * Scales all the values (positions, dimensions, etc.) associated
@@ -188,7 +180,7 @@ struct Image : public Shape {
    *
    * @param s The scaling factor.
    */
-  void scaleAll( double s );
+  void scaleAll(double s) override;
 
   /**
    * Writes the EPS code of the shape in a stream according
@@ -197,8 +189,7 @@ struct Image : public Shape {
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
    */
-  void flushPostscript( std::ostream & stream,
-                        const TransformEPS & transform ) const;
+  void flushPostscript(std::ostream & stream, const TransformEPS & transform) const override;
 
   /**
    * Writes the FIG code of the shape in a stream according
@@ -206,10 +197,9 @@ struct Image : public Shape {
    *
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
+   * @param colormap
    */
-  void flushFIG( std::ostream & stream,
-                 const TransformFIG & transform,
-                 std::map<Color,int> & colormap ) const;
+  void flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const override;
 
   /**
    * Writes the SVG code of the shape in a stream according
@@ -218,8 +208,7 @@ struct Image : public Shape {
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
    */
-  void flushSVG( std::ostream & stream,
-                 const TransformSVG & transform ) const;
+  void flushSVG(std::ostream & stream, const TransformSVG & transform) const override;
 
   /**
    * Writes the TikZ code of the shape in a stream according
@@ -228,23 +217,64 @@ struct Image : public Shape {
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
    */
-  void flushTikZ( std::ostream & stream,
-                  const TransformTikZ & transform ) const;
+  void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const override;
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(const ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(const ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accept a composite shape transform.
+   *
+   * @param transform A composite shape transform object.
+   */
+  virtual Shape * accept(CompositeShapeTransform & transform) const override;
+
+  /**
+   * @brief Accept a constant composite shape transform.
+   *
+   * @param transform A constant composite shape transform object..
+   */
+  virtual Shape * accept(const CompositeShapeTransform & transform) const override;
+
+  Image(const Image &) = default;
+  Image(Image &&) = default;
+  Image & operator=(Image &&) = default;
+  ~Image() override = default;
 
 private:
-  static const std::string _name;        /**< The generic name of the shape. */
-  Rectangle _rectangle;
-  Rectangle _originalRectangle;
+  static const std::string _name; /**< The generic name of the shape. */
+  Polyline _rectangle;
+  Polyline _originalRectangle;
   TransformMatrix _transformMatrixSVG;
   TransformMatrix _transformMatrixEPS;
   std::string _filename;
 };
 
-Image::~Image()
-{}
-
-
 } // namespace LibBoard
 
-#endif /* _SHAPE_H_ */
-
+#endif /* SHAPE_H */

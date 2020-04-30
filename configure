@@ -8,7 +8,6 @@ ECHO=echo
 [ -f /usr/ucb/echo ] && ECHO=/usr/ucb/echo
 DOXYGEN=doxygen
 SANITIZE=""
-CXXVERSION="11"
 
 #
 # Get version number from CMakeLists.txt
@@ -43,7 +42,7 @@ do
 	STATIC_LIB_ONLY=yes
 	;;
     --debug*)
-	DEBUG="-g"
+	DEBUG="-g -DBOARD_DEBUG"
 	;;
     --no-doc*)
 	DOXYGEN=""
@@ -68,7 +67,6 @@ Directory and file names:
   --no-doc                don't build the documentation [yes if Doxygen is present]
   --static		  build only the static version of the library [both static and dynamic]
   --sanitize-address      build using -fsanitize=address option
-  --force-cpp03           force C++03 even if compiler supports C++11
 EOF
     exit 0;
     ;;
@@ -153,30 +151,33 @@ if [ -n "$DOXYGEN" ]; then
 fi
 
 
+CPP11=no
+
 ##
-## C++ version
+## Check support of C++ 11
 ##
-if [ $CXXVERSION = "11" ]; then
-    echo -n "Checking that compiler supports C++11..."
-    cat > cpp11.cpp <<EOF
-    int main()
-    {
-      auto x = 1 + 2;
-      return 0;
-    }
+echo -n "Checking that compiler supports C++11..."
+cat > cpp11.cpp <<EOF
+int main()
+{
+ auto x = 1 + 2;
+ return x;
+}
 EOF
-    if ( ${CXX} --std=c++11 cpp11.cpp -o a.out > /dev/null 2>&1 ); then
-	echo "yes"
-    else
-	echo "no"
-	CXXVERSION="03"
-    fi
-    rm -f cpp11.cpp a.out
+if ( ${CXX} -std=c++11 cpp11.cpp -o a.out > /dev/null 2>&1 ); then
+  CPP11=yes
+else
+  CPP11=no
 fi
-if [ $CXXVERSION = "03" ]; then
-    ${ECHO} "Compiling with C++98/03 standard."
+rm -f cpp11.cpp a.out
+${ECHO} $CPP11
+
+
+if [ $CPP11 = no ]; then
+  ${ECHO} "Error: Compiler (${CXX}) does not support C++11, which is required."
+  exit 1
 fi
-CXXVERSION="--std=c++${CXXVERSION}"
+
 
 ##
 ## GZip
@@ -222,6 +223,8 @@ for f in examples/*.cpp; do
     EXAMPLE_TARGETS="${EXAMPLE_TARGETS} bin/${name}"
 done
 
+CXXVERSION="--std=c++11"
+
 cat > Makefile <<EOF
 
 CXX = ${CXX}
@@ -243,14 +246,17 @@ AR=ar
 ARFLAGS=rsv
 LN=ln -s
 
-CXXFLAGSOBJ=-O3 ${CXXVERSION} -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include ${CXX64FLAGS}
-CXXFLAGSEXEC=-O3 ${CXXVERSION} -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include
+ifeq (\$(CONFIG),Debug)
+CXXFLAGS += -DBOARD_DEBUG -g
+CFLAGS += -DBOARD_DEBUG -g
+endif
 
-.PHONY: all clean distclean install examples lib doc
+CXXFLAGSOBJ=-O3 ${CXXVERSION} -pedantic -Wall -Wextra -Wno-unknown-pragmas ${DEBUG} ${SANITIZE} -I./include ${CXX64FLAGS}
+CXXFLAGSEXEC=-O3 ${CXXVERSION} -pedantic -Wall -Wextra -Wno-unknown-pragmas ${DEBUG} ${SANITIZE} -I./include
+
+.PHONY: all clean install examples lib test_examples doc
 
 OBJS=\$(patsubst src/%.cpp,obj/%.o,\$(wildcard src/*.cpp))
-
-
 
 all: lib examples ${DOXYGEN_TARGET}
 
@@ -303,10 +309,7 @@ bin/%: examples/%.cpp \$(STATICLIB)
 	\$(CXX) \$(CXXFLAGSEXEC) -o \$@ \$< ${IMAGE_CXXFLAGS} ${IMAGE_LDFLAGS} \$(STATICLIB)
 
 clean:
-	rm -f obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ *~
-
-distclean: clean
-	rm -rf obj lib bin
+	rm -f out/* obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ *~
 
 install: all
 	install -d \$(PREFIX)/lib
@@ -346,7 +349,16 @@ install-doc: doc
 	\$(RM) -rf \$(PREFIX)/share/doc/libboard/html
 	install -d \$(PREFIX)/share/doc/libboard
 	\$(CP) -r doc/html \$(PREFIX)/share/doc/libboard
+
+out:
+	mkdir out
+
+test_examples: out examples
 EOF
+for example in ${EXAMPLE_TARGETS}; do
+  ${ECHO} -e "\tcd out ; ../${example}" >> Makefile
+done
+
 
 ${ECHO} "done."
 

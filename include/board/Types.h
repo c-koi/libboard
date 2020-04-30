@@ -1,10 +1,10 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   Tools.ih
+ * @file   Types.h
  * @author Sebastien Fourey (GREYC)
- * @date   June 2010
- * 
- * @brief  Tools (def. of inline functions and methods)
+ * @date   Aug 2007
+ *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -14,7 +14,7 @@
  * it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -23,29 +23,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef BOARD_TYPES_H
+#define BOARD_TYPES_H
 
-namespace LibBoard {
-
-namespace Tools {
-
-void secured_strncpy( char * dst, const char * src, size_t count )
+namespace LibBoard
 {
-#if defined( _MSC_VER )
-  strncpy_s( dst, count, src, _TRUNCATE );
-#else
-  strncpy( dst, src, count );
-#endif // defined( _MSC_VER )
-}
 
-void secured_ctime( char * str, const time_t * t, size_t count )
+enum SketchFilling
 {
-#if defined( _MSC_VER )
-  ctime_s( str, count, t );
-#else
-  strncpy( str, ctime(t), count );
-#endif // defined( _MSC_VER )  
-}
-
-} // namespace Tools
+  NoFilling,
+  PlainFilling,
+  StraightHachure,
+  CrossingHachure,
+  SketchyHachure,
+  SketchyCrossingHachure // TODO : Add double crossing hachures
+};
 
 } // namespace LibBoard
+
+#endif /* BOARD_TYPES_H */

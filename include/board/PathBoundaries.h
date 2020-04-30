@@ -23,49 +23,41 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_PATH_BOUNDARIES_H_
-#define _BOARD_PATH_BOUNDARIES_H_
+#ifndef BOARD_PATH_BOUNDARIES_H
+#define BOARD_PATH_BOUNDARIES_H
 
 #include <vector>
 #include "board/Point.h"
-#include "board/Shapes.h"
 #include "board/Rect.h"
-namespace LibBoard {
+#include "board/Shape.h"
+namespace LibBoard
+{
 
 struct Path;
 
-namespace Tools {
+namespace Tools
+{
 
 /*
  * An euclidean line a.x + b.y + c = 0
  */
 struct EuclideanLine {
-  EuclideanLine(double a, double b, double c)
-    :a(a),b(b),c(c) {
-  }
-  EuclideanLine(Point p1, Point p2) {
+  EuclideanLine(double a, double b, double c) : a(a), b(b), c(c) {}
+  EuclideanLine(Point p1, Point p2)
+  {
     a = p1.y - p2.y;
     b = p2.x - p1.x;
-    c = p1.x * (p2.y-p1.y) + p1.y * (p1.x-p2.x);
+    c = p1.x * (p2.y - p1.y) + p1.y * (p1.x - p2.x);
   }
-  double a,b,c;
+  double a, b, c;
 };
 
+std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, LineCap lineCap, LineJoin lineJoin, double miterLimit = 4.0);
 
-std::vector<Point>  pathBoundaryPoints(const Path & path,
-                                       double strokeWidth,
-                                       Shape::LineCap lineCap,
-                                       Shape::LineJoin lineJoin,
-                                       double miterLimit = 4.0);
+Rect pathBoundingBox(const Path & path, double strokeWidth, LineCap lineCap, LineJoin lineJoin, double miterLimit = 4.0);
 
-Rect pathBoundingBox(const Path & path,
-                     double strokeWidth,
-                     Shape::LineCap lineCap,
-                     Shape::LineJoin lineJoin,
-                     double miterLimit = 4.0);
+} // namespace Tools
 
-}  // namespace Tools
+} // namespace LibBoard
 
-}  // namespace LibBoard
-
-#endif /* _PATH_BOUNDARIES_H_ */
+#endif /* PATH_BOUNDARIES_H */

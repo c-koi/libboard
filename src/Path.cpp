@@ -23,301 +23,293 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "BoardConfig.h"
 #include "board/Path.h"
-#include "board/Transforms.h"
 #include <algorithm>
 #include <iterator>
+#include "BoardConfig.h"
+#include "board/Transforms.h"
 
-namespace LibBoard {
+namespace LibBoard
+{
 
-Path &
-Path::pop_back()
+Path & Path::pop_back()
 {
   _points.pop_back();
   return *this;
 }
 
-Path &
-Path::operator<<( const Point & p )
+Path & Path::push_back(const Point & p)
 {
-  _points.push_back( p );
+  _points.push_back(p);
   return *this;
 }
 
-Path &
-Path::operator<<(const std::vector<Point> & v )
+Path & Path::operator<<(const Point & p)
 {
-  std::copy(v.begin(),v.end(),std::back_inserter(_points));
+  _points.push_back(p);
   return *this;
 }
 
-Point
-Path::center() const {
+Path & Path::operator<<(const std::vector<Point> & v)
+{
+  std::copy(v.begin(), v.end(), std::back_inserter(_points));
+  return *this;
+}
+
+Path::Path(std::initializer_list<Point> points)
+{
+  _openClosed = OpenPath;
+  _points = points;
+}
+
+void Path::setOpenClosed(Path::OpenClosed openClosed)
+{
+  _openClosed = openClosed;
+}
+
+Point Path::center() const
+{
   return boundingBox().center();
 }
 
-Path &
-Path::rotate( double angle, const Point & center )
+Path & Path::rotate(double angle, const Point & center)
 {
   std::vector<Point>::iterator i = _points.begin();
   std::vector<Point>::iterator end = _points.end();
-  while ( i != end ) {
-    i->rotate( angle, center );
+  while (i != end) {
+    i->rotate(angle, center);
     ++i;
   }
   return *this;
 }
 
-Path &
-Path::rotateDeg( double angle, const Point & center )
+Path & Path::rotateDeg(double angle, const Point & center)
 {
-  return rotate( angle  * (M_PI / 180.0), center );
+  return rotate(angle * (M_PI / 180.0), center);
 }
 
-Path
-Path::rotated( double angle, const Point & center ) const
+Path Path::rotated(double angle, const Point & center) const
 {
   Path res(*this);
   std::vector<Point>::iterator i = res._points.begin();
   std::vector<Point>::iterator end = res._points.end();
-  while ( i != end ) {
-    i->rotate( angle, center );
+  while (i != end) {
+    i->rotate(angle, center);
     ++i;
   }
   return res;
 }
 
-Path
-Path::rotatedDeg( double angle, const Point & center ) const
+Path Path::rotatedDeg(double angle, const Point & center) const
 {
-  return rotated( angle  * (M_PI / 180.0), center );
+  return rotated(angle * (M_PI / 180.0), center);
 }
 
-Path &
-Path::rotate( double angle )
+Path & Path::rotate(double angle)
 {
-  return Path::rotate( angle, center() );
+  return Path::rotate(angle, center());
 }
 
-Path &
-Path::rotateDeg( double angle )
+Path & Path::rotateDeg(double angle)
 {
-  return Path::rotate( angle  * (M_PI / 180.0), center() );
+  return Path::rotate(angle * (M_PI / 180.0), center());
 }
 
-Path
-Path::rotated( double angle ) const
+Path Path::rotated(double angle) const
 {
-  return Path(*this).rotate( angle, center() );
+  return Path(*this).rotate(angle, center());
 }
 
-Path
-Path::rotatedDeg( double angle ) const
+Path Path::rotatedDeg(double angle) const
 {
-  return Path(*this).rotate( angle * (M_PI / 180.0), center() );
+  return Path(*this).rotate(angle * (M_PI / 180.0), center());
 }
 
-Path &
-Path::translate( double dx, double dy )
+Path & Path::translate(double dx, double dy)
 {
   std::vector<Point>::iterator i = _points.begin();
   std::vector<Point>::iterator end = _points.end();
-  Point delta( dx, dy );
-  while ( i != end ) {
+  Point delta(dx, dy);
+  while (i != end) {
     (*i) += delta;
     ++i;
   }
   return *this;
 }
 
-Path
-Path::translated( double dx, double dy ) const
+Path Path::translated(double dx, double dy) const
 {
   Path res(*this);
   std::vector<Point>::iterator i = res._points.begin();
   std::vector<Point>::iterator end = res._points.end();
-  Point delta( dx, dy );
-  while ( i != end ) {
+  Point delta(dx, dy);
+  while (i != end) {
     (*i) += delta;
     ++i;
   }
   return res;
 }
 
-
-Path &
-Path::moveCenter(double x, double y)
+Path & Path::moveCenter(double x, double y)
 {
   Point c = center();
-  translate(x-c.x,y-c.y);
+  translate(x - c.x, y - c.y);
   return *this;
 }
 
-Path &
-Path::moveCenter(Point p)
+Path & Path::moveCenter(Point p)
 {
   Point c = center();
-  translate(p.x-c.x,p.y-c.y);
+  translate(p.x - c.x, p.y - c.y);
   return *this;
 }
 
-
-Path &
-Path::scale( double sx, double sy )
+Path & Path::scale(double sx, double sy)
 {
   Point c = center();
-  translate( -c.x, -c.y );
-  std::vector<Point>::iterator i = _points.begin();
-  std::vector<Point>::iterator end = _points.end();
-  while ( i != end ) {
-    i->x *= sx;
-    i->y *= sy;
-    ++i;
+  translate(-c.x, -c.y);
+  for (Point & p : _points) {
+    p.scale(sx, sy);
   }
   Point delta = c - center();
-  translate( delta.x, delta.y );
+  translate(delta.x, delta.y);
   return *this;
 }
 
-Path &
-Path::scale( double s )
+Path & Path::scale(double s)
 {
-  return Path::scale( s, s );
+  return Path::scale(s, s);
 }
 
-Path
-Path::scaled( double sx, double sy ) const
+Path Path::scaled(double sx, double sy) const
 {
-  return Path(*this).scale( sx, sy );
+  return Path(*this).scale(sx, sy);
 }
 
-Path
-Path::scaled( double s) const
+Path Path::scaled(double s) const
 {
-  return Path(*this).scale( s, s );
+  return Path(*this).scale(s, s);
 }
 
-void
-Path::scaleAll( double s )
+void Path::scaleAll(double s)
 {
   std::vector<Point>::iterator it = _points.begin();
   std::vector<Point>::iterator end = _points.end();
-  while ( it != end ) {
+  while (it != end) {
     (*it) *= s;
     ++it;
   }
 }
 
-void
-Path::flushPostscript( std::ostream & stream,
-                       const TransformEPS & transform ) const
+void Path::flushPostscript(std::ostream & stream, const TransformEPS & transform) const
 {
-  if ( _points.empty() )
+  if (_points.empty())
     return;
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
 
-  stream << transform.mapX( i->x ) << " " << transform.mapY( i->y ) << " m";
+  stream << transform.mapX(i->x) << " " << transform.mapY(i->y) << " m";
   ++i;
-  while ( i != end ) {
-    stream << " " << transform.mapX( i->x ) << " " << transform.mapY( i->y ) << " l";
+  while (i != end) {
+    stream << " " << transform.mapX(i->x) << " " << transform.mapY(i->y) << " l";
     ++i;
   }
-  if ( _closed ) stream << " cp";
-  stream << " ";
+  stream << (isClosed() ? " cp " : " ");
 }
 
-void
-Path::flushFIG( std::ostream & stream,
-                const TransformFIG & transform ) const
+void Path::flushFIG(std::ostream & stream, const TransformFIG & transform) const
 {
-  if ( _points.empty() )
+  if (_points.empty()) {
     return;
-
+  }
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
-  while ( i != end ) {
-    stream << " " << static_cast<int>( transform.mapX( i->x ) )
-           << " " << static_cast<int>( transform.mapY( i->y ) );
+  while (i != end) {
+    stream << " " << static_cast<int>(transform.mapX(i->x)) << " " << static_cast<int>(transform.mapY(i->y));
     ++i;
   }
-  if ( _closed ) {
-    stream << " " << static_cast<int>( transform.mapX( _points.begin()->x ) )
-           << " " << static_cast<int>( transform.mapY( _points.begin()->y ) );
+  if (isClosed()) {
+    stream << " " << static_cast<int>(transform.mapX(_points.begin()->x)) << " " << static_cast<int>(transform.mapY(_points.begin()->y));
   }
 }
 
-void
-Path::flushSVGCommands( std::ostream & stream,
-                        const TransformSVG & transform ) const
+void Path::flushSVGCommands(std::ostream & stream, const TransformSVG & transform) const
 {
-  if ( _points.empty() )
+  if (_points.empty()) {
     return;
+  }
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
   int count = 0;
 
-  stream << "M " << transform.mapX( i->x ) << " " << transform.mapY( i->y );
+  stream << "M " << transform.mapX(i->x) << " " << transform.mapY(i->y);
   ++i;
-  while ( i != end ) {
-    stream << " L " << transform.mapX( i->x ) << " " << transform.mapY( i->y );
+  while (i != end) {
+    stream << " L " << transform.mapX(i->x) << " " << transform.mapY(i->y);
     ++i;
-    count = ( count + 1 ) % 6;
-    if ( !count ) stream << "\n                  ";
+    count = (count + 1) % 6;
+    if (!count)
+      stream << "\n                  ";
   }
-  if ( _closed ) {
+  if (isClosed()) {
     stream << " Z" << std::endl;
   }
 }
 
-void
-Path::flushSVGPoints( std::ostream & stream,
-                      const TransformSVG & transform ) const
+void Path::flushSVGPoints(std::ostream & stream, const TransformSVG & transform) const
 {
-  if ( _points.empty() )
+  if (_points.empty()) {
     return;
+  }
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
   int count = 0;
-  stream << transform.mapX( i->x ) << "," << transform.mapY( i->y );
+  stream << transform.mapX(i->x) << "," << transform.mapY(i->y);
   ++i;
-  while ( i != end ) {
-    stream << " " << transform.mapX( i->x ) << "," << transform.mapY( i->y );
+  while (i != end) {
+    stream << " " << transform.mapX(i->x) << "," << transform.mapY(i->y);
     ++i;
-    count = ( count + 1 ) % 6;
-    if ( !count ) stream << "\n                  ";
+    count = (count + 1) % 6;
+    if (!count)
+      stream << "\n                  ";
   }
 }
 
-void
-Path::flushTikZPoints( std::ostream & stream,
-                       const TransformTikZ & transform ) const
+void Path::flushTikZPoints(std::ostream & stream, const TransformTikZ & transform) const
 {
-  if ( _points.empty() )
+  if (_points.empty()) {
     return;
+  }
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
-  stream << '(' << transform.mapX( i->x ) << "," << transform.mapY( i->y ) << ')';
+  stream << '(' << transform.mapX(i->x) << "," << transform.mapY(i->y) << ')';
   ++i;
-  while ( i != end ) {
-    stream << " -- "
-           << '(' << transform.mapX( i->x ) << "," << transform.mapY( i->y ) << ')';
+  while (i != end) {
+    stream << " -- " << '(' << transform.mapX(i->x) << "," << transform.mapY(i->y) << ')';
     ++i;
   }
+}
+
+Path Path::transformed(const Transform & transform) const
+{
+  Path path(_openClosed);
+  for (const Point & p : _points) {
+    path.push_back(transform.map(p));
+  }
+  return path;
 }
 
 bool Path::isClockwise() const
 {
-  if ( _points.size() < 3 ) {
+  if (_points.size() < 3) {
     return true;
   }
   double sum = 0.0;
-  std::vector< Point >::const_iterator it = _points.begin();
-  std::vector< Point >::const_iterator end = _points.end();
+  std::vector<Point>::const_iterator it = _points.begin();
+  std::vector<Point>::const_iterator end = _points.end();
   Point previous = _points.front();
   ++it;
-  while ( it != end ) {
+  while (it != end) {
     sum += previous.x * (*it).y;
     sum -= previous.y * (*it).x;
     previous = *it;
@@ -335,15 +327,15 @@ bool Path::isCounterclockwise() const
 
 void Path::setClockwise()
 {
-  if ( isCounterclockwise() ) {
-    std::reverse(_points.begin(),_points.end());
+  if (isCounterclockwise()) {
+    std::reverse(_points.begin(), _points.end());
   }
 }
 
 void Path::setCounterclockwise()
 {
-  if ( isClockwise() ) {
-    std::reverse(_points.begin(),_points.end());
+  if (isClockwise()) {
+    std::reverse(_points.begin(), _points.end());
   }
 }
 
@@ -361,18 +353,14 @@ Path Path::getCounterclockwise() const
   return p;
 }
 
-Rect
-Path::boundingBox() const
+Rect Path::boundingBox() const
 {
-  if ( _points.empty() ) {
-    return Rect( 0, 0, 0, 0 );
+  if (_points.empty()) {
+    return Rect(0, 0, 0, 0);
   }
-  std::vector< Point >::const_iterator it = _points.begin();
-  std::vector< Point >::const_iterator end = _points.end();
-  Rect rect(*it,0.0,0.0);
-  ++it;
-  while ( it != end ) {
-    rect.growToContain(*it++);
+  Rect rect(_points.front(), 0.0, 0.0);
+  for (const Point & p : _points) {
+    rect.growToContain(p);
   }
   return rect;
 }
@@ -382,25 +370,38 @@ const std::vector<Point> & Path::points() const
   return _points;
 }
 
-std::ostream &
-Path::flush(std::ostream & out) const
+std::ostream & Path::flush(std::ostream & out) const
 {
   out << "Path(";
   std::vector<Point>::const_iterator it = _points.begin();
-  if ( it != _points.end() ) {
+  if (it != _points.end()) {
     out << (*it++);
   }
-  while ( it != _points.end() ) {
+  while (it != _points.end()) {
     out << "," << (*it++);
   }
   out << ")";
   return out;
 }
 
+Path mid(const Path & a, const Path & b, double time)
+{
+  if (a.size() != b.size()) {
+    Tools::error << "Path::mid() cannot interpolate path with different sizes";
+    return a;
+  }
+  Path result(a.openClosed());
+  auto ita = a.begin();
+  auto itb = b.begin();
+  while (ita != a.end()) {
+    result.push_back(mid(*ita++, *itb++, time));
+  }
+  return result;
+}
+
 } // namespace LibBoard
 
-std::ostream &
-operator<<( std::ostream & out, const LibBoard::Path & path )
+std::ostream & operator<<(std::ostream & out, const LibBoard::Path & path)
 {
   return path.flush(out);
 }

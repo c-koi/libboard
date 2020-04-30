@@ -8,119 +8,102 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
-#include "Board.h"
 #include <vector>
+#include "Board.h"
 using namespace LibBoard;
 
 #include "board/PathBoundaries.h"
 
-ShapeList strikeOut( const Path & path,
-                     double strokeWidth,
-                     Shape::LineCap lineCap,
-                     Shape::LineJoin lineJoin,
-                     double miterLimit = 4.0 )
+ShapeList strikeOut(const Path & path, double strokeWidth, LineCap lineCap, LineJoin lineJoin, double miterLimit = 4.0)
 {
   const double s = 1.0;
   ShapeList list;
-  std::vector<Point> e = Tools::pathBoundaryPoints(path,strokeWidth,lineCap, lineJoin, miterLimit );
-  size_t limit = (path.closed()?path.size():(path.size()-1));
-  for ( size_t i = 0; i < limit; ++i ) {
+  std::vector<Point> e = Tools::pathBoundaryPoints(path, strokeWidth, lineCap, lineJoin, miterLimit);
+  size_t limit = (path.isClosed() ? path.size() : (path.size() - 1));
+  for (size_t i = 0; i < limit; ++i) {
     Point a = path[i];
-    Point b = path[(i+1)%path.size()];
-    Point v = b-a;
-    Point shift  = 0.5 * strokeWidth * v.rotatedPI2().normalise();
-    list << Line(a+shift,b+shift,Color::Black,strokeWidth*0.01).scale(s);
-    list << Line(a-shift,b-shift,Color::Black,strokeWidth*0.01).scale(s);
-    list << Line(a,b,Color::Red,strokeWidth*0.01);
-    if ( (lineCap == Shape::RoundCap) || (lineJoin == Shape::RoundJoin)) {
-      list << Circle(a,strokeWidth*0.5,Color::Green,Color::Null,strokeWidth*0.01);
+    Point b = path[(i + 1) % path.size()];
+    Point v = b - a;
+    Point shift = 0.5 * strokeWidth * v.rotatedPI2().normalise();
+    list << Line(a + shift, b + shift, Color::Black, strokeWidth * 0.01).scale(s);
+    list << Line(a - shift, b - shift, Color::Black, strokeWidth * 0.01).scale(s);
+    list << Line(a, b, Color::Red, strokeWidth * 0.01);
+    if ((lineCap == RoundCap) || (lineJoin == RoundJoin)) {
+      list << LibBoard::circle(a, strokeWidth * 0.5, Color::Green, Color::Null, strokeWidth * 0.01);
     }
   }
-  if ( (!path.closed() && lineCap == Shape::RoundCap) || (lineJoin == Shape::RoundJoin) ) {
-    Point a = path[path.size()-1];
-    list << Circle(a,strokeWidth*0.5,Color::Green,Color::Null,strokeWidth*0.01);
+  if ((!path.isClosed() && lineCap == RoundCap) || (lineJoin == RoundJoin)) {
+    Point a = path[path.size() - 1];
+    list << LibBoard::circle(a, strokeWidth * 0.5, Color::Green, Color::Null, strokeWidth * 0.01);
   }
 
-  for ( size_t i = 0; i < e.size(); ++i ) {
+  for (size_t i = 0; i < e.size(); ++i) {
     Point c = e[i];
-    list << Circle(c,10.0,Color::Blue,Color::Null,strokeWidth*0.01);
-    list << Line(c-Point(10.0,0.0), c+Point(10.0,0),Color::Blue,strokeWidth*0.01);
-    list << Line(c-Point(0.0,10.0), c+Point(0,10.0),Color::Blue,strokeWidth*0.01);
+    list << LibBoard::circle(c, 10.0, Color::Blue, Color::Null, strokeWidth * 0.01);
+    list << Line(c - Point(10.0, 0.0), c + Point(10.0, 0), Color::Blue, strokeWidth * 0.01);
+    list << Line(c - Point(0.0, 10.0), c + Point(0, 10.0), Color::Blue, strokeWidth * 0.01);
   }
   return list;
 }
 
-int main( int , char *[] )
+int main(int, char *[])
 {
   Board board;
-  Shape::enableLineWidthScaling();
-  board.clear( Color::White);
+  Board::enableLineWidthScaling();
+  board.clear(Color::White);
 
   // http://www.w3.org/TR/SVG/painting.html#StrokeProperties
 
-  Point p1(30,366);
-  Point p2(200,400);
-  Point p3(0,0);
-  Point p4(-100,20);
-  Point p5(-50,-100);
+  Point p1(30, 366);
+  Point p2(200, 400);
+  Point p3(0, 0);
+  Point p4(-100, 20);
+  Point p5(-50, -100);
 
-  Path pA(true);
-  pA<<p1<<p2<<p3<<p4<<p5;
-  Path pB(true);
-  pB<<Point(0,0)<<Point(180,0)<<Point(180,300)<<Point(0,300);
-  Path pC(true);
-  pC << Point(0,0) << Point(200,0) << Point(500,5) << Point(150,200);
+  Path pA(Path::ClosedPath);
+  pA << p1 << p2 << p3 << p4 << p5;
+  Path pB(Path::ClosedPath);
+  pB << Point(0, 0) << Point(180, 0) << Point(180, 300) << Point(0, 300);
+  Path pC(Path::ClosedPath);
+  pC << Point(0, 0) << Point(200, 0) << Point(500, 5) << Point(150, 200);
 
   Path losange;
-  losange << Point(0,0) << Point(300,-500) << Point(600,0) << Point(300,500);
+  losange << Point(0, 0) << Point(300, -500) << Point(600, 0) << Point(300, 500);
 
   ShapeList l;
-  l.append( strikeOut(pA,50.0,Shape::RoundCap,Shape::MiterJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append( strikeOut(pB,50.0,Shape::RoundCap,Shape::BevelJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append( strikeOut(pC,50.0,Shape::RoundCap,Shape::MiterJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append( strikeOut(pA,50.0,Shape::RoundCap,Shape::RoundJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append(Text(0,0,"Round cap, miter/bevel/miter/round join",Fonts::Courier,14.0),ShapeList::Right,ShapeList::AlignCenter);
-  board.append(l,ShapeList::Bottom,ShapeList::AlignLeft);
+  l.append(strikeOut(pA, 50.0, RoundCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(strikeOut(pB, 50.0, RoundCap, BevelJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(strikeOut(pC, 50.0, RoundCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(strikeOut(pA, 50.0, RoundCap, RoundJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(Text(0, 0, "Round cap, miter/bevel/miter/round join", Fonts::Courier, 14.0), ShapeList::Right, ShapeList::AlignCenter);
+  board.append(l, ShapeList::Bottom, ShapeList::AlignLeft);
 
   l.clear();
-  l.append( strikeOut(pA,50.0,Shape::ButtCap,Shape::MiterJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append( strikeOut(pB,50.0,Shape::ButtCap,Shape::BevelJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append( strikeOut(pC,50.0,Shape::ButtCap,Shape::MiterJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append( strikeOut(pA,50.0,Shape::ButtCap,Shape::RoundJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append(Text(0,0,"Butt cap, miter/bevel/miter/round join",Fonts::Courier,14.0),ShapeList::Right,ShapeList::AlignCenter);
-  board.append(l,ShapeList::Bottom,ShapeList::AlignLeft);
+  l.append(strikeOut(pA, 50.0, ButtCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(strikeOut(pB, 50.0, ButtCap, BevelJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(strikeOut(pC, 50.0, ButtCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(strikeOut(pA, 50.0, ButtCap, RoundJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(Text(0, 0, "Butt cap, miter/bevel/miter/round join", Fonts::Courier, 14.0), ShapeList::Right, ShapeList::AlignCenter);
+  board.append(l, ShapeList::Bottom, ShapeList::AlignLeft);
 
   l.clear();
-  l.append( strikeOut(pA,50.0,Shape::SquareCap,Shape::MiterJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append( strikeOut(pB,50.0,Shape::SquareCap,Shape::BevelJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append( strikeOut(pC,50.0,Shape::SquareCap,Shape::MiterJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append( strikeOut(pA,50.0,Shape::SquareCap,Shape::RoundJoin, 3.0 ),
-            ShapeList::Right, ShapeList::AlignCenter, 30.0 );
-  l.append(Text(0,0,"Square cap, miter/bevel/miter/round join",Fonts::Courier,14.0),ShapeList::Right,ShapeList::AlignCenter);
-  board.append(l,ShapeList::Bottom,ShapeList::AlignLeft);
+  l.append(strikeOut(pA, 50.0, SquareCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(strikeOut(pB, 50.0, SquareCap, BevelJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(strikeOut(pC, 50.0, SquareCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(strikeOut(pA, 50.0, SquareCap, RoundJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
+  l.append(Text(0, 0, "Square cap, miter/bevel/miter/round join", Fonts::Courier, 14.0), ShapeList::Right, ShapeList::AlignCenter);
+  board.append(l, ShapeList::Bottom, ShapeList::AlignLeft);
 
   ShapeList list;
-  Polyline poly(true,Color::Blue,Color::Null,1.0,Shape::SolidStyle,Shape::ButtCap,Shape::MiterJoin);
-  poly << Point(0,0) << Point(30,-50) << Point(60,0) << Point(30,50);
-  list.append(poly,ShapeList::Right,ShapeList::AlignCenter);
-  list.append(poly,ShapeList::Right,ShapeList::AlignCenter);
-  board.append(list,ShapeList::Right,ShapeList::AlignCenter);
-  board.append( Rectangle(0,0,100,30).rotateDeg(40).scale(1.5,1.0),
-                ShapeList::Right,ShapeList::AlignCenter);
+  Polyline poly(Path::ClosedPath, Color::Blue, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin);
+  poly << Point(0, 0) << Point(30, -50) << Point(60, 0) << Point(30, 50);
+  list.append(poly, ShapeList::Right, ShapeList::AlignCenter);
+  list.append(poly, ShapeList::Right, ShapeList::AlignCenter);
+  board.append(list, ShapeList::Right, ShapeList::AlignCenter);
+  board.append(LibBoard::rectangle(0, 0, 100, 30).rotateDeg(40).scale(1.5, 1.0), ShapeList::Right, ShapeList::AlignCenter);
 
-  board.saveEPS( "stroke_path.eps" , Board::A4 );
+  board.saveEPS("stroke_path.eps", Board::A4);
 
-  board.scaleToWidth(25,Board::UseLineWidth);
-  board.saveSVG( "stroke_path.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
+  board.scaleToWidth(25, UseLineWidth);
+  board.saveSVG("stroke_path.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
 }

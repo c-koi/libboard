@@ -1,3 +1,9 @@
+* Open arrows
+
+* Shape should not have style properties (substituion principle fails for ShapeList)
+
+* Support text anchor
+
 * Depth of groups in XFig files.
 
 * ShapeList::insert()

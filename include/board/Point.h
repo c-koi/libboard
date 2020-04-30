@@ -23,22 +23,42 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_POINT_H_
-#define _BOARD_POINT_H_
+#ifndef BOARD_POINT_H
+#define BOARD_POINT_H
 
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <vector>
+#include "board/Tools.h"
 
-namespace LibBoard {
+namespace LibBoard
+{
 
 /**
  * The Point structure.
  * @brief Struct representing a 2D point.
  */
 struct Point {
-  double x;     /**< The point's first coordinate */
-  double y;     /**< The point's second coordinate */
+  double x; /**< The point's first coordinate */
+  double y; /**< The point's second coordinate */
+
+  /**
+   * Point constructor.
+   */
+  Point() : x(0.0), y(0.0) {}
+
+  /**
+   * Point copy.
+   * @param other
+   */
+  Point(const Point & other) : x(other.x), y(other.y) {}
+
+  /**
+   * Point assignment operator.
+   * @param other
+   */
+  inline Point & operator=(const Point & other);
 
   /**
    * Point constructor.
@@ -46,23 +66,7 @@ struct Point {
    * @param x The point's first coordinate.
    * @param y The point's second coordinate.
    */
-  Point():x(0.0),y(0.0) { }
-
-  /**
-   * Point constructor.
-   *
-   * @param x The point's first coordinate.
-   * @param y The point's second coordinate.
-   */
-  Point( const Point & other ):x(other.x),y(other.y) { }
-
-  /**
-   * Point constructor.
-   *
-   * @param x The point's first coordinate.
-   * @param y The point's second coordinate.
-   */
-  Point( double x, double y ):x(x),y(y) { }
+  Point(double x, double y) : x(x), y(y) {}
 
   /**
    * Get the values of the x and y values.
@@ -70,14 +74,14 @@ struct Point {
    * @param x Reference to the x to be set.
    * @param y Reference to the y to be set.
    */
-  inline void get( double & x, double & y ) const;
+  inline void get(double & x, double & y) const;
 
   /**
    * Rotate the point with a given angle around the origin (0,0)
    *
    * @param angle The rotation angle.
    */
-  inline Point & rotate( double angle );
+  inline Point & rotate(double angle);
 
   /**
    * Get a rotated copy of the point, around the origin, by a given angle.
@@ -86,7 +90,7 @@ struct Point {
    *
    * @return The rotated point.
    */
-  inline Point rotated( double angle ) const;
+  inline Point rotated(double angle) const;
 
   /**
    * Rotate the point, given a rotation center and an angle.
@@ -96,7 +100,7 @@ struct Point {
    *
    * @return The point itself (once rotated).
    */
-  inline Point & rotate( double angle, const Point & center );
+  inline Point & rotate(double angle, const Point & center);
 
   /**
    * Get a rotated copy of the point, given a rotation center and an angle.
@@ -106,7 +110,7 @@ struct Point {
    *
    * @return A rotated copy of the point.
    */
-  inline Point rotated( double angle, const Point & center ) const;
+  inline Point rotated(double angle, const Point & center) const;
 
   /**
    * Get a PI/2 rotated copy of the point around (0,0), counterclockwise.
@@ -122,7 +126,43 @@ struct Point {
    *
    * @return The point itself, once translated.
    */
-  inline Point & operator+=( const Point & other );
+  inline Point & operator+=(const Point & other);
+
+  /**
+   * Translate the point
+   *
+   * @param dx Translation along the x axis.
+   * @param dy Translation along the y axis.
+   * @return The point itself, once translated.
+   */
+  inline Point & translate(double dx, double dy);
+
+  /**
+   * Return a translated copy of the point
+   *
+   * @param dx Translation along the x axis.
+   * @param dy Translation along the y axis.
+   * @return The translated point.
+   */
+  inline Point translated(double dx, double dy) const;
+
+  /**
+   * Scale the point
+   *
+   * @param sx x factor.
+   * @param sy y factor.
+   * @return The point itself, once scaled.
+   */
+  inline Point & scale(double sx, double sy);
+
+  /**
+   * Return a scaled copy of a point
+   *
+   * @param sx x factor.
+   * @param sy y factor.
+   * @return The new point, once scaled.
+   */
+  inline Point scaled(double sx, double sy);
 
   /**
    * Move (backward) the point given a translation vector (given as another Point).
@@ -131,8 +171,7 @@ struct Point {
    *
    * @return The point itself, once translated.
    */
-  inline Point & operator-=( const Point & other );
-
+  inline Point & operator-=(const Point & other);
 
   /**
    * Scale the point's coordinates.
@@ -141,7 +180,7 @@ struct Point {
    *
    * @return The point itself, once scaled.
    */
-  inline Point & operator*=( double s );
+  inline Point & operator*=(double s);
 
   /**
    * Downscale the point's coordinates.
@@ -150,7 +189,7 @@ struct Point {
    *
    * @return The point itself, once scaled.
    */
-  inline Point & operator/=( double s );
+  inline Point & operator/=(double s);
 
   /**
    * Get the opposite copy of the point.
@@ -195,147 +234,178 @@ struct Point {
   inline bool isInf() const;
 
   static Point Infinity;
-
 };
 
-inline void
-Point::get( double & x, double & y ) const
+/**
+ * @brief Return an interpolated point between two points at 'time' t.
+ * @param a First point.
+ * @param b Second point.
+ * @param t Interpolation time in [0,1]. 0 is a, 1 is b.
+ * @return The interpolated point.
+ */
+Point mid(const Point & a, const Point & b, double t);
+
+bool orthogonal(const Point & a, const Point & b);
+
+Point & Point::operator=(const Point & other)
+{
+  x = other.x;
+  y = other.y;
+  return *this;
+}
+
+inline void Point::get(double & x, double & y) const
 {
   x = Point::x;
   y = Point::y;
 }
 
-inline Point
-operator+( const Point & a, const Point & b )
+inline Point operator+(const Point & a, const Point & b)
 {
-  return Point( a.x + b.x, a.y + b.y );
+  return Point(a.x + b.x, a.y + b.y);
 }
 
-inline Point
-operator-( const Point & a, const Point & b )
+inline Point operator-(const Point & a, const Point & b)
 {
-  return Point( a.x - b.x, a.y - b.y );
+  return Point(a.x - b.x, a.y - b.y);
 }
 
-inline double
-operator*( const Point & a, const Point & b )
+inline double operator*(const Point & a, const Point & b)
 {
   return a.x * b.x + a.y * b.y;
 }
 
-inline Point
-operator*( const Point & p, double s  )
+inline Point operator*(const Point & p, double s)
 {
-  return Point( p.x * s, p.y * s );
+  return Point(p.x * s, p.y * s);
 }
 
-inline Point
-operator*( double s, const Point & p )
+inline Point operator*(double s, const Point & p)
 {
-  return Point( s * p.x, s * p.y );
+  return Point(s * p.x, s * p.y);
 }
 
-inline Point
-operator/( const Point & p, double s )
+inline Point operator/(const Point & p, double s)
 {
-  return Point( p.x / s, p.y / s );
+  return Point(p.x / s, p.y / s);
 }
 
-inline Point &
-Point::operator+=( const Point & other )
+inline Point & Point::operator+=(const Point & other)
 {
   x += other.x;
   y += other.y;
   return *this;
 }
 
-inline Point &
-Point::operator-=( const Point & other )
+inline Point & Point::operator-=(const Point & other)
 {
   x -= other.x;
   y -= other.y;
   return *this;
 }
 
-inline Point &
-Point::operator*=( double s )
+inline Point & Point::operator*=(double s)
 {
   x *= s;
   y *= s;
   return *this;
 }
 
-inline Point &
-Point::operator/=( double s )
+inline Point & Point::operator/=(double s)
 {
   x /= s;
   y /= s;
   return *this;
 }
 
-inline bool
-operator==( const Point & a, const Point & b )
+inline bool operator==(const Point & a, const Point & b)
 {
-  return ( a.x == b.x ) && ( a.y == b.y ) ;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
+  return (a.x == b.x) && (a.y == b.y);
+#pragma clang diagnostic pop
 }
 
-inline bool
-operator!=( const Point & a, const Point & b )
+inline bool operator!=(const Point & a, const Point & b)
 {
-  return ( a.x != b.x ) || ( a.y != b.y ) ;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
+  return (a.x != b.x) || (a.y != b.y);
+#pragma clang diagnostic push
 }
 
-Point &
-Point::rotate( double angle )
+inline bool almostEqual(const Point & a, const Point & b)
 {
-  double x = cos( angle ) * Point::x - sin( angle ) * Point::y;
-  double y = sin( angle ) * Point::x + cos( angle ) * Point::y;
+  return Tools::almostEqual((a - b).norm(), 0.0);
+}
+
+Point & Point::rotate(double angle)
+{
+  const double x = cos(angle) * Point::x - sin(angle) * Point::y;
+  const double y = sin(angle) * Point::x + cos(angle) * Point::y;
   Point::x = x;
   Point::y = y;
   return *this;
 }
 
-Point
-Point::rotated( double angle ) const
+Point Point::rotated(double angle) const
 {
-  return Point(*this).rotate( angle );
+  return Point(*this).rotate(angle);
 }
 
-Point &
-Point::rotate( double angle, const Point & center )
+Point & Point::rotate(double angle, const Point & center)
 {
   (*this) -= center;
-  (*this).rotate( angle );
+  (*this).rotate(angle);
   (*this) += center;
   return *this;
 }
 
-Point
-Point::rotated( double angle, const Point & center ) const
+Point Point::rotated(double angle, const Point & center) const
 {
-  return Point(*this).rotate( angle, center );
+  return Point(*this).rotate(angle, center);
 }
 
-Point
-Point::rotatedPI2() const
+Point Point::rotatedPI2() const
 {
-  return Point(-y,x);
+  return Point(-y, x);
 }
 
-double
-Point::norm() const
+Point & Point::translate(double dx, double dy)
 {
-  return std::sqrt( x*x + y*y );
+  x += dx;
+  y += dy;
+  return *this;
 }
 
-Point
-Point::normalised() const
+Point Point::translated(double dx, double dy) const
+{
+  return Point(x + dx, y + dy);
+}
+
+Point & Point::scale(double sx, double sy)
+{
+  x *= sx;
+  y *= sy;
+  return *this;
+}
+
+Point Point::scaled(double sx, double sy)
+{
+  return Point(*this).scale(sx, sy);
+}
+
+double Point::norm() const
+{
+  return std::hypot(x, y);
+}
+
+Point Point::normalised() const
 {
   return (*this) / norm();
 }
 
-Point &
-Point::normalise()
+Point & Point::normalise()
 {
   double n = norm();
   x /= n;
@@ -343,27 +413,25 @@ Point::normalise()
   return *this;
 }
 
-double
-Point::argument() const
+double Point::argument() const
 {
-  return std::atan2( y, x );
+  return std::atan2(y, x);
 }
 
-bool
-Point::isInf() const
+bool Point::isInf() const
 {
   return (*this) == Point::Infinity;
 }
 
-
-Point
-Point::operator-() const
+Point Point::operator-() const
 {
-  return Point( -x, -y );
+  return Point(-x, -y);
 }
 
-} // mamespace LibBoard
+} // namespace LibBoard
 
-std::ostream & operator<<( std::ostream & out, const LibBoard::Point & p );
+std::ostream & operator<<(std::ostream & out, const LibBoard::Point &);
 
-#endif // _POINT_H_
+std::ostream & operator<<(std::ostream & out, const std::vector<LibBoard::Point> &);
+
+#endif // BOARD_POINT_H

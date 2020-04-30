@@ -23,17 +23,42 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "BoardConfig.h"
 #include "board/Point.h"
+#include <iomanip>
 #include <limits>
+#include "BoardConfig.h"
+#include "board/Tools.h"
 
-namespace LibBoard {
-Point Point::Infinity( std::numeric_limits<double>::infinity(),
-                       std::numeric_limits<double>::infinity());
+namespace LibBoard
+{
+Point Point::Infinity(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
+
+Point mid(const Point & a, const Point & b, double t)
+{
+  return (1 - t) * a + t * b;
 }
 
-std::ostream &
-operator<<( std::ostream & out, const LibBoard::Point & p )
+bool orthogonal(const Point & a, const Point & b)
 {
-  return out << "Point(" << p.x << "," << p.y << ")";
+  return Tools::almostEqual(a * b, 0.0);
+}
+
+} // namespace LibBoard
+
+std::ostream & operator<<(std::ostream & out, const LibBoard::Point & p)
+{
+  return out << "Point(" << std::setprecision(15) << p.x << "," << p.y << ")";
+}
+
+std::ostream & operator<<(std::ostream & out, const std::vector<LibBoard::Point> & v)
+{
+  out << "[";
+  auto it = v.cbegin();
+  if (it != v.end()) {
+    out << *it++;
+  }
+  while (it != v.end()) {
+    out << "," << *it++;
+  }
+  return out << "]";
 }
