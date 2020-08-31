@@ -59,6 +59,8 @@ const char * xFigDashStylesTikZ[] = {
 
 Style Style::_defaultStyle{Color(0, 0, 0, 255), Color(nullptr), 1.0, SolidStyle, ButtCap, MiterJoin};
 
+std::stack<Style> Style::_styleStack;
+
 Style::Style()
 {
   *this = _defaultStyle;
@@ -153,6 +155,19 @@ void Style::setDefaultLineCap(LineCap lineCap)
 void Style::setDefaultLineJoin(LineJoin lineJoin)
 {
   _defaultStyle.lineJoin = lineJoin;
+}
+
+void Style::push()
+{
+  _styleStack.push(_defaultStyle);
+}
+
+void Style::pop()
+{
+  if (!_styleStack.empty()) {
+    _defaultStyle = _styleStack.top();
+    _styleStack.pop();
+  }
 }
 
 std::ostream & operator<<(std::ostream & out, const Style & style)

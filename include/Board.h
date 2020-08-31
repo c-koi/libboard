@@ -229,7 +229,7 @@ public:
    * @param y2 Second coordinate of the second extremity.
    * @param type The arrow extremity type.
    */
-  void drawArrow(double x1, double y1, double x2, double y2, Arrow::Type type = Arrow::Plain);
+  void drawArrow(double x1, double y1, double x2, double y2, Arrow::ExtremityType type = Arrow::Plain);
 
   /**
    * Draws a line from p to q with an arrow at (x2,y2).
@@ -238,7 +238,7 @@ public:
    * @param q Second extremity.
    * @param type The arrow extremity type.
    */
-  void drawArrow(Point p, Point q, Arrow::Type type = Arrow::Plain);
+  void drawArrow(Point p, Point q, Arrow::ExtremityType type = Arrow::Plain);
 
   /**
    * Draws a triangle.

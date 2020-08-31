@@ -37,7 +37,7 @@ namespace LibBoard
  */
 struct Arrow : public Line {
 
-  enum Type
+  enum ExtremityType
   {
     Stick,  /**< Two lines  */
     Closed, /**< Closed triangle (pen color, white filled) */
@@ -59,7 +59,7 @@ struct Arrow : public Line {
    * @param cap The line cap.
    * @param join The line join.
    */
-  inline Arrow(double x1, double y1, double x2, double y2, Type type = Plain, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(),
+  inline Arrow(double x1, double y1, double x2, double y2, ExtremityType type = Plain, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(),
                double lineWidth = Style::defaultLineWidth(), //
                const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
 
@@ -73,7 +73,7 @@ struct Arrow : public Line {
    * @param type Arrow type.
    * @param style The shape style.
    */
-  inline Arrow(double x1, double y1, double x2, double y2, Type type, const Style & style);
+  inline Arrow(double x1, double y1, double x2, double y2, ExtremityType type, const Style & style);
 
   /**
    * Constructs an arrow.
@@ -88,7 +88,7 @@ struct Arrow : public Line {
    * @param cap The line cap.
    * @param join The line join.
    */
-  inline Arrow(Point p1, Point p2, Type type = Plain, //
+  inline Arrow(Point p1, Point p2, ExtremityType type = Plain, //
                Color penColor = Style::defaultPenColor(),
                Color fillColor = Style::defaultFillColor(),  //
                double lineWidth = Style::defaultLineWidth(), //
@@ -102,7 +102,7 @@ struct Arrow : public Line {
    * @param type Arrow type.
    * @param style The shape style.
    */
-  inline Arrow(Point p1, Point p2, Type type, const Style & style);
+  inline Arrow(Point p1, Point p2, ExtremityType type, const Style & style);
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -236,11 +236,11 @@ struct Arrow : public Line {
   Arrow & operator=(const Arrow &) = default;
   ~Arrow() override = default;
 
-  inline Type type() const;
+  inline ExtremityType type() const;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
-  Type _type;
+  ExtremityType _type;
 };
 
 } // namespace LibBoard
@@ -252,7 +252,7 @@ private:
 namespace LibBoard
 {
 
-Arrow::Arrow(double x1, double y1, double x2, double y2, Type type, Color penColor, Color fillColor, double lineWidth, const LineStyle style, const LineCap cap, const LineJoin join)
+Arrow::Arrow(double x1, double y1, double x2, double y2, ExtremityType type, Color penColor, Color fillColor, double lineWidth, const LineStyle style, const LineCap cap, const LineJoin join)
     : Line(x1, y1, x2, y2, penColor, lineWidth, style, cap, join), _type(type)
 {
   // FIXME : Handle fill color of the tip properly
@@ -263,7 +263,7 @@ Arrow::Arrow(double x1, double y1, double x2, double y2, Type type, Color penCol
   }
 }
 
-Arrow::Arrow(double x1, double y1, double x2, double y2, Type type, const Style & style) //
+Arrow::Arrow(double x1, double y1, double x2, double y2, ExtremityType type, const Style & style) //
     : Line(x1, y1, x2, y2, style), _type(type)
 {
   if (style.fillColor == Color::Null) {
@@ -273,7 +273,7 @@ Arrow::Arrow(double x1, double y1, double x2, double y2, Type type, const Style 
   }
 }
 
-Arrow::Arrow(Point p1, Point p2, Type type,                                 //
+Arrow::Arrow(Point p1, Point p2, ExtremityType type,                        //
              Color penColor, Color fillColor, double lineWidth,             //
              const LineStyle style, const LineCap cap, const LineJoin join) //
     : Line(p1, p2, penColor, lineWidth, style, cap, join), _type(type)
@@ -285,7 +285,7 @@ Arrow::Arrow(Point p1, Point p2, Type type,                                 //
   }
 }
 
-Arrow::Arrow(Point p1, Point p2, Type type, const Style & style) //
+Arrow::Arrow(Point p1, Point p2, ExtremityType type, const Style & style) //
     : Line(p1, p2, style), _type(type)
 {
   if (style.fillColor == Color::Null) {
@@ -295,7 +295,7 @@ Arrow::Arrow(Point p1, Point p2, Type type, const Style & style) //
   }
 }
 
-Arrow::Type Arrow::type() const
+Arrow::ExtremityType Arrow::type() const
 {
   return _type;
 }

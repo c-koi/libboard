@@ -53,4 +53,4 @@ LibBoard: A vector graphics C++ library (Version 0.9.5). GREYC laboratory. [Soft
 
 ### Author
 
-  * Sébastien Fourey (foureys.users.greyc.fr).
+  * SÃ©bastien Fourey (foureys.users.greyc.fr).

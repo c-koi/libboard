@@ -34,7 +34,7 @@ int main(int, char *[])
   board << avatars;
 #else
   Text text(10, -40, "Magick++ is required", Fonts::Helvetica, 10);
-  board << LibBoard::rectangle(text.boundingBox(Board::IgnoreLineWidth).grow(5), Color::Red, Color::White, 1.0, SolidStyle, RoundCap, RoundJoin);
+  board << LibBoard::rectangle(text.boundingBox(LibBoard::IgnoreLineWidth).grow(5), Color::Red, Color::White, 1.0, SolidStyle, RoundCap, RoundJoin);
   board << text;
 #endif
 

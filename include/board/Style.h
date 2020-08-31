@@ -26,6 +26,7 @@
 #ifndef BOARD_STYLE_H
 #define BOARD_STYLE_H
 #include <iostream>
+#include <stack>
 #include "board/Color.h"
 
 namespace LibBoard
@@ -62,6 +63,9 @@ struct TransformTikZ;
 struct TransformEPS;
 struct TransformSVG;
 
+/**
+ * Structure describing shape style properties.
+ */
 struct Style {
   Color penColor;
   Color fillColor;
@@ -70,6 +74,9 @@ struct Style {
   LineCap lineCap;
   LineJoin lineJoin;
 
+  /**
+   * Create a style with (current) default values.
+   */
   Style();
 
   Style(Color penColor, Color fillColor, double lineWidth, LineStyle linestyle, LineCap lineCap, LineJoin lineJoin);
@@ -110,16 +117,46 @@ struct Style {
 
   static void setDefaultLineJoin(LineJoin);
 
+  /**
+   * Returns a copy of the style, with modified pen color.
+   * @param color New pen color.
+   * @return A copy of the style, with modified pen color.
+   */
   inline Style withPenColor(const Color & color) const;
 
+  /**
+   * Returns a copy of the style, with modified fill color.
+   * @param color New fill color.
+   * @return A copy of the style, with modified fill color.
+   */
   inline Style withFillColor(const Color & color) const;
 
+  /**
+   * Returns a copy of the style, with modified line width.
+   * @param width New line width.
+   * @return A copy of the style, with modified line width.
+   */
   inline Style withLineWidth(double width) const;
 
+  /**
+   * Returns a copy of the style, with modified line style.
+   * @param lineStyle New line style.
+   * @return A copy of the style, with modified line style.
+   */
   inline Style withLineStyle(LineStyle lineStyle) const;
 
+  /**
+   * Returns a copy of the style, with modified line cap.
+   * @param lineCap New line cap.
+   * @return A copy of the style, with modified line cap.
+   */
   inline Style withLineCap(LineCap lineCap) const;
 
+  /**
+   * Returns a copy of the style, with modified line join.
+   * @param lineJoin New line join.
+   * @return A copy of the style, with modified line join.
+   */
   inline Style withLineJoin(LineJoin lineJoin) const;
 
   /**
@@ -164,8 +201,19 @@ struct Style {
    */
   static inline const LineJoin & defaultLineJoin();
 
+  /**
+   * Push the current default style on top of the style stack.
+   */
+  static void push();
+
+  /**
+   * Restore the top of the style stack as the new default style (and pop it).
+   */
+  static void pop();
+
 private:
   static Style _defaultStyle;
+  static std::stack<Style> _styleStack;
 };
 
 std::ostream & operator<<(std::ostream & out, const Style & style);

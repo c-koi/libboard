@@ -310,12 +310,12 @@ void Board::drawLine(Point p, Point q)
   _shapes.push_back(new Line(p, q, _state.style));
 }
 
-void Board::drawArrow(double x1, double y1, double x2, double y2, Arrow::Type type)
+void Board::drawArrow(double x1, double y1, double x2, double y2, Arrow::ExtremityType type)
 {
   _shapes.push_back(new Arrow(x1, y1, x2, y2, type, _state.style));
 }
 
-void Board::drawArrow(Point p, Point q, Arrow::Type type)
+void Board::drawArrow(Point p, Point q, Arrow::ExtremityType type)
 {
   _shapes.push_back(new Arrow(p, q, type, _state.style));
 }
