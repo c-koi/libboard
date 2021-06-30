@@ -35,12 +35,15 @@ namespace LibBoard
 
 /**
  * The Bezier structure.
- * @brief A cubice polygonal line described by a series of 2D points.
+ *
+ * @brief A Bezier curve described by two series of
+ * 2D points (curve points and control points).
  */
 struct Bezier : public ShapeWithStyle {
 
   /**
-   * @brief A cubic bezier curve
+   * @brief A Bezier curve described by two series of
+   * 2D points (curve points and control points).
    *
    * @param points Points of the bezier curve (n points)
    * @param controls Controls points (2(n-1) points)
@@ -67,7 +70,8 @@ struct Bezier : public ShapeWithStyle {
          const Style & style);
 
   /**
-   * @brief Bezier
+   * @brief A bezier curve defined by its two extremities and two control points
+   *
    * @param p0 Start point
    * @param control0 Start control point
    * @param p1 End point
@@ -85,7 +89,8 @@ struct Bezier : public ShapeWithStyle {
          const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
 
   /**
-   * @brief Bezier
+   * @brief A bezier curve defined by its two extremities and two control points
+   *
    * @param p0 Start point
    * @param control0 Start control point
    * @param p1 End point
@@ -96,7 +101,8 @@ struct Bezier : public ShapeWithStyle {
          const Style & style);
 
   /**
-   * @brief Bezier
+   * @brief A bezier curve defined by its two extremities and two control points
+   *
    * @param x0 Start point (x coordinate)
    * @param y0 Start point (y coordinate)
    * @param xc0 Start control point (x coordinate)
@@ -118,7 +124,8 @@ struct Bezier : public ShapeWithStyle {
          const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
 
   /**
-   * @brief Bezier
+   * @brief A bezier curve defined by its two extremities and two control points
+   *
    * @param x0 Start point (x coordinate)
    * @param y0 Start point (y coordinate)
    * @param xc0 Start control point (x coordinate)
@@ -133,17 +140,18 @@ struct Bezier : public ShapeWithStyle {
          const Style & style);
 
   /**
-   * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
+   * The generic name of the shape (e.g., Circle, Rectangle, etc.)
    *
-   * @return
+   * @return The generic name of the shape
    */
   const std::string & name() const override;
 
   /**
    * @brief Rotate the Bezier curve.
-   * @param angle
-   * @param center
-   * @return The curve itself
+   *
+   * @param angle The rotation angle.
+   * @param center Center of the rotation.
+   * @return The curve itself.
    */
   Bezier & rotate(double angle, const Point & center) override;
 
@@ -152,20 +160,18 @@ struct Bezier : public ShapeWithStyle {
   Bezier & rotate(double angle) override;
 
   /**
+   * @brief Return a rotated copy of the curve.
    *
-   *
-   * @param angle
-   *
-   * @return
+   * @param angle The rotation angle.
+   * @return A rotated copy of the curve.
    */
   Bezier rotated(double angle) const;
 
   /**
    * Translate the Bezier by a given offset.
    *
-   * @param dx The x offset.
-   * @param dy The y offset.
-   *
+   * @param dx Shift of the first coordinate.
+   * @param dy Shift of the second coordinate.
    * @return A reference to the Bezier itself.
    */
   Bezier & translate(double dx, double dy) override;
@@ -175,7 +181,6 @@ struct Bezier : public ShapeWithStyle {
    *
    * @param dx Shift of the first coordinate.
    * @param dy Shift of the second coordinate.
-   *
    * @return A copy of the Bezier, translated.
    */
   Bezier translated(double dx, double dy) const;
@@ -185,7 +190,6 @@ struct Bezier : public ShapeWithStyle {
    *
    * @param sx Scaling factor along the x axis.
    * @param sy Scaling factor along the y axis.
-   *
    * @return A reference to the Bezier itself, once scaled.
    */
   Bezier & scale(double sx, double sy) override;
@@ -194,7 +198,6 @@ struct Bezier : public ShapeWithStyle {
    * Scale the Bezier, given a scaling factor.
    *
    * @param s Scaling factor.
-   *
    * @return A reference to the Bezier itself, once scaled.
    */
   Bezier & scale(double s) override;
@@ -204,7 +207,6 @@ struct Bezier : public ShapeWithStyle {
    *
    * @param sx The scaling factor along the x axis.
    * @param sy The scaling factor along the y axis.
-   *
    * @return A scaled copy of the line.
    */
   Bezier scaled(double sx, double sy) const;
@@ -213,7 +215,6 @@ struct Bezier : public ShapeWithStyle {
    * Returns a scaled copy of the line.
    *
    * @param s The scaling factor.
-   *
    * @return A scaled copy of the line.
    */
   Bezier scaled(double s) const;
@@ -286,24 +287,92 @@ struct Bezier : public ShapeWithStyle {
    */
   virtual Shape * accept(const CompositeShapeTransform & transform) const override;
 
+  /**
+   * @brief Return the bounding box of the curve.
+   * @return The bounding box of the curve.
+   */
   Rect boundingBox(LineWidthFlag) const override;
 
+  /**
+   * @brief Return a copy of the curve.
+   * @return a copy of the curve.
+   */
   Bezier * clone() const override;
 
+  /**
+   * @brief The series of points defining the curve, as a path.
+   * @return The series of points defining the curve, as a path.
+   */
   inline const Path & path() const;
 
+  /**
+   * @brief The series of control points points defining the curve, as a path.
+   * @return The series of control points points defining the curve, as a path.
+   */
   inline const Path & controls() const;
 
+  /**
+   * @brief A sequence of properly spaced points approximating the curve.
+   * @return A path of properly spaced points approximating the curve.
+   */
   Path discretizedPath() const;
+
+  /**
+   * @brief A path through local extremums.
+   * @return A path through local extremums.
+   */
   std::vector<Point> pathThroughLocalExtremums() const;
 
+  /**
+   * @brief Add points and crontrol points of another curve.
+   * @param other A Bezier curve.
+   * @return This Bezier curve, appended.
+   */
   Bezier & operator+=(const Bezier & other);
 
+  /**
+   * @brief Concatenate two Bezier curves.
+   * @param other A Bezier curve.
+   * @return A new Bezier curve, concatenation of this curve with other.
+   */
   Bezier operator+(const Bezier & other) const;
 
+  /**
+   * @brief Build a Bezier curve as a 'rounded' version of a Polyline.
+   * @param path A sequence of points defining a polyline.
+   * @param roundness
+   * @param style
+   * @return A bezier curve
+   */
   static Bezier smoothedPolyline(const std::vector<Point> & path, double roundness, const Style & style = Style::defaultStyle());
+
+  /**
+   * @brief Build a Bezier curve as a 'rounded' version of a Polyline.
+   * @param path A path defining a polyline.
+   * @param roundness
+   * @param style
+   * @return A bezier curve
+   */
   static Bezier smoothedPolyline(const Path & path, double roundness, const Style & style = Style::defaultStyle());
-  static Bezier interpolation(const Point & y0, const Point & y1, const Point & y2, const Point & y3, const Style & style = Style::defaultStyle());
+
+  /**
+   * @brief Bezier interpolation passing through 4 points
+   * @param a
+   * @param b
+   * @param c
+   * @param d
+   * @param style
+   * @return A Bezier interpolation passing through the 4 points a, b, c, d
+   */
+  static Bezier interpolation(const Point & a, const Point & b, const Point & c, const Point & d, const Style & style = Style::defaultStyle());
+
+  /**
+   * @brief Get a point of the curve given its interval between two curve points and a position in [0..1].
+   * @param interval Position of the preceding curve point.
+   * @param t Time position within the interval, in [0..1].
+   * @return
+   */
+  Point eval(Path::size_type interval, double t) const;
 
   Bezier(const Bezier &) = default;
   Bezier(Bezier &&) = default;
@@ -311,10 +380,9 @@ struct Bezier : public ShapeWithStyle {
   Bezier & operator=(const Bezier &) = default;
   ~Bezier() override = default;
 
-public:                           // TODO Make private
-  static const std::string _name; /**< The generic name of the shape. */
+private:
   Point eval(const Point & p0, const Point & p1, const Point & p2, const Point & p3, double t) const;
-  Point eval(Path::size_type interval, double t) const;
+  static const std::string _name; /**< The generic name of the shape. */
 
 protected:
   Path _path;

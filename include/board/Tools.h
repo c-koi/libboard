@@ -121,7 +121,7 @@ double boardRandDouble(double min, double max);
 
 inline bool almostEqual(const double & a, const double & b);
 
-inline double mid(const double & a, const double & b, const double & time)
+inline double mix(const double & a, const double & b, const double & time)
 {
   return a + time * (b - a);
 }

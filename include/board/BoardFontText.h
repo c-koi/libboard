@@ -37,12 +37,6 @@ namespace LibBoard
 
 Group boardFontText(Point p, const std::string & text, double size, Color penColor = Style::defaultPenColor(), double lineWidth = 0.0);
 
-void splitAndParseSVGPaths(const std::string & text, ShapeList & shapes);
-void parseSVGPath(const std::string & text, ShapeList & paths);
-void flush(const std::vector<Point> & points, const std::vector<Point> & controls, ShapeList & paths);
-
-// Inline methods and functions
-
 } // namespace LibBoard
 
 #endif /* BOARD_BOARD_FONT_TEXT_H */

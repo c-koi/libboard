@@ -45,6 +45,11 @@ using std::vector;
 
 namespace
 {
+using LibBoard::Bezier;
+using LibBoard::Path;
+using LibBoard::Point;
+using LibBoard::Polyline;
+using LibBoard::ShapeList;
 extern const char * font_paths[];
 extern const double font_baseline;
 extern const double font_topline;
@@ -75,7 +80,9 @@ inline double glyph_width(int c)
   return glyphValid(c) ? font_glyph_width[c - '!'] : 0.0;
 }
 
-inline const LibBoard::ShapeList & fontGlyph(int c)
+void parseSVGPath(const std::string & text, ShapeList & paths);
+
+const LibBoard::ShapeList & fontGlyph(int c)
 {
   if (!glyphValid(c)) {
     return fontGlyph(255);
@@ -166,52 +173,16 @@ bool isCommand(const std::string & token)
   return false;
 }
 
-} // namespace
-
-namespace LibBoard
-{
-
-Group boardFontText(Point p, const std::string & text, double size, Color penColor, double lineWidth)
-{
-  Group group;
-  double x = p.x;
-  for (const char c : text) {
-    LSHOW(c);
-    if (c == ' ') {
-      x += 0.7 * size;
-      continue;
-    }
-    const ShapeList & g = fontGlyph(c);
-    ShapeList list = g.scaled(size);
-    Rect box = list.boundingBox(IgnoreLineWidth);
-    list.translate(x - box.left, glyph_vshift(c) * size - box.bottom());
-    group << list;
-    x += 1.1 * glyph_width(c) * size + lineWidth;
-  }
-  Style style;
-  style.penColor = penColor;
-  if (lineWidth != 0.0) {
-    style.lineWidth = lineWidth;
-  } else {
-    style.lineWidth = 0.025 * size;
-  }
-  style.fillColor = Color::Null;
-  style.lineCap = RoundCap;
-  style.lineJoin = RoundJoin;
-  group.accept(ShapeWithStyleVisitor(style));
-  return group;
-}
-
-void splitAndParseSVGPaths(const std::string & text, ShapeList & shapes)
-{
-  if (text.length() == 0) {
-    return;
-  }
-  std::vector<string> paths = split(text, ";");
-  for (const string & path : paths) {
-    parseSVGPath(path, shapes);
-  }
-}
+// void splitAndParseSVGPaths(const std::string & text, ShapeList & shapes)
+//{
+//  if (text.length() == 0) {
+//    return;
+//  }
+//  std::vector<string> paths = split(text, ";");
+//  for (const string & path : paths) {
+//    parseSVGPath(path, shapes);
+//  }
+//}
 
 bool pathHasCurve(const string & str)
 {
@@ -223,6 +194,21 @@ bool pathHasCurve(const string & str)
   return false;
 }
 
+void flush(const std::vector<Point> & points, const std::vector<Point> & controls, ShapeList & paths)
+{
+  //  using ::operator<<;
+  //  LSHOW(points);
+  //  LSHOW(controls);
+  if (points.size() <= 1) {
+    return;
+  }
+  if (controls.empty()) {
+    paths << Polyline(points, Path::OpenPath);
+  } else {
+    paths << Bezier(points, controls);
+  }
+}
+
 void parseSVGPath(const std::string & text, ShapeList & paths)
 {
   // TSHOW(text);
@@ -230,9 +216,7 @@ void parseSVGPath(const std::string & text, ShapeList & paths)
   std::vector<Point> points;
   std::vector<Point> controls;
 
-  // TODO : Fix consecutive path that do not link !
-  // TODO : Complete this
-  bool absolute = false; // FIXME : Complete this
+  bool absolute = false;
   char mode = 'l';
   const bool hasCurves = pathHasCurve(text);
 
@@ -328,19 +312,40 @@ void parseSVGPath(const std::string & text, ShapeList & paths)
   flush(points, controls, paths);
 }
 
-void flush(const std::vector<Point> & points, const std::vector<Point> & controls, ShapeList & paths)
+} // namespace
+
+namespace LibBoard
 {
-  //  using ::operator<<;
-  //  LSHOW(points);
-  //  LSHOW(controls);
-  if (points.size() <= 1) {
-    return;
+
+Group boardFontText(Point p, const std::string & text, double size, Color penColor, double lineWidth)
+{
+  Group group;
+  double x = p.x;
+  for (const char c : text) {
+    LSHOW(c);
+    if (c == ' ') {
+      x += 0.7 * size;
+      continue;
+    }
+    const ShapeList & g = fontGlyph(c);
+    ShapeList list = g.scaled(size);
+    Rect box = list.boundingBox(IgnoreLineWidth);
+    list.translate(x - box.left, glyph_vshift(c) * size - box.bottom());
+    group << list;
+    x += 1.1 * glyph_width(c) * size + lineWidth;
   }
-  if (controls.empty()) {
-    paths << Polyline(points, Path::OpenPath);
+  Style style;
+  style.penColor = penColor;
+  if (lineWidth != 0.0) {
+    style.lineWidth = lineWidth;
   } else {
-    paths << Bezier(points, controls);
+    style.lineWidth = 0.025 * size;
   }
+  style.fillColor = Color::Null;
+  style.lineCap = RoundCap;
+  style.lineJoin = RoundJoin;
+  group.accept(ShapeWithStyleVisitor(style));
+  return group;
 }
 
 } // namespace LibBoard

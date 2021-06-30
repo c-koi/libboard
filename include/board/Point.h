@@ -243,7 +243,7 @@ struct Point {
  * @param t Interpolation time in [0,1]. 0 is a, 1 is b.
  * @return The interpolated point.
  */
-Point mid(const Point & a, const Point & b, double t);
+Point mix(const Point & a, const Point & b, double t);
 
 bool orthogonal(const Point & a, const Point & b);
 

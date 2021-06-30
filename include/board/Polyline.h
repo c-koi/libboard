@@ -403,7 +403,7 @@ protected:
  * @param time Time (0 is a, 1 is b)
  * @return The interpolated polyline
  */
-Polyline mid(const Polyline & a, const Polyline & b, double time);
+Polyline mix(const Polyline & a, const Polyline & b, double time);
 
 } // namespace LibBoard
 

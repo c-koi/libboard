@@ -383,7 +383,7 @@ protected:
  * @param time Interpolation time in (0 is a, 1 is b)
  * @return Interpolated path
  */
-Path mid(const Path & a, const Path & b, double time);
+Path mix(const Path & a, const Path & b, double time);
 
 // Inline methods
 

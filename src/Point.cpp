@@ -33,7 +33,7 @@ namespace LibBoard
 {
 Point Point::Infinity(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity());
 
-Point mid(const Point & a, const Point & b, double t)
+Point mix(const Point & a, const Point & b, double t)
 {
   return (1 - t) * a + t * b;
 }

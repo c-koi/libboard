@@ -623,23 +623,23 @@ Polyline triangle(const Point & p1, const Point & p2, const Point & p3, const St
   return Polyline(path, style.penColor, style.fillColor, style.lineWidth, style.lineStyle, style.lineCap, style.lineJoin);
 }
 
-Polyline mid(const Polyline & a, const Polyline & b, double time)
+Polyline mix(const Polyline & a, const Polyline & b, double time)
 {
-  Path path = mid(a.path(), b.path(), time);
+  Path path = mix(a.path(), b.path(), time);
   if (a.lineStyle() != b.lineStyle() || a.lineCap() != b.lineCap() || a.lineJoin() != b.lineJoin()) {
     Tools::warning << "Polyline::mid(): lines have different style/join/cap attributes" << std::endl;
   }
   Color pen = a.penColor();
   if (pen != b.penColor()) {
-    pen = Color::midRGB(a.penColor(), b.penColor(), static_cast<float>(time));
+    pen = Color::mixRGB(a.penColor(), b.penColor(), static_cast<float>(time));
   }
   Color fill = a.fillColor();
   if (fill != b.fillColor()) {
-    fill = Color::midRGB(a.fillColor(), b.fillColor(), static_cast<float>(time));
+    fill = Color::mixRGB(a.fillColor(), b.fillColor(), static_cast<float>(time));
   }
   double width = a.lineWidth();
   if (width != b.lineWidth()) {
-    width = Tools::mid(a.lineWidth(), b.lineWidth(), time);
+    width = Tools::mix(a.lineWidth(), b.lineWidth(), time);
   }
   return Polyline(path, pen, fill, width, a.lineStyle(), a.lineCap(), a.lineJoin());
 }

@@ -394,7 +394,7 @@ Bezier Bezier::smoothedPolyline(const std::vector<Point> & path, double roundnes
   std::vector<Point> points;
   std::vector<Point> controls;
   points.push_back(path[0]);
-  controls.push_back(mid(path[0], path[1], 0.3 * roundness));
+  controls.push_back(mix(path[0], path[1], 0.3 * roundness));
   for (std::vector<Point>::size_type i = 1; i < path.size() - 1; ++i) {
     Point previous = path[i - 1];
     Point current = path[i];
@@ -407,7 +407,7 @@ Bezier Bezier::smoothedPolyline(const std::vector<Point> & path, double roundnes
   Point previous = path[path.size() - 2];
   Point current = path.back();
   points.push_back(current);
-  controls.push_back(mid(current, previous, 0.3 * roundness));
+  controls.push_back(mix(current, previous, 0.3 * roundness));
   return Bezier(points, controls, style);
 }
 
@@ -444,12 +444,12 @@ Bezier Bezier::smoothedPolyline(const Path & path, double roundness, const Style
   }
 }
 
-Bezier Bezier::interpolation(const Point & y0, const Point & y1, const Point & y2, const Point & y3, const Style & style)
+Bezier Bezier::interpolation(const Point & a, const Point & b, const Point & c, const Point & d, const Style & style)
 {
-  const Point & p0 = y0;
-  const Point p1 = (-5 * y0 + 18 * y1 - 9 * y2 + 2 * y3) / 6.0;
-  const Point p2 = (2 * y0 - 9 * y1 + 18 * y2 - 5 * y3) / 6.0;
-  const Point & p3 = y3;
+  const Point & p0 = a;
+  const Point p1 = (-5 * a + 18 * b - 9 * c + 2 * d) / 6.0;
+  const Point p2 = (2 * a - 9 * b + 18 * c - 5 * d) / 6.0;
+  const Point & p3 = d;
   std::vector<Point> points = {p0, p3};
   std::vector<Point> controls = {p1, p2};
   return Bezier(points, controls, style);

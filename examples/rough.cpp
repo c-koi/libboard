@@ -45,7 +45,7 @@ Group diamond()
   Path p2 = {Point(100, 100), Point(150, 50), Point(200, 100)};
   Group g;
   for (double r = 0.0; r <= 1.0; r += 0.1) {
-    g << mid(Polyline(p, Color::Red), Polyline(p2, Color::Yellow), r);
+    g << mix(Polyline(p, Color::Red), Polyline(p2, Color::Yellow), r);
   }
   return g;
 }

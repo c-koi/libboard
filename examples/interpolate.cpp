@@ -24,7 +24,7 @@ Group interpolate()
   Polyline pb(b, Color::Green);
   g << pa << pb;
   for (double t = 0.05; t < 1.0; t += 0.05) {
-    g << mid(pa, pb, t);
+    g << mix(pa, pb, t);
   }
 
   for (decltype(a.size()) i = 0; i < a.size(); ++i) {
@@ -42,7 +42,7 @@ Group mustache()
   Style style = Style::defaultStyle();
   for (double r = 0.0; r <= 2.0; r += 0.1) {
     const float t = static_cast<float>(r) / 2.0f;
-    style.penColor = Color::midHSV(c0, c1, t);
+    style.penColor = Color::mixHSV(c0, c1, t);
     g << Bezier::smoothedPolyline(p.points(), r, style);
   }
   return g;

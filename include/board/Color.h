@@ -143,9 +143,9 @@ public:
 
   static Color fromHSV(float hue, float saturation, float value, float alpha = 1.0f);
 
-  static Color midRGB(const Color & a, const Color & b, float t);
+  static Color mixRGB(const Color & a, const Color & b, float t);
 
-  static Color midHSV(const Color & a, const Color & b, float t);
+  static Color mixHSV(const Color & a, const Color & b, float t);
 
   static Color fromHueColormap(float t);
 

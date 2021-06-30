@@ -384,7 +384,7 @@ std::ostream & Path::flush(std::ostream & out) const
   return out;
 }
 
-Path mid(const Path & a, const Path & b, double time)
+Path mix(const Path & a, const Path & b, double time)
 {
   if (a.size() != b.size()) {
     Tools::error << "Path::mid() cannot interpolate path with different sizes";
@@ -394,7 +394,7 @@ Path mid(const Path & a, const Path & b, double time)
   auto ita = a.begin();
   auto itb = b.begin();
   while (ita != a.end()) {
-    result.push_back(mid(*ita++, *itb++, time));
+    result.push_back(mix(*ita++, *itb++, time));
   }
   return result;
 }

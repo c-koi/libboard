@@ -205,7 +205,7 @@ Color Color::fromHSV(float hue, float saturation, float value, float alpha)
   return c;
 }
 
-Color Color::midRGB(const Color & a, const Color & b, float t)
+Color Color::mixRGB(const Color & a, const Color & b, float t)
 {
   float red = (a.red() + t * (static_cast<float>(b.red()) - a.red())) / 255.0f;
   float green = (a.green() + t * (static_cast<float>(b.green()) - a.green())) / 255.0f;
@@ -214,7 +214,7 @@ Color Color::midRGB(const Color & a, const Color & b, float t)
   return Color::fromRGBf(red, green, blue, alpha);
 }
 
-Color Color::midHSV(const Color & a, const Color & b, float t)
+Color Color::mixHSV(const Color & a, const Color & b, float t)
 {
   float ha, sa, va, aa;
   float hb, sb, vb, ab;

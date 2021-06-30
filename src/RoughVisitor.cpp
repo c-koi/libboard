@@ -109,11 +109,11 @@ Shape * RoughVisitor::map(const Line & line) const
 
   for (int k = 0; k < _repeat; ++k) {
     const Point p0 = randomlySlided(line.a(), radius);
-    const Point p1 = randomlySlidedAwayFromSegment(mid(line.a(), line.b(), 0.5), line.a(), line.b());
+    const Point p1 = randomlySlidedAwayFromSegment(mix(line.a(), line.b(), 0.5), line.a(), line.b());
     const Point ab = line.b() - line.a();
     const Point u = ab.normalised();
     const Point v = u.rotatedPI2();
-    const Point p2 = randomlySlidedAwayFromSegmentInBox(mid(line.a(), line.b(), 0.75), u, ab.norm() / 10.0, v, radius);
+    const Point p2 = randomlySlidedAwayFromSegmentInBox(mix(line.a(), line.b(), 0.75), u, ab.norm() / 10.0, v, radius);
     const Point p3 = randomlySlided(line.b(), radius);
     if (group) {
       (*group) += Bezier::interpolation(p0, p1, p2, p3, style);
@@ -147,11 +147,11 @@ Shape * RoughVisitor::map(const Arrow & arrow) const
 
   for (int k = 0; k < _repeat; ++k) {
     const Point p0 = randomlySlided(arrow.a(), radius);
-    const Point p1 = randomlySlidedAwayFromSegment(mid(arrow.a(), arrow.b(), 0.5), arrow.a(), arrow.b());
+    const Point p1 = randomlySlidedAwayFromSegment(mix(arrow.a(), arrow.b(), 0.5), arrow.a(), arrow.b());
     const Point ab = arrow.b() - arrow.a();
     const Point u = ab.normalised();
     const Point v = u.rotatedPI2();
-    const Point p2 = randomlySlidedAwayFromSegmentInBox(mid(arrow.a(), arrow.b(), 0.75), u, ab.norm() / 10.0, v, radius);
+    const Point p2 = randomlySlidedAwayFromSegmentInBox(mix(arrow.a(), arrow.b(), 0.75), u, ab.norm() / 10.0, v, radius);
     const Point p3 = randomlySlided(end, radius / 2.0);
     (*group) += Bezier::interpolation(p0, p1, p2, p3, style);
   }
@@ -207,8 +207,8 @@ Shape * RoughVisitor::map(const Polyline & polyline) const
       const Point v = u.rotatedPI2();
       slideRandomly(b, radius);
       const Point p0 = a;
-      const Point p1 = randomlySlidedAwayFromSegment(mid(a, b, 0.5), a, b);
-      const Point p2 = randomlySlidedAwayFromSegmentInBox(mid(a, b, 0.75), u, ab.norm() / 10.0, v, radius);
+      const Point p1 = randomlySlidedAwayFromSegment(mix(a, b, 0.5), a, b);
+      const Point p2 = randomlySlidedAwayFromSegmentInBox(mix(a, b, 0.75), u, ab.norm() / 10.0, v, radius);
       const Point p3 = b;
       a = b;
       if (segment) {
