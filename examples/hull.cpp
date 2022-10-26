@@ -45,7 +45,7 @@ bool isSeparing(Point & a, Point & b, const std::vector<Point> & points)
           return true;
         }
       }
-      if ((sign > 0 && wp < 0.0) || (sign < 0 && wp > 0.0)) {
+      if (((sign > 0) && (wp < 0.0)) || ((sign < 0) && (wp > 0.0))) {
         return true;
       }
       sign = (wp > 0.0) ? 1 : -1;

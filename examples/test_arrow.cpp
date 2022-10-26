@@ -1,5 +1,5 @@
 /**
- * @file   rough.cpp
+ * @file   test_arrow.cpp
  * @author Sebastien Fourey (GREYC)
  *
  * @brief  Illustrate the rough shape filter

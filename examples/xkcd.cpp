@@ -1,5 +1,5 @@
 /**
- * @file   example4.cpp
+ * @file   xkcd.cpp
  * @author Sebastien Fourey (GREYC)
  *
  * @brief  Sample drawing using the board library.
