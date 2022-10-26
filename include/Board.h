@@ -131,6 +131,12 @@ public:
   Board & operator<<(const Shape & shape);
 
   /**
+   * Add of shapes from a vector to the shape list.
+   */
+  template <typename S> //
+  Board & operator<<(const std::vector<S> & shapes);
+
+  /**
    * Clears the board with a given background color.
    *
    * @param color The board background color (may be Color::None).
@@ -1052,6 +1058,12 @@ inline void Board::fillGouraudTriangle(const double x1, const double y1, const f
                                        unsigned char divisions)
 {
   fillGouraudTriangle(Point(x1, y1), brightness1, Point(x2, y2), brightness2, Point(x3, y3), brightness3, divisions);
+}
+
+template <typename S> //
+Board & Board::operator<<(const std::vector<S> & shapes)
+{
+  return static_cast<Board &>(ShapeList::operator<<(shapes));
 }
 
 } // namespace LibBoard

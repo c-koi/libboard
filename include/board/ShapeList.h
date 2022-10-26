@@ -30,6 +30,7 @@
 #include <queue>
 #include <stack>
 #include <typeinfo>
+#include <vector>
 #include "board/Exception.h"
 #include "board/Shape.h"
 #include "board/Tools.h"
@@ -94,6 +95,11 @@ struct ShapeList : public Shape {
    * @param angle The rotation angle between two repetitions.
    */
   ShapeList(const Shape & shape, unsigned int times, double dx, double dy, double scaleX, double scaleY, double angle);
+
+  /**
+   * Add a list of shapes
+   */
+  template <typename S> ShapeList(const std::vector<S> & shapes);
 
   ~ShapeList() override;
 
@@ -196,6 +202,12 @@ struct ShapeList : public Shape {
    * @return
    */
   ShapeList & operator<<(const Shape & shape);
+
+  /**
+   * Add of shapes from a vector to the shape list.
+   */
+  template <typename S> //
+  ShapeList & operator<<(const std::vector<S> & shapes);
 
   /**
    * Adds a shape to the list of shape, always preserving the shape's depth.
@@ -511,7 +523,7 @@ template <typename T> T & ShapeList::last(const std::size_t position)
     return dynamic_cast<T &>(*result);
   } else {
     Tools::error << "Trying to access an element that does not exist (" << position << "/" << _shapes.size() << ").\n";
-    throw - 1;
+    throw -1;
   }
 }
 
@@ -761,6 +773,22 @@ ShapeList::BreadthFirstIterator ShapeList::BreadthFirstIterator::operator++(int)
   BreadthFirstIterator currentValue(*this);
   moveToNextActualShape();
   return currentValue;
+}
+
+template <typename S>                               //
+ShapeList::ShapeList(const std::vector<S> & shapes) //
+    : ShapeList()
+{
+  (*this) << shapes;
+}
+
+template <typename S>                                            //
+ShapeList & ShapeList::operator<<(const std::vector<S> & shapes) //
+{
+  for (const S & shape : shapes) {
+    (*this) << shape;
+  }
+  return *this;
 }
 
 #if defined(HAS_MSVC_MAX)
