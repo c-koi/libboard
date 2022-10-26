@@ -49,7 +49,7 @@ public:
   inline Color(unsigned char gray, unsigned char alpha = 255);
 
   static inline Color fromRGBf(float red, float green, float blue, float alpha = 1.0f);
-
+  static inline Color gray(unsigned char grayLevel, unsigned char alpha = 255);
   /**
    * @brief Build a color from an HTML color string (\#RRGGBB)
    * @param htmlColor An HTML color string
@@ -224,6 +224,11 @@ Color::Color(unsigned char gray, unsigned char alpha) : _red(gray), _green(gray)
 Color Color::fromRGBf(float red, float green, float blue, float alpha)
 {
   return Color(static_cast<unsigned char>(red * 255), static_cast<unsigned char>(green * 255), static_cast<unsigned char>(blue * 255), static_cast<unsigned char>(alpha * 255));
+}
+
+Color Color::gray(unsigned char grayLevel, unsigned char alpha)
+{
+  return Color(grayLevel, grayLevel, grayLevel, alpha);
 }
 
 // FIXME : Make alpha parameter take precedence over AA in html string
