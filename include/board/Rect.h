@@ -88,6 +88,7 @@ struct Rect {
   bool intersects(const Rect &) const;
   bool strictlyIntersects(const Rect &) const;
   Rect & grow(double margin);
+  Rect growed(double margin);
   inline bool isNull() const;
 };
 

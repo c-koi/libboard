@@ -130,6 +130,11 @@ Rect & Rect::grow(double margin)
   return *this;
 }
 
+Rect Rect::growed(double margin)
+{
+  return Rect(*this).grow(margin);
+}
+
 } // namespace LibBoard
 
 std::ostream & operator<<(std::ostream & out, const LibBoard::Rect & rect)
