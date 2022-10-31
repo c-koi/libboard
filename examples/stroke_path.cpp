@@ -102,8 +102,7 @@ int main(int, char *[])
   board.append(list, ShapeList::Right, ShapeList::AlignCenter);
   board.append(LibBoard::rectangle(0, 0, 100, 30).rotateDeg(40).scale(1.5, 1.0), ShapeList::Right, ShapeList::AlignCenter);
 
-  board.saveEPS("stroke_path.eps", Board::A4);
-
+  board.saveEPS("stroke_path.eps", Board::PageSize::A4);
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("stroke_path.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.saveSVG("stroke_path.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
 }

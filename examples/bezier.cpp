@@ -89,7 +89,6 @@ int main(int, char *[])
     board.append(Bezier::smoothedPolyline(p, 0.5));
   }
 
-  board.saveSVG("bezier.svg", Board::BoundingBox);
-  board.saveEPS("bezier.eps", Board::BoundingBox);
-  system("svgviewer bezier.svg");
+  board.saveSVG("bezier.svg", Board::PageSize::BoundingBox);
+  // system("svgviewer bezier.svg");
 }

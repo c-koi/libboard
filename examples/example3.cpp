@@ -24,13 +24,13 @@ int main(int, char *[])
   board.saveEPS("example3.eps", 210, 297);
   board.saveEPS("example3_15x10.eps", 210, 297, 25);
   board.saveFIG("example3.fig");
-  board.saveFIG("example3_A4.fig", Board::A4);
+  board.saveFIG("example3_A4.fig", Board::PageSize::A4);
 
   // Viewport == BoundingBox
   board.saveSVG("example3.svg");
 
   // Centered on an A4 paper, with a 50mm margin.
-  board.saveSVG("example3_A4.svg", Board::A4, 50);
+  board.saveSVG("example3_A4.svg", Board::PageSize::A4, 50);
 
   board.scale(10);
   board.saveSVG("example3_x10.svg");

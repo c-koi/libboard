@@ -60,7 +60,6 @@ int main(int, char *[])
   board.append(interpolate(), Board::Right, Board::AlignCenter, 5);
   board.append(mustache(), Board::Right, Board::AlignCenter, 5);
 
-  board.saveSVG("interpolate.svg", Board::BoundingBox);
-
-  system("svgviewer interpolate.svg");
+  board.saveSVG("interpolate.svg", Board::PageSize::BoundingBox);
+  // system("svgviewer interpolate.svg");
 }

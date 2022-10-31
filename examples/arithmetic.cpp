@@ -75,11 +75,11 @@ int main(int argc, char * argv[])
     board.drawRectangle(lefts[k], thickness, probabilities[k], 0.9 * thickness);
   }
 
-  board.save("arithmetic_A4.eps", Board::A4, 0.5, Board::UCentimeter);
-  board.save("arithmetic.eps", Board::BoundingBox, 0.5, Board::UCentimeter);
-  board.save("arithmetic_A4.svg", Board::A4, 2, Board::UCentimeter);
-  board.save("arithmetic.fig", Board::A4);
+  // board.save("arithmetic_A4.eps", Board::PageSize::A4, 0.5, Board::Unit::Centimeter);
+  // board.save("arithmetic.eps", Board::PageSize::BoundingBox, 0.5, Board::Unit::Centimeter);
+  // board.save("arithmetic_A4.svg", Board::PageSize::A4, 2, Board::Unit::Centimeter);
+  // board.save("arithmetic.fig", Board::PageSize::A4);
 
   board.scaleToWidth(20, UseLineWidth);
-  board.save("arithmetic.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.save("arithmetic.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
 }

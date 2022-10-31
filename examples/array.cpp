@@ -43,6 +43,6 @@ int main(int, char *[])
   board.setLineWidth(1.0);
   board.append(space_invader(), Board::Right, Board::AlignCenter);
   board.append(makeRough(board.last<Group>(), 2, LibBoard::SketchyHachure, 10.0 * Board::Degree));
-  board.saveSVG("array.svg", Board::BoundingBox);
-  system("svgviewer array.svg");
+  board.saveSVG("array.svg", Board::PageSize::BoundingBox);
+  // system("svgviewer array.svg");
 }

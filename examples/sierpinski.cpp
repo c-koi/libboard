@@ -1,5 +1,5 @@
 /**
- * @file   Sierpinski.cpp
+ * @file   sierpinski.cpp
  * @author Sebastien Fourey (GREYC)
  *
  * @brief  Draws a Sierpinky triangle.
@@ -37,7 +37,7 @@ int main(int, char *[])
   board << curve;
   Tools::notice << curve.vertexCount() << " points in the curve after " << recursions << " recursions.\n";
   board.saveFIG("sierpinski.fig", 200, 200);
-  board.saveEPS("sierpinski.eps", Board::A4);
+  board.saveEPS("sierpinski.eps", Board::PageSize::A4);
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("sierpinski.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.saveSVG("sierpinski.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
 }

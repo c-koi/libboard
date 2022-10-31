@@ -34,11 +34,8 @@ int main(int, char *[])
   board << Arrow(Point(0, 100), Point(100, 100), Arrow::Plain);
   board << board.last<Arrow>().rotated(180 * Board::Degree).translated(-30, 10);
 
-  board.saveSVG("test_arrow.svg", Board::BoundingBox);
-  board.saveEPS("test_arrow.eps", Board::BoundingBox);
-  board.saveFIG("test_arrow.fig", Board::BoundingBox);
-
+  board.saveSVG("test_arrow.svg", Board::PageSize::BoundingBox);
+  // board.saveEPS("test_arrow.eps", Board::PageSize::BoundingBox);
+  // board.saveFIG("test_arrow.fig", Board::PageSize::BoundingBox);
   // system("svgviewer test_arrow.svg");
-  // system("xfig test_arrow.fig");
-  // system("evince test_arrow.eps");
 }

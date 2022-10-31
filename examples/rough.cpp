@@ -226,8 +226,7 @@ int main(int, char *[])
 
   // board.append(framed(board), ShapeList::Bottom);
 
-  board.saveSVG("rough.svg", Board::BoundingBox);
-  // board.saveFIG("rough.fig", Board::BoundingBox);
-
-  system("svgviewer rough.svg");
+  board.saveSVG("rough.svg", Board::PageSize::BoundingBox);
+  // board.saveFIG("rough.fig", Board::PageSize::BoundingBox);
+  // system("svgviewer rough.svg");
 }

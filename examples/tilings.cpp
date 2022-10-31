@@ -65,5 +65,5 @@ int main(int, char *[])
   board.saveEPS("tilings.eps");
 
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("tilings.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.saveSVG("tilings.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
 }

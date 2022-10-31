@@ -42,9 +42,9 @@ int main( int , char *[] )
   board << Text( board.last<Line>().boundingBox(UseLineWidth).topRight(),
                  "Inches", Fonts::CourierBold, 2, Color::Red );
 
-  board.saveEPS( "ruler.eps" /*, Board::A4 */ );
-  board.saveFIG( "ruler.fig" /*, Board::A4 */ );
+  board.saveEPS( "ruler.eps" /*, Board::PageSize::A4 */ );
+  board.saveFIG( "ruler.fig" /*, Board::PageSize::A4 */ );
 
   board.scaleToWidth(25,UseLineWidth);
-  board.saveSVG( "ruler.svg", Board::BoundingBox, 0.0, Board::UCentimeter );
+  board.saveSVG( "ruler.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter );
 }

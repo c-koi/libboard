@@ -64,7 +64,7 @@ int main(int, char *[])
 
   //  board << Polyline(losange,Shape::defaultPenColor(),Color::White);
 
-  board.saveEPS("holes.eps", Board::A4);
+  board.saveEPS("holes.eps", Board::PageSize::A4);
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("holes.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.saveSVG("holes.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
 }

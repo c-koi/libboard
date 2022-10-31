@@ -58,7 +58,6 @@ int main(int, char *[])
   //  board << bezierControls(Bezier(p, q, Color::Black), Style().withLineWidth(0.2));
   //  board << bezierControls(Bezier(p, q, Color::Black).scaled(1.5), Style().withLineWidth(0.2));
 
-  board.saveSVG("board_font_text.svg", Board::BoundingBox);
-
-  system("svgviewer board_font_text.svg");
+  board.saveSVG("board_font_text.svg", Board::PageSize::BoundingBox);
+  // system("svgviewer board_font_text.svg");
 }

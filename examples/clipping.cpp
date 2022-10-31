@@ -53,9 +53,9 @@ int main(int, char *[])
   board.saveEPS("clipping.eps", 210, 297);
 
   // Centered on an A4 paper with a 50mm margin.
-  board.saveSVG("clipping_A4.svg", Board::A4, 50);
+  board.saveSVG("clipping_A4.svg", Board::PageSize::A4, 50);
 
   // Viewport == BoundingBox (default)
   board.scaleToWidth(20, UseLineWidth);
-  board.saveSVG("clipping.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.saveSVG("clipping.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
 }

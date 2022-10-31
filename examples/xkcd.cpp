@@ -57,5 +57,5 @@ int main(int, char *[])
   board.append(title, Board::Bottom, Board::AlignCenter, 5.0);
 
   board.saveSVG("xkcd.svg");
-  system("svgviewer xkcd.svg");
+  // system("svgviewer xkcd.svg");
 }

@@ -28,18 +28,14 @@ int main(int, char *[])
   Style::setDefaultLineWidth(0.5);
 
   Polyline r = rectangle(0, 10, 10, 10);
-
   Group g;
   g.addTiling(r, Point(0, 100), 4, 4, 0.0, IgnoreLineWidth);
 
   board << g;
-  // board << g << g.translated(36, -6) << g.translated(30, -25);
-
   board << r.translated(5, 5) << r.translated(8, 8) << r.translated(9, 9);
 
-  board.saveSVG("depth.svg", Board::BoundingBox);
-  board.saveFIG("depth.fig", Board::BoundingBox);
-
+  board.saveSVG("test_depth.svg", Board::PageSize::BoundingBox);
+  // board.saveFIG("depth.fig", Board::PageSize::BoundingBox);
   // system("svgviewer depth.svg");
-  system("xfig depth.fig");
+  // system("xfig depth.fig");
 }
