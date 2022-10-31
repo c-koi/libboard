@@ -377,7 +377,7 @@ protected:
 };
 
 /**
- * Interpolate two paths according to a time (0 is a, 1 is b)
+ * @brief Interpolate two paths according to a time (0 is a, 1 is b)
  * @param a First path
  * @param b Second path
  * @param time Interpolation time in (0 is a, 1 is b)

@@ -352,5 +352,5 @@ Group boardFontText(Point p, const std::string & text, double size, Color penCol
 
 namespace
 {
-#include "../font/font.cpp"
+#include "./inc/BoardFont.cpp"
 } // namespace

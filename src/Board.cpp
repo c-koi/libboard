@@ -516,25 +516,25 @@ void Board::addDuplicates(const Shape & shape, std::size_t times, double dx, dou
 
 void Board::saveEPS(const char * filename, PageSize size, double margin, Unit unit, const std::string & title) const
 {
-  if (size == BoundingBox) {
+  if (size == PageSize::BoundingBox) {
     if (title == std::string())
       saveEPS(filename, 0.0, 0.0, margin, unit, filename);
     else
       saveEPS(filename, 0.0, 0.0, margin, unit, title);
   } else {
     if (title == std::string())
-      saveEPS(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter, filename);
+      saveEPS(filename, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter, filename);
     else
-      saveEPS(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter, title);
+      saveEPS(filename, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter, title);
   }
 }
 
 void Board::saveEPS(std::ostream & out, PageSize size, double margin, Unit unit, const std::string & title) const
 {
-  if (size == BoundingBox) {
+  if (size == PageSize::BoundingBox) {
     saveEPS(out, 0.0, 0.0, margin, unit, title);
   } else {
-    saveEPS(out, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter, title);
+    saveEPS(out, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter, title);
   }
 }
 
@@ -628,19 +628,19 @@ void Board::saveEPS(const char * filename, double pageWidth, double pageHeight, 
 
 void Board::saveFIG(const char * filename, PageSize size, double margin, Unit unit) const
 {
-  if (size == BoundingBox) {
+  if (size == PageSize::BoundingBox) {
     saveFIG(filename, 0.0, 0.0, margin, unit);
   } else {
-    saveFIG(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
+    saveFIG(filename, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter);
   }
 }
 
 void Board::saveFIG(std::ostream & out, PageSize size, double margin, Unit unit) const
 {
-  if (size == BoundingBox) {
+  if (size == PageSize::BoundingBox) {
     saveFIG(out, 0.0, 0.0, margin, unit);
   } else {
-    saveFIG(out, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
+    saveFIG(out, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter);
   }
 }
 
@@ -757,19 +757,19 @@ void Board::saveFIG(const char * filename, double pageWidth, double pageHeight, 
 
 void Board::saveSVG(const char * filename, PageSize size, double margin, Unit unit) const
 {
-  if (size == BoundingBox) {
+  if (size == PageSize::BoundingBox) {
     saveSVG(filename, 0.0, 0.0, margin, unit);
   } else {
-    saveSVG(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
+    saveSVG(filename, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter);
   }
 }
 
 void Board::saveSVG(std::ostream & out, PageSize size, double margin, Unit unit) const
 {
-  if (size == BoundingBox) {
+  if (size == PageSize::BoundingBox) {
     saveSVG(out, 0.0, 0.0, margin, unit);
   } else {
-    saveSVG(out, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
+    saveSVG(out, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter);
   }
 }
 
@@ -848,12 +848,12 @@ void Board::saveSVG(std::ostream & out, double pageWidth, double pageHeight, dou
 
 void Board::saveTikZ(const char * filename, PageSize size, double margin) const
 {
-  saveTikZ(filename, pageSizes[size][0], pageSizes[size][1], margin);
+  saveTikZ(filename, pageSizes[int(size)][0], pageSizes[int(size)][1], margin);
 }
 
 void Board::saveTikZ(std::ostream & out, PageSize size, double margin) const
 {
-  saveTikZ(out, pageSizes[size][0], pageSizes[size][1], margin);
+  saveTikZ(out, pageSizes[int(size)][0], pageSizes[int(size)][1], margin);
 }
 
 void Board::saveTikZ(std::ostream & out, double pageWidth, double pageHeight, double margin) const
@@ -886,20 +886,38 @@ void Board::saveTikZ(std::ostream & out, double pageWidth, double pageHeight, do
   out << "\\end{tikzpicture}" << std::endl;
 }
 
+Rect Board::pageRect(PageSize size, Unit unit)
+{
+  const double width = pageSizes[int(size)][0];
+  const double height = pageSizes[int(size)][1];
+  switch (unit) {
+  case Unit::Point:
+    return {0, 0, (width / 25.4) * 72.0, (height / 25.4) * 72.0};
+  case Unit::Millimeter:
+    return {0, 0, width, height};
+  case Unit::Centimeter:
+    return {0, 0, width / 10.0, height / 10.0};
+  case Unit::Inch:
+    return {0, 0, width / 25.4, height / 25.4};
+  }
+  Tools::error << "Board::pageRect(): bad unit (" << int(unit) << ")\n";
+  return Rect{0, 0, 0, 0};
+}
+
 double Board::toMillimeter(double x, Board::Unit unit)
 {
-  // enum Unit { UPoint, UInche, UCentimeter, UMillimeter };
+  // enum class Unit { Point, Inch, Centimeter, Millimeter };
   switch (unit) {
-  case UPoint:
+  case Unit::Point:
     return x * 25.4 / 72.0;
-  case UInche:
+  case Unit::Inch:
     return x * 25.4;
-  case UCentimeter:
+  case Unit::Centimeter:
     return x * 10.0;
-  case UMillimeter:
+  case Unit::Millimeter:
     return x;
   }
-  Tools::error << "toMillimeter(): bad unit (" << unit << ")\n";
+  Tools::error << "toMillimeter(): bad unit (" << int(unit) << ")\n";
   return 0;
 }
 
@@ -932,35 +950,37 @@ void Board::save(const char * filename, double pageWidth, double pageHeight, dou
 
 void Board::save(const char * filename, PageSize size, double margin, Unit unit) const
 {
-  if (size == BoundingBox) {
+  if (size == PageSize::BoundingBox) {
     save(filename, 0.0, 0.0, margin, unit);
   } else {
-    save(filename, pageSizes[size][0], pageSizes[size][1], toMillimeter(margin, unit), UMillimeter);
+    save(filename, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter);
   }
 }
 
-Group grid(Point topLeft, size_t columns, size_t rows, double width, double height, Color penColor, Color fillColor, double lineWidth, const LineStyle lineStyle, const LineCap cap,
-           const LineJoin join)
+Group grid(Point topLeft, size_t columns, size_t rows, //
+           double width, double height,                //
+           Color penColor, Color fillColor, double lineWidth, const LineStyle lineStyle, const LineCap cap, const LineJoin join)
 {
   Group group;
-  double cellSide = width / columns;
+  double cellSide = width / double(columns);
   group << rectangle(topLeft.x, topLeft.y, width, height, penColor, fillColor, lineWidth, lineStyle, cap, join);
   Line vLine(topLeft.x + cellSide, topLeft.y, topLeft.x + cellSide, topLeft.y - height, penColor, lineWidth, lineStyle, RoundCap, join);
   while (--columns) {
     group << vLine;
     vLine.translate(cellSide, 0);
   }
-  cellSide = height / rows;
+  cellSide = height / double(rows);
   Line hLine(topLeft.x, topLeft.y - cellSide, topLeft.x + width, topLeft.y - cellSide, penColor, lineWidth, lineStyle, RoundCap, join);
   while (--rows) {
     group << hLine;
     hLine.translate(0, -cellSide);
   }
-
   return group;
 }
 
-Group grid(Point topLeft, size_t columns, size_t rows, double width, double height, const Style & style)
+Group grid(Point topLeft, size_t columns, size_t rows, //
+           double width, double height,                //
+           const Style & style)
 {
   return grid(topLeft, columns, rows, width, height, style.penColor, style.fillColor, style.lineWidth, style.lineStyle, style.lineCap, style.lineJoin);
 }
@@ -994,7 +1014,9 @@ Polyline bezierControls(const Bezier & bezier, const Style & style)
   return Polyline(path, Path::OpenPath, style);
 }
 
-Group array(Point topLeft, const std::vector<Color> & colors, unsigned int columns, unsigned int rows, double pixelWidth, double pixelHeight, double lineWidth)
+Group array(Point topLeft, const std::vector<Color> & colors, //
+            unsigned int columns, unsigned int rows,          //
+            double pixelWidth, double pixelHeight, double lineWidth)
 {
   if (colors.size() < rows * columns) {
     throw Exception("array(): not enough colors cells for requested array size");
@@ -1009,7 +1031,7 @@ Group array(Point topLeft, const std::vector<Color> & colors, unsigned int colum
     const double y = topLeft.y - i * pixelHeight;
     const unsigned int skip_lines = i * columns;
     for (unsigned int j = 0; j < columns; j++) {
-      double x = topLeft.x + j * pixelWidth;
+      const double x = topLeft.x + j * pixelWidth;
       style.fillColor = colors[j + skip_lines];
       if (WithLine) {
         style.penColor = style.fillColor;
@@ -1041,8 +1063,10 @@ Group framed(const Shape & shape, const Color & color, double lineWidth, double 
 
 /**
  * @example examples/arithmetic.cpp
+ * @example examples/array.cpp
  * @example examples/arrows.cpp
  * @example examples/bezier.cpp
+ * @example examples/board_font_text.cpp
  * @example examples/clipping.cpp
  * @example examples/ellipse.cpp
  * @example examples/example1.cpp
@@ -1053,17 +1077,26 @@ Group framed(const Shape & shape, const Color & color, double lineWidth, double 
  * @example examples/flag.cpp
  * @example examples/graph.cpp
  * @example examples/holes.cpp
+ * @example examples/Huffman.cpp
  * @example examples/hull.cpp
  * @example examples/images.cpp
+ * @example examples/interpolate.cpp
  * @example examples/koch.cpp
  * @example examples/line_segment.cpp
  * @example examples/line_style.cpp
  * @example examples/logo.cpp
+ * @example examples/rough.cpp
  * @example examples/ruler.cpp
+ * @example examples/sandbox.cpp
  * @example examples/scale_ellipse.cpp
+ * @example examples/sierpinski.cpp
  * @example examples/stroke_path.cpp
+ * @example examples/test_arrow.cpp
+ * @example examples/test_depth.cpp
  * @example examples/tilings.cpp
  * @example examples/traversal.cpp
+ * @example examples/triangles.cpp
+ * @example examples/xkcd.cpp
  */
 
 /**

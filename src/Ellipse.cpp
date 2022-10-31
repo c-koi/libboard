@@ -382,4 +382,11 @@ Ellipse circle(Point center, double radius, Color penColor, Color fillColor, dou
   return ellipse;
 }
 
+Ellipse circle(Point center, double radius, Style style)
+{
+  Ellipse ellipse(center, radius, radius, style);
+  ellipse.setCircleFlag();
+  return ellipse;
+}
+
 } // namespace LibBoard

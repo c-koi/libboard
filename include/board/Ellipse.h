@@ -53,6 +53,8 @@ struct Ellipse : public ShapeWithStyle {
                  Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), //
                  double lineWidth = Style::defaultLineWidth(), const LineStyle lineStyle = Style::defaultLineStyle());
 
+  inline Ellipse(Point center, double xRadius, double yRadius, Style style);
+
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
    *
@@ -247,6 +249,7 @@ struct Ellipse : public ShapeWithStyle {
 private:
   static const std::string _name; /**< The generic name of the shape. */
   bool isACircle() const;
+  inline void normaliseAngle();
 
 protected:
   Point _center;
@@ -264,23 +267,32 @@ Ellipse circle(Point center, double radius,                                     
                Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), //
                double lineWidth = Style::defaultLineWidth(), const LineStyle lineStyle = Style::defaultLineStyle());
 
+Ellipse circle(Point center, double radius, Style style);
+
 // Inline methods
 
 Ellipse::Ellipse(double x, double y, double xRadius, double yRadius, Color penColor, Color fillColor, double lineWidth, LineStyle lineStyle)
     : ShapeWithStyle(penColor, fillColor, lineWidth, lineStyle, ButtCap, MiterJoin), //
       _center(x, y), _xRadius(xRadius), _yRadius(yRadius), _angle(0.0), _isCreatedAsCircle(false)
 {
-  while (_angle > M_PI_2) {
-    _angle -= M_PI;
-  }
-  while (_angle < -M_PI_2) {
-    _angle += M_PI;
-  }
+  normaliseAngle();
 }
 
 Ellipse::Ellipse(Point center, double xRadius, double yRadius, Color penColor, Color fillColor, double lineWidth, const LineStyle lineStyle)
     : ShapeWithStyle(penColor, fillColor, lineWidth, lineStyle, ButtCap, MiterJoin), //
       _center(center), _xRadius(xRadius), _yRadius(yRadius), _angle(0.0), _isCreatedAsCircle(false)
+{
+  normaliseAngle();
+}
+
+inline Ellipse::Ellipse(Point center, double xRadius, double yRadius, Style style) //
+    : ShapeWithStyle(style),                                                       //
+      _center(center), _xRadius(xRadius), _yRadius(yRadius), _angle(0.0), _isCreatedAsCircle(false)
+{
+  normaliseAngle();
+}
+
+inline void Ellipse::normaliseAngle()
 {
   while (_angle > M_PI_2) {
     _angle -= M_PI;
