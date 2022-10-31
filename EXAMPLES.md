@@ -10,6 +10,13 @@
   [GitHub](examples/arithmetic.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/arithmetic.svg)
 
+### array.cpp
+
+* ![array](http://foureys.users.greyc.fr/board/examples/0.9.5/array.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2array_8cpp-example.html) doc or on
+  [GitHub](examples/array.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/array.svg)
+
 ### arrows.cpp
 
 * ![arrows](http://foureys.users.greyc.fr/board/examples/0.9.5/arrows.png)
@@ -23,6 +30,13 @@
 * C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2bezier_8cpp-example.html) doc or on
   [GitHub](examples/bezier.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/bezier.svg)
+
+### board_font_text.cpp
+
+* ![board_font_text](http://foureys.users.greyc.fr/board/examples/0.9.5/board_font_text.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2board_font_text_8cpp-example.html) doc or on
+  [GitHub](examples/board_font_text.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/board_font_text.svg)
 
 ### clipping.cpp
 
@@ -94,6 +108,13 @@
   [GitHub](examples/holes.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/holes.svg)
 
+### Huffman.cpp
+
+* ![Huffman](http://foureys.users.greyc.fr/board/examples/0.9.5/Huffman.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2Huffman_8cpp-example.html) doc or on
+  [GitHub](examples/Huffman.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/Huffman.svg)
+
 ### hull.cpp
 
 * ![hull](http://foureys.users.greyc.fr/board/examples/0.9.5/hull.png)
@@ -107,6 +128,13 @@
 * C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2images_8cpp-example.html) doc or on
   [GitHub](examples/images.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/images.svg)
+
+### interpolate.cpp
+
+* ![interpolate](http://foureys.users.greyc.fr/board/examples/0.9.5/interpolate.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2interpolate_8cpp-example.html) doc or on
+  [GitHub](examples/interpolate.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/interpolate.svg)
 
 ### koch.cpp
 
@@ -136,12 +164,26 @@
   [GitHub](examples/logo.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/logo.svg)
 
+### rough.cpp
+
+* ![rough](http://foureys.users.greyc.fr/board/examples/0.9.5/rough.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2rough_8cpp-example.html) doc or on
+  [GitHub](examples/rough.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/rough.svg)
+
 ### ruler.cpp
 
 * ![ruler](http://foureys.users.greyc.fr/board/examples/0.9.5/ruler.png)
 * C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2ruler_8cpp-example.html) doc or on
   [GitHub](examples/ruler.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/ruler.svg)
+
+### sandbox.cpp
+
+* ![sandbox](http://foureys.users.greyc.fr/board/examples/0.9.5/sandbox.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2sandbox_8cpp-example.html) doc or on
+  [GitHub](examples/sandbox.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/sandbox.svg)
 
 ### scale_ellipse.cpp
 
@@ -150,12 +192,33 @@
   [GitHub](examples/scale_ellipse.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/scale_ellipse.svg)
 
+### sierpinski.cpp
+
+* ![sierpinski](http://foureys.users.greyc.fr/board/examples/0.9.5/sierpinski.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2sierpinski_8cpp-example.html) doc or on
+  [GitHub](examples/sierpinski.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/sierpinski.svg)
+
 ### stroke_path.cpp
 
 * ![stroke_path](http://foureys.users.greyc.fr/board/examples/0.9.5/stroke_path.png)
 * C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2stroke_path_8cpp-example.html) doc or on
   [GitHub](examples/stroke_path.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/stroke_path.svg)
+
+### test_arrow.cpp
+
+* ![test_arrow](http://foureys.users.greyc.fr/board/examples/0.9.5/test_arrow.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2test_arrow_8cpp-example.html) doc or on
+  [GitHub](examples/test_arrow.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/test_arrow.svg)
+
+### test_depth.cpp
+
+* ![test_depth](http://foureys.users.greyc.fr/board/examples/0.9.5/test_depth.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2test_depth_8cpp-example.html) doc or on
+  [GitHub](examples/test_depth.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/test_depth.svg)
 
 ### tilings.cpp
 
@@ -170,4 +233,18 @@
 * C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2traversal_8cpp-example.html) doc or on
   [GitHub](examples/traversal.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/traversal.svg)
+
+### triangles.cpp
+
+* ![triangles](http://foureys.users.greyc.fr/board/examples/0.9.5/triangles.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2triangles_8cpp-example.html) doc or on
+  [GitHub](examples/triangles.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/triangles.svg)
+
+### xkcd.cpp
+
+* ![xkcd](http://foureys.users.greyc.fr/board/examples/0.9.5/xkcd.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.5/examples_2xkcd_8cpp-example.html) doc or on
+  [GitHub](examples/xkcd.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.5/xkcd.svg)
 
