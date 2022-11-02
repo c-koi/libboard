@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
-#include "Board.h"
+#include <Board.h>
 
 using namespace std;
 using namespace LibBoard;

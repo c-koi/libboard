@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include "Board.h"
+#include <Board.h>
 
 using namespace LibBoard;
 

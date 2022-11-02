@@ -15,8 +15,8 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-#include "Board.h"
-#include "board/Tools.h"
+#include <Board.h>
+#include <board/Tools.h>
 using namespace LibBoard;
 
 /**

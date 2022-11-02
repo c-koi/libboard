@@ -12,7 +12,7 @@
 #include <ctime>
 #include <set>
 #include <vector>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 int main(int, char *[])

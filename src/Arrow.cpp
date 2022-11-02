@@ -23,21 +23,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Arrow.h"
+#include <BoardConfig.h>
 #include <algorithm>
+#include <board/Arrow.h>
+#include <board/PSFonts.h>
+#include <board/PathBoundaries.h>
+#include <board/Polyline.h>
+#include <board/Rect.h>
+#include <board/ShapeVisitor.h>
+#include <board/Tools.h>
+#include <board/Transforms.h>
 #include <cmath>
 #include <cstring>
 #include <limits>
 #include <sstream>
 #include <vector>
-#include "BoardConfig.h"
-#include "board/PSFonts.h"
-#include "board/PathBoundaries.h"
-#include "board/Polyline.h"
-#include "board/Rect.h"
-#include "board/ShapeVisitor.h"
-#include "board/Tools.h"
-#include "board/Transforms.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846 /* pi */

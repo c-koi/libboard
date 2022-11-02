@@ -31,9 +31,9 @@
 #include <stack>
 #include <typeinfo>
 #include <vector>
-#include "board/Exception.h"
-#include "board/Shape.h"
-#include "board/Tools.h"
+#include <board/Exception.h>
+#include <board/Shape.h>
+#include <board/Tools.h>
 
 namespace LibBoard
 {

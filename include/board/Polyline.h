@@ -26,7 +26,7 @@
 #ifndef BOARD_POLYLINE_H
 #define BOARD_POLYLINE_H
 
-#include "board/ShapeWithStyle.h"
+#include <board/ShapeWithStyle.h>
 
 namespace LibBoard
 {

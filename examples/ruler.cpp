@@ -9,7 +9,7 @@
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
 #include <cstdlib>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 int main( int , char *[] )

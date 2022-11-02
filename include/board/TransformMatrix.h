@@ -26,9 +26,9 @@
 #ifndef BOARD_TRANSFORM_MATRIX_H
 #define BOARD_TRANSFORM_MATRIX_H
 
+#include <board/Point.h>
 #include <cmath>
 #include <iostream>
-#include "Point.h"
 
 namespace LibBoard
 {
@@ -50,7 +50,7 @@ public:
   static TransformMatrix rotation(double angle, Type type);
   static TransformMatrix rotation(double angle, const Point & center, Type type);
 
-  TransformMatrix operator*(const TransformMatrix &)const;
+  TransformMatrix operator*(const TransformMatrix &) const;
 
   TransformMatrix & operator*=(const TransformMatrix &);
 

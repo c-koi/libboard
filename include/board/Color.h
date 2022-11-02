@@ -26,11 +26,11 @@
 #ifndef BOARD_COLOR_H
 #define BOARD_COLOR_H
 
+#include <board/Tools.h>
 #include <cstddef>
 #include <cstdio>
 #include <ostream>
 #include <string>
-#include "Tools.h"
 
 namespace LibBoard
 {

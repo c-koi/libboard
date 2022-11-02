@@ -10,8 +10,8 @@
  */
 #include <cstdlib>
 #include <ctime>
-#include "Board.h"
-#include "board/RoughVisitor.h"
+#include <Board.h>
+#include <board/RoughVisitor.h>
 using namespace LibBoard;
 
 int main(int, char *[])

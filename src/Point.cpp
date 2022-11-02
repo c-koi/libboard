@@ -23,11 +23,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Point.h"
+#include <board/Point.h>
 #include <iomanip>
 #include <limits>
-#include "BoardConfig.h"
-#include "board/Tools.h"
+#include <BoardConfig.h>
+#include <board/Tools.h>
 
 namespace LibBoard
 {

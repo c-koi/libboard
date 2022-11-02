@@ -23,17 +23,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/SketchFilter.h"
+#include <board/SketchFilter.h>
 #include <algorithm>
 #include <deque>
 #include <set>
 #include <vector>
-#include "board/Ellipse.h"
-#include "board/Line.h"
-#include "board/Path.h"
-#include "board/Point.h"
-#include "board/RoughVisitor.h"
-#include "board/Tools.h"
+#include <board/Ellipse.h>
+#include <board/Line.h>
+#include <board/Path.h>
+#include <board/Point.h>
+#include <board/RoughVisitor.h>
+#include <board/Tools.h>
 
 namespace
 {

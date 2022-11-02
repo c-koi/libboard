@@ -24,12 +24,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "board/Transforms.h"
+#include <board/Transforms.h>
 #include <cmath>
-#include "BoardConfig.h"
-#include "board/Rect.h"
-#include "board/Shape.h"
-#include "board/ShapeList.h"
+#include <BoardConfig.h>
+#include <board/Rect.h>
+#include <board/Shape.h>
+#include <board/ShapeList.h>
 
 namespace
 {

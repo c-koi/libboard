@@ -10,7 +10,7 @@
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
 #include <cmath>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 const int RAYS = 40;

@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 const int NbColors = 4;

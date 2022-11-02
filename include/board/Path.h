@@ -29,9 +29,9 @@
 #include <initializer_list>
 #include <iostream>
 #include <vector>
-#include "board/Point.h"
-#include "board/Rect.h"
-#include "board/Transforms.h"
+#include <board/Point.h>
+#include <board/Rect.h>
+#include <board/Transforms.h>
 
 // TODO : Add a resample (uniformly wrt to length) method
 

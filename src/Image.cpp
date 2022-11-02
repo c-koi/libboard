@@ -23,13 +23,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Image.h"
+#include <BoardConfig.h>
+#include <board/Image.h>
+#include <board/ShapeVisitor.h>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <sstream>
-#include "BoardConfig.h"
-#include "board/ShapeVisitor.h"
 
 #if (BOARD_HAVE_MAGICKPLUSPLUS == 1)
 #define MAGICKCORE_QUANTUM_DEPTH 16

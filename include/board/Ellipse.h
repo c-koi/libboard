@@ -26,7 +26,7 @@
 #ifndef BOARD_ELLIPSE_H
 #define BOARD_ELLIPSE_H
 
-#include "board/ShapeWithStyle.h"
+#include <board/ShapeWithStyle.h>
 
 namespace LibBoard
 {

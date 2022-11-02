@@ -31,25 +31,25 @@
 #include <string>
 #include <vector>
 
-#include "BoardConfig.h"
-#include "board/Arrow.h"
-#include "board/Bezier.h"
-#include "board/BoardFontText.h"
-#include "board/Dot.h"
-#include "board/Ellipse.h"
-#include "board/Exception.h"
-#include "board/Group.h"
-#include "board/Image.h"
-#include "board/Line.h"
-#include "board/Path.h"
-#include "board/Point.h"
-#include "board/Polyline.h"
-#include "board/RoughVisitor.h"
-#include "board/Shape.h"
-#include "board/ShapeList.h"
-#include "board/SketchFilter.h"
-#include "board/Style.h"
-#include "board/Text.h"
+#include <BoardConfig.h>
+#include <board/Arrow.h>
+#include <board/Bezier.h>
+#include <board/BoardFontText.h>
+#include <board/Dot.h>
+#include <board/Ellipse.h>
+#include <board/Exception.h>
+#include <board/Group.h>
+#include <board/Image.h>
+#include <board/Line.h>
+#include <board/Path.h>
+#include <board/Point.h>
+#include <board/Polyline.h>
+#include <board/RoughVisitor.h>
+#include <board/Shape.h>
+#include <board/ShapeList.h>
+#include <board/SketchFilter.h>
+#include <board/Style.h>
+#include <board/Text.h>
 
 namespace LibBoard
 {

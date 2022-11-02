@@ -10,7 +10,7 @@
  *
  */
 #include <cmath>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 int main(int, char *[])

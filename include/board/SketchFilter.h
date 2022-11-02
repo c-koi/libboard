@@ -28,10 +28,10 @@
 
 #include <tuple>
 #include <vector>
-#include "board/Point.h"
-#include "board/Shape.h"
-#include "board/ShapeList.h"
-#include "board/Types.h"
+#include <board/Point.h>
+#include <board/Shape.h>
+#include <board/ShapeList.h>
+#include <board/Types.h>
 
 /*
  *

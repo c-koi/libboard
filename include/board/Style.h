@@ -27,7 +27,7 @@
 #define BOARD_STYLE_H
 #include <iostream>
 #include <stack>
-#include "board/Color.h"
+#include <board/Color.h>
 
 namespace LibBoard
 {

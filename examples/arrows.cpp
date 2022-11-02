@@ -16,7 +16,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 #ifndef M_PI

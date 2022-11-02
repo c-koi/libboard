@@ -24,19 +24,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/BoardFontText.h"
+#include <board/BoardFontText.h>
 #include <cassert>
 #include <cstdio>
 #include <cstring>
 #include <memory>
 #include <string>
 #include <vector>
-#include "board/Bezier.h"
-#include "board/Debug.h"
-#include "board/Polyline.h"
-#include "board/ShapeList.h"
-#include "board/ShapeVisitor.h"
-#include "board/Tools.h"
+#include <board/Bezier.h>
+#include <board/Debug.h>
+#include <board/Polyline.h>
+#include <board/ShapeList.h>
+#include <board/ShapeVisitor.h>
+#include <board/Tools.h>
 
 using std::string;
 using std::vector;

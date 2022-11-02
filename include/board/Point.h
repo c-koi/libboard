@@ -30,7 +30,7 @@
 #include <iostream>
 #include <limits>
 #include <vector>
-#include "board/Tools.h"
+#include <board/Tools.h>
 
 namespace LibBoard
 {

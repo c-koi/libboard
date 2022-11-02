@@ -27,7 +27,7 @@
 #ifndef BOARD_GROUP_H
 #define BOARD_GROUP_H
 
-#include "board/ShapeList.h"
+#include <board/ShapeList.h>
 
 namespace LibBoard
 {

@@ -26,7 +26,7 @@
 #ifndef BOARD_ARROW_H
 #define BOARD_ARROW_H
 
-#include "board/Line.h"
+#include <board/Line.h>
 
 namespace LibBoard
 {

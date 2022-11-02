@@ -8,7 +8,7 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 int main(int, char * [])

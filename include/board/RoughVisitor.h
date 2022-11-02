@@ -36,9 +36,9 @@
  */
 
 #include <cstddef> // For std::size_t
-#include "board/Point.h"
-#include "board/ShapeVisitor.h"
-#include "board/Types.h"
+#include <board/Point.h>
+#include <board/ShapeVisitor.h>
+#include <board/Types.h>
 
 namespace LibBoard
 {

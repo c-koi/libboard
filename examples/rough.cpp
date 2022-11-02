@@ -10,8 +10,8 @@
  */
 #include <cstdlib>
 #include <ctime>
-#include "Board.h"
-#include "board/Debug.h"
+#include <Board.h>
+#include <board/Debug.h>
 using namespace LibBoard;
 
 Group slide()

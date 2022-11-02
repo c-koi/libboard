@@ -26,9 +26,9 @@
 #define BOARD_IMAGE_H
 
 #include <string>
-#include "board/Polyline.h"
-#include "board/Shape.h"
-#include "board/TransformMatrix.h"
+#include <board/Polyline.h>
+#include <board/Shape.h>
+#include <board/TransformMatrix.h>
 
 namespace LibBoard
 {

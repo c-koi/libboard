@@ -16,7 +16,7 @@
 #include <queue>
 #include <string>
 #include <vector>
-#include "Board.h"
+#include <Board.h>
 
 using namespace LibBoard;
 

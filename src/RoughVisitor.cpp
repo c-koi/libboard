@@ -23,14 +23,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/RoughVisitor.h"
+#include <board/RoughVisitor.h>
 #include <cassert>
 #include <deque>
 #include <iostream>
 #include <typeinfo>
-#include "Board.h"
-#include "board/Debug.h"
-#include "board/Shape.h"
+#include <Board.h>
+#include <board/Debug.h>
+#include <board/Shape.h>
 
 namespace LibBoard
 {

@@ -24,7 +24,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Board.h"
+#include <Board.h>
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
@@ -34,12 +34,12 @@
 #include <iostream>
 #include <map>
 #include <typeinfo>
-#include "board/PSFonts.h"
-#include "board/Point.h"
-#include "board/Rect.h"
-#include "board/Shape.h"
-#include "board/ShapeVisitor.h"
-#include "board/Tools.h"
+#include <board/PSFonts.h>
+#include <board/Point.h>
+#include <board/Rect.h>
+#include <board/Shape.h>
+#include <board/ShapeVisitor.h>
+#include <board/Tools.h>
 
 #if defined(max)
 #undef max

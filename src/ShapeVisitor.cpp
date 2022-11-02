@@ -23,10 +23,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/ShapeVisitor.h"
+#include <board/ShapeVisitor.h>
 #include <iostream>
-#include "Board.h"
-#include "board/Shape.h"
+#include <Board.h>
+#include <board/Shape.h>
 
 namespace LibBoard
 {

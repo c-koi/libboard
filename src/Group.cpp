@@ -24,13 +24,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Group.h"
+#include <board/Group.h>
 #include <algorithm>
 #include <typeinfo>
 #include <utility>
-#include "BoardConfig.h"
-#include "board/ShapeVisitor.h"
-#include "board/Tools.h"
+#include <BoardConfig.h>
+#include <board/ShapeVisitor.h>
+#include <board/Tools.h>
 
 #if defined(max)
 #undef max

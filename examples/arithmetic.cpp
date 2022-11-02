@@ -13,8 +13,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include "Board.h"
-#include "board/Tools.h"
+#include <Board.h>
+#include <board/Tools.h>
 using namespace std;
 using namespace LibBoard;
 

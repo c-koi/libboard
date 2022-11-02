@@ -26,13 +26,13 @@
 #ifndef BOARD_TRANSFORMS_H
 #define BOARD_TRANSFORMS_H
 
+#include <board/Point.h>
+#include <board/Rect.h>
+#include <board/TransformMatrix.h>
 #include <cmath>
 #include <limits>
 #include <map>
 #include <vector>
-#include "TransformMatrix.h"
-#include "board/Point.h"
-#include "board/Rect.h"
 namespace LibBoard
 {
 

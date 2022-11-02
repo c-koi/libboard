@@ -32,15 +32,15 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "board/Color.h"
-#include "board/Globals.h"
-#include "board/PSFonts.h"
-#include "board/Path.h"
-#include "board/Point.h"
-#include "board/Rect.h"
-#include "board/Style.h"
-#include "board/Tools.h"
-#include "board/Transforms.h"
+#include <board/Color.h>
+#include <board/Globals.h>
+#include <board/PSFonts.h>
+#include <board/Path.h>
+#include <board/Point.h>
+#include <board/Rect.h>
+#include <board/Style.h>
+#include <board/Tools.h>
+#include <board/Transforms.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846

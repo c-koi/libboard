@@ -27,9 +27,9 @@
 #define BOARD_PATH_BOUNDARIES_H
 
 #include <vector>
-#include "board/Point.h"
-#include "board/Rect.h"
-#include "board/Shape.h"
+#include <board/Point.h>
+#include <board/Rect.h>
+#include <board/Shape.h>
 namespace LibBoard
 {
 

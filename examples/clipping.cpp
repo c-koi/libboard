@@ -13,7 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 int main(int, char *[])

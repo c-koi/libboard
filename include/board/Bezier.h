@@ -26,7 +26,7 @@
 #ifndef BOARD_BEZIER_H
 #define BOARD_BEZIER_H
 
-#include "board/ShapeWithStyle.h"
+#include <board/ShapeWithStyle.h>
 
 // TODO : Add a merge (+=) operation to link to bezier curve
 

@@ -9,10 +9,10 @@
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
 #include <vector>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
-#include "board/PathBoundaries.h"
+#include <board/PathBoundaries.h>
 
 ShapeList strikeOut(const Path & path, double strokeWidth, LineCap lineCap, LineJoin lineJoin, double miterLimit = 4.0)
 {

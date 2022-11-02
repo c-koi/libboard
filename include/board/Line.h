@@ -26,7 +26,7 @@
 #ifndef BOARD_LINE_H
 #define BOARD_LINE_H
 
-#include "board/ShapeWithStyle.h"
+#include <board/ShapeWithStyle.h>
 
 namespace LibBoard
 {

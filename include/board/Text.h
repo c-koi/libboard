@@ -26,7 +26,7 @@
 #ifndef BOARD_TEXT_H
 #define BOARD_TEXT_H
 
-#include "board/ShapeWithStyle.h"
+#include <board/ShapeWithStyle.h>
 
 // TODO : Add a sketchy line text font
 

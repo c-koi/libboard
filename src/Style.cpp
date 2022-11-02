@@ -23,9 +23,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Style.h"
+#include <board/Style.h>
 #include <sstream>
-#include "board/Transforms.h"
+#include <board/Transforms.h>
 
 namespace LibBoard
 {

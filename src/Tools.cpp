@@ -24,16 +24,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "board/Tools.h"
+#include <BoardConfig.h>
+#include <board/Debug.h>
+#include <board/Rect.h>
+#include <board/Tools.h>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <fstream>
-#include "BoardConfig.h"
-#include "board/Debug.h"
-#include "board/Rect.h"
 
 LibBoard::Tools::MessageStream LibBoard::Tools::notice(std::cerr, "Information: ");
 

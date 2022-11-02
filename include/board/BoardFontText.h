@@ -28,7 +28,7 @@
 #define BOARD_BOARD_FONT_TEXT_H
 
 #include <string>
-#include "board/Group.h"
+#include <board/Group.h>
 
 namespace LibBoard
 {
