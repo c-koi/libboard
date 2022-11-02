@@ -39,7 +39,7 @@ namespace LibBoard
  */
 struct Group : public ShapeList {
 
-  Group() : _clippingPath(Path::ClosedPath) {}
+  Group() : _clippingPath(Path::Closed) {}
 
   Group(const Group & other) : ShapeList(other), _clippingPath(other._clippingPath) {}
 

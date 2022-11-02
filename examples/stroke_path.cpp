@@ -60,11 +60,11 @@ int main(int, char *[])
   Point p4(-100, 20);
   Point p5(-50, -100);
 
-  Path pA(Path::ClosedPath);
+  Path pA(Path::Closed);
   pA << p1 << p2 << p3 << p4 << p5;
-  Path pB(Path::ClosedPath);
+  Path pB(Path::Closed);
   pB << Point(0, 0) << Point(180, 0) << Point(180, 300) << Point(0, 300);
-  Path pC(Path::ClosedPath);
+  Path pC(Path::Closed);
   pC << Point(0, 0) << Point(200, 0) << Point(500, 5) << Point(150, 200);
 
   Path losange;
@@ -95,7 +95,7 @@ int main(int, char *[])
   board.append(l, Direction::Bottom, Alignment::Left);
 
   ShapeList list;
-  Polyline poly(Path::ClosedPath, Color::Blue, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin);
+  Polyline poly(Path::Closed, Color::Blue, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin);
   poly << Point(0, 0) << Point(30, -50) << Point(60, 0) << Point(30, 50);
   list.append(poly, Direction::Right, Alignment::Center);
   list.append(poly, Direction::Right, Alignment::Center);

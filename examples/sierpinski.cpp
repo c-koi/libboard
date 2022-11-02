@@ -30,7 +30,7 @@ int main(int, char *[])
   Board board;
   Point a(0, 0);
   Point b(1000, 0);
-  Polyline curve(Path::OpenPath, Color::gray(10), Color::Null, 0.1, SolidStyle, RoundCap, RoundJoin);
+  Polyline curve(Path::Open, Color::gray(10), Color::Null, 0.1, SolidStyle, RoundCap, RoundJoin);
   curve << a;
   const int recursions = 11;
   Sierpinksi(curve, a, b, recursions, 1);

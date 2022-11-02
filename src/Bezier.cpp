@@ -65,12 +65,12 @@ const std::string Bezier::_name("Bezier");
 
 Bezier::Bezier(const std::vector<Point> & points, const std::vector<Point> & controls, Color penColor, Color fillColor, double lineWidth, const LineStyle lineStyle, const LineCap cap,
                const LineJoin join)
-    : ShapeWithStyle(penColor, fillColor, lineWidth, lineStyle, cap, join), _path(points, Path::OpenPath), _controls(controls, Path::OpenPath)
+    : ShapeWithStyle(penColor, fillColor, lineWidth, lineStyle, cap, join), _path(points, Path::Open), _controls(controls, Path::Open)
 {
 }
 
 Bezier::Bezier(const std::vector<Point> & points, const std::vector<Point> & controls, const Style & style) //
-    : ShapeWithStyle(style), _path(points, Path::OpenPath), _controls(controls, Path::OpenPath)
+    : ShapeWithStyle(style), _path(points, Path::Open), _controls(controls, Path::Open)
 {
 }
 
@@ -170,7 +170,7 @@ Bezier & Bezier::scale(double sx, double sy)
     controls.emplace_back(points[i + 1] + itRC[1]);
     itRC += 2;
   }
-  _controls = Path(controls, Path::OpenPath);
+  _controls = Path(controls, Path::Open);
   updateLineWidth(std::max(sx, sy));
   return *this;
 }
@@ -617,7 +617,7 @@ Shape * Bezier::accept(const CompositeShapeTransform & transform) const
 Rect Bezier::boundingBox(LineWidthFlag lineWidthFlag) const
 {
   // Path path = discretizedPath(); // DONE: Make it more "analytical".
-  Path path(pathThroughLocalExtremums(), Path::OpenPath);
+  Path path(pathThroughLocalExtremums(), Path::Open);
   Rect result;
   switch (lineWidthFlag) {
   case UseLineWidth:

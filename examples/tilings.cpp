@@ -28,7 +28,7 @@ int main(int, char *[])
   grid << Line(0, 0, 100, 0, Color::Blue);
   grid << Line(0, 0, 0, -200, Color::Blue);
 
-  Polyline l(Path::OpenPath, Color::Blue, Color::Null);
+  Polyline l(Path::Open, Color::Blue, Color::Null);
   l << Point(-10, 0) << Point(0, 0) << Point(0, 10);
   grid.addTiling(l, Point(0, 0), 10, 20, 0.0, IgnoreLineWidth);
 

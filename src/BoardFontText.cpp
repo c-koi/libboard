@@ -203,7 +203,7 @@ void flush(const std::vector<Point> & points, const std::vector<Point> & control
     return;
   }
   if (controls.empty()) {
-    paths << Polyline(points, Path::OpenPath);
+    paths << Polyline(points, Path::Open);
   } else {
     paths << Bezier(points, controls);
   }

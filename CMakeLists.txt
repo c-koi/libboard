@@ -108,66 +108,68 @@ INCLUDE_DIRECTORIES( include/ include/board )
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib/ )
 
 SET(lib_src
-  include/Board.h
   include/BoardConfig.h
+  include/Board.h
+  include/board/PSFonts.h
   include/board/Arrow.h
-  include/board/Bezier.h
-  include/board/BoardFontText.h
-  include/board/Color.h
-  include/board/Debug.h
-  include/board/Dot.h
+  include/board/PathBoundaries.h
+  include/board/Tools.h
+  include/board/Point.h
+  include/board/RoughVisitor.h
+  include/board/ShapeList.h
+  include/board/Shape.h
+  include/board/TransformMatrix.h
   include/board/Ellipse.h
-  include/board/Exception.h
-  include/board/Group.h
+  include/board/Path.h
+  include/board/Bezier.h
+  include/board/SketchFilter.h
+  include/board/BoardFontText.h
+  include/board/Dot.h
+  include/board/Globals.h
+  include/board/Style.h
   include/board/Image.h
   include/board/Line.h
-  include/board/PSFonts.h
-  include/board/Path.h
-  include/board/PathBoundaries.h
-  include/board/Point.h
-  include/board/Polyline.h
-  include/board/Rect.h
-  include/board/RoughVisitor.h
-  include/board/Shape.h
-  include/board/ShapeList.h
   include/board/ShapeVisitor.h
-  include/board/ShapeWithStyle.h
-  include/board/SketchFilter.h
-  include/board/Style.h
-  include/board/Text.h
-  include/board/Tools.h
-  include/board/TransformMatrix.h
-  include/board/Transforms.h
   include/board/Types.h
+  include/board/Debug.h
+  include/board/Polyline.h
+  include/board/Exception.h
+  include/board/Color.h
+  include/board/Rect.h
+  include/board/ShapeWithStyle.h
+  include/board/Group.h
+  include/board/Text.h
+  include/board/Transforms.h
+  src/Style.cpp
   src/Arrow.cpp
-  src/Bezier.cpp
-  src/Board.cpp
   src/BoardFontText.cpp
-  src/Color.cpp
+  src/Polyline.cpp
+  src/Transforms.cpp
+  src/Shape.cpp
+  src/Point.cpp
+  src/inc/BoardFont.cpp
+  src/SketchFilter.cpp
   src/Dot.cpp
+  src/ShapeVisitor.cpp
+  src/Board.cpp
+  src/Line.cpp
+  src/Rect.cpp
+  src/Color.cpp
+  src/TransformMatrix.cpp
+  src/ShapeWithStyle.cpp
+  src/PathBoundaries.cpp
   src/Ellipse.cpp
   src/Exception.cpp
+  src/PSFonts.cpp
+  src/Tools.cpp
+  src/ShapeList.cpp
+  src/RoughVisitor.cpp
   src/Group.cpp
   src/Image.cpp
-  src/Line.cpp
-  src/PSFonts.cpp
   src/Path.cpp
-  src/PathBoundaries.cpp
-  src/Point.cpp
-  src/Polyline.cpp
-  src/Rect.cpp
-  src/RoughVisitor.cpp
-  src/Shape.cpp
-  src/ShapeList.cpp
-  src/ShapeVisitor.cpp
-  src/ShapeWithStyle.cpp
-  src/SketchFilter.cpp
-  src/Style.cpp
   src/Text.cpp
-  src/Tools.cpp
-  src/TransformMatrix.cpp
-  src/Transforms.cpp
-  )
+  src/Bezier.cpp
+)
 
 ADD_LIBRARY(board STATIC ${lib_src})
 SET_TARGET_PROPERTIES(board PROPERTIES DEBUG_POSTFIX _d)

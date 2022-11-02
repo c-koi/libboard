@@ -157,7 +157,7 @@ Shape * RoughVisitor::map(const Arrow & arrow) const
   }
 
   style.fillColor = fillColor;
-  Polyline p(points, (arrow.type() != Arrow::ExtremityType::Stick) ? Path::ClosedPath : Path::OpenPath, style); // FIXME : Take all types into account
+  Polyline p(points, (arrow.type() != Arrow::ExtremityType::Stick) ? Path::Closed : Path::Open, style); // FIXME : Take all types into account
   RoughVisitor v;
   v.setRepeat(1);
   Shape * roughExtremity = v.map(p);
@@ -262,7 +262,7 @@ Shape * RoughVisitor::map(const Ellipse & ellipse) const
     points.pop_front();
     points.push_back(first);
     points.push_front(last);
-    path = Path(std::vector<Point>(points.begin(), points.end()), Path::OpenPath);
+    path = Path(std::vector<Point>(points.begin(), points.end()), Path::Open);
 
     const double radius = ellipse.perimeter() / 160;
     for (unsigned int i = 0; i < path.size(); ++i) {

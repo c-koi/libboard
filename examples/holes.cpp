@@ -23,9 +23,9 @@ int main(int, char *[])
 
   srand(static_cast<unsigned int>(time(nullptr)));
 
-  Path pA(Path::ClosedPath);
+  Path pA(Path::Closed);
   pA << Point(0, 0) << Point(180, 0) << Point(180, 300) << Point(0, 300);
-  Path pB(Path::ClosedPath);
+  Path pB(Path::Closed);
   pB << Point(0, 0) << Point(200, 0) << Point(500, 5) << Point(150, 200);
 
   Path losange;
@@ -45,7 +45,7 @@ int main(int, char *[])
 
   board.append(board.last<Polyline>(), Direction::Right, Alignment::Center);
 
-  Polyline square(Path::ClosedPath, Color::Black, Color(70, 70, 130), 0.1);
+  Polyline square(Path::Closed, Color::Black, Color(70, 70, 130), 0.1);
   square << Point(-110, 110) << Point(110, 110) << Point(110, -110) << Point(-110, -110);
   int n = 80;
   std::set<std::pair<int, int>> holes;

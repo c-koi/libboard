@@ -8,6 +8,7 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
  */
+#include <Board.h>
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
@@ -16,7 +17,6 @@
 #include <queue>
 #include <string>
 #include <vector>
-#include <Board.h>
 
 using namespace LibBoard;
 
@@ -110,9 +110,9 @@ Group LeaveBox(const Node & node)
 {
   char text[128];
   sprintf(text, "%.3g", node.probability);
-  Group top = boardFontText(Point(), node.symbol, 10, Color::Blue, 2.0);
-  Group bottom = boardFontText(Point(), std::string(text), 10, Color::Blue, 2.0);
-  Group codeword = boardFontText(Point(), std::string(node.codeword), 5, Color::Black, 2.0);
+  Group top = boardFontText(Point(), node.symbol, 10, Color::Blue);
+  Group bottom = boardFontText(Point(), std::string(text), 10, Color::Blue);
+  Group codeword = boardFontText(Point(), std::string(node.codeword), 5, Color::Black);
   top.append(bottom, Direction::Bottom, Alignment::Center, 5);
   top.append(codeword, Direction::Bottom, Alignment::Center, 5);
   return framed(top, Color::Blue, 1.0, 5.0);
@@ -194,18 +194,18 @@ Group merge(Group left, Group right)
           Point(fullWidth * 0.5, margin * 3),                         //
           Point(bboxLeft.width + margin + 0.5 * bboxRight.width, 0.0) //
       },
-      Path::OpenClosed::OpenPath, Color::Green, Color::Null, 2.0, LineStyle::SolidStyle, LineCap::RoundCap);
+      Path::Open, Color::Green, Color::Null, 1.0, LineStyle::SolidStyle, LineCap::RoundCap);
 
   g << left << right << polyline;
-  Group labelLeft = boardFontText(Point(), std::string("0"), 3, Color::Black, 2);
+  Group labelLeft = boardFontText(Point(), std::string("0"), 3, Color::Black);
   Group box;
-  box << rectangle(labelLeft.bbox(LineWidthFlag::UseLineWidth).growed(2), Color::Green, Color::White, 2.0);
+  box << rectangle(labelLeft.bbox(LineWidthFlag::UseLineWidth).growed(2), Color::Green, Color::White);
   box << labelLeft.moveCenter(labelLeft.center());
   box.moveCenter(mix(polyline[0], polyline[1], 0.5));
   g << box;
-  Group labelRight = boardFontText(Point(), std::string("1"), 3, Color::Black, 2);
+  Group labelRight = boardFontText(Point(), std::string("1"), 3, Color::Black);
   box.clear();
-  box << rectangle(labelRight.bbox(LineWidthFlag::UseLineWidth).growed(2), Color::Green, Color::White, 2.0);
+  box << rectangle(labelRight.bbox(LineWidthFlag::UseLineWidth).growed(2), Color::Green, Color::White);
   box << labelRight.moveCenter(labelRight.center());
   box.moveCenter(mix(polyline[1], polyline[2], 0.5));
   g << box;
@@ -228,7 +228,7 @@ Group HuffmanTree(Node * node)
 int main(int, char *[])
 {
   Board board;
-  Style::setDefaultLineWidth(0.8);
+  Style::setDefaultLineWidth(0.5);
 
   std::vector<Node> nodes = {
       {"X", 0.73},  //
@@ -240,10 +240,6 @@ int main(int, char *[])
       {"Z", 0.015}  //
   };
 
-  //  for (const Node & node : nodes) {
-  //    board.append(nodeBox(node), Direction::Right, Alignment::Top, 5);
-  //  }
-
   Node * tree = HuffmanTree(nodes);
 
   Node * c = canonicalized(tree);
@@ -254,5 +250,5 @@ int main(int, char *[])
   delete c;
 
   board.saveSVG("Huffman.svg");
-  // system("svgviewer Huffman.svg");
+  // system("display Huffman.svg");
 }

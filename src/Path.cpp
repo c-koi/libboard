@@ -23,11 +23,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <board/Path.h>
-#include <algorithm>
-#include <iterator>
 #include <BoardConfig.h>
+#include <algorithm>
+#include <board/Path.h>
 #include <board/Transforms.h>
+#include <iterator>
 
 namespace LibBoard
 {
@@ -58,7 +58,7 @@ Path & Path::operator<<(const std::vector<Point> & v)
 
 Path::Path(std::initializer_list<Point> points)
 {
-  _openClosed = OpenPath;
+  _openClosed = Open;
   _points = points;
 }
 

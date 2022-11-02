@@ -26,6 +26,12 @@
 
 #include <Board.h>
 #include <algorithm>
+#include <board/PSFonts.h>
+#include <board/Point.h>
+#include <board/Rect.h>
+#include <board/Shape.h>
+#include <board/ShapeVisitor.h>
+#include <board/Tools.h>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
@@ -34,12 +40,6 @@
 #include <iostream>
 #include <map>
 #include <typeinfo>
-#include <board/PSFonts.h>
-#include <board/Point.h>
-#include <board/Rect.h>
-#include <board/Shape.h>
-#include <board/ShapeVisitor.h>
-#include <board/Tools.h>
 
 #if defined(max)
 #undef max
@@ -366,41 +366,41 @@ void Board::fillEllipse(double x, double y, double xRadius, double yRadius)
 
 void Board::drawPolyline(const std::vector<Point> & points)
 {
-  _shapes.push_back(new Polyline(points, Path::OpenPath, _state.style));
+  _shapes.push_back(new Polyline(points, Path::Open, _state.style));
 }
 
 void Board::drawClosedPolyline(const std::vector<Point> & points)
 {
-  _shapes.push_back(new Polyline(points, Path::ClosedPath, _state.style));
+  _shapes.push_back(new Polyline(points, Path::Closed, _state.style));
 }
 
 void Board::fillPolyline(const std::vector<Point> & points)
 {
-  _shapes.push_back(new Polyline(points, Path::ClosedPath, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle, _state.style.lineCap, _state.style.lineJoin));
+  _shapes.push_back(new Polyline(points, Path::Closed, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle, _state.style.lineCap, _state.style.lineJoin));
 }
 
 void Board::drawTriangle(double x1, double y1, double x2, double y2, double x3, double y3)
 {
   std::vector<Point> points = {Point(x1, y1), Point(x2, y2), Point(x3, y3)};
-  _shapes.push_back(new Polyline(points, Path::ClosedPath, _state.style));
+  _shapes.push_back(new Polyline(points, Path::Closed, _state.style));
 }
 
 void Board::drawTriangle(const Point & p1, const Point & p2, const Point & p3)
 {
   std::vector<Point> points = {p1, p2, p3};
-  _shapes.push_back(new Polyline(points, Path::ClosedPath, _state.style));
+  _shapes.push_back(new Polyline(points, Path::Closed, _state.style));
 }
 
 void Board::fillTriangle(double x1, double y1, double x2, double y2, double x3, double y3)
 {
   std::vector<Point> points = {Point(x1, y1), Point(x2, y2), Point(x3, y3)};
-  _shapes.push_back(new Polyline(points, Path::ClosedPath, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle, _state.style.lineCap, _state.style.lineJoin));
+  _shapes.push_back(new Polyline(points, Path::Closed, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle, _state.style.lineCap, _state.style.lineJoin));
 }
 
 void Board::fillTriangle(const Point & p1, const Point & p2, const Point & p3)
 {
   std::vector<Point> points = {p1, p2, p3};
-  _shapes.push_back(new Polyline(points, Path::ClosedPath, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle, _state.style.lineCap, _state.style.lineJoin));
+  _shapes.push_back(new Polyline(points, Path::Closed, Color::Null, _state.style.penColor, 0.0, _state.style.lineStyle, _state.style.lineCap, _state.style.lineJoin));
 }
 
 void Board::fillGouraudTriangle(const Point & p1, const Color & color1, const Point & p2, const Color & color2, const Point & p3, const Color & color3, unsigned char divisions)
@@ -1011,7 +1011,7 @@ Polyline bezierControls(const Bezier & bezier, const Style & style)
     a = b;
   }
   path.push_back(bezier.path().back());
-  return Polyline(path, Path::OpenPath, style);
+  return Polyline(path, Path::Open, style);
 }
 
 Group array(Point topLeft, const std::vector<Color> & colors, //
@@ -1123,7 +1123,7 @@ Group framed(const Shape & shape, const Color & color, double lineWidth, double 
  *
  * <ul>
  * <li>See the "Examples" tab above or visit
- *     <a href="https://github.com/c-koi/libboard/blob/v0.9.5/EXAMPLES.md">dedicated page on GitHub</a>.
+ *     <a href="https://github.com/c-koi/libboard/blob/v0.9.6/EXAMPLES.md">dedicated page on GitHub</a>.
  * </ul>
  *
  * @section links_sec Links

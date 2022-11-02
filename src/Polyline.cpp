@@ -397,7 +397,7 @@ GouraudTriangle::GouraudTriangle(const Point & p0, const Color & color0, //
                                  const Point & p1, const Color & color1, //
                                  const Point & p2, const Color & color2, //
                                  int subdivisions)
-    : Polyline(std::vector<Point>(), Path::ClosedPath, Color::Null, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin), //
+    : Polyline(std::vector<Point>(), Path::Closed, Color::Null, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin), //
       _color0(color0), _color1(color1), _color2(color2), _subdivisions(subdivisions)
 {
   _path << p0;
@@ -413,7 +413,7 @@ GouraudTriangle::GouraudTriangle(const Point & p0, float brightness0, //
                                  const Point & p1, float brightness1, //
                                  const Point & p2, float brightness2, //
                                  const Color & fillColor, int subdivisions)
-    : Polyline(std::vector<Point>(), Path::ClosedPath, Color::Null, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin), //
+    : Polyline(std::vector<Point>(), Path::Closed, Color::Null, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin), //
       _color0(fillColor), _color1(fillColor), _color2(fillColor), _subdivisions(subdivisions)
 {
   _path << p0;
@@ -570,7 +570,7 @@ Polyline rectangle(double left, double top, double width, double height, //
                    Color penColor, Color fillColor, double lineWidth,    //
                    const LineStyle lineStyle, const LineCap cap, const LineJoin join)
 {
-  Path path(Path::ClosedPath);
+  Path path(Path::Closed);
   width = std::abs(width);
   height = std::abs(height);
   path << Point(left, top);
@@ -602,7 +602,7 @@ Polyline triangle(const double x1, const double y1, const double x2, const doubl
                   Color penColor, Color fillColor, double lineWidth,                                                    //
                   const LineStyle lineStyle, const LineCap cap, const LineJoin join)
 {
-  Path path(Path::ClosedPath);
+  Path path(Path::Closed);
   path << Point(x1, y1) << Point(x2, y2) << Point(x3, y3);
   return Polyline(path, penColor, fillColor, lineWidth, lineStyle, cap, join);
 }
@@ -611,14 +611,14 @@ Polyline triangle(const Point & p1, const Point & p2, const Point & p3, //
                   Color penColor, Color fillColor, double lineWidth,    //
                   const LineStyle lineStyle, const LineCap cap, const LineJoin join)
 {
-  Path path(Path::ClosedPath);
+  Path path(Path::Closed);
   path << p1 << p2 << p3;
   return Polyline(path, penColor, fillColor, lineWidth, lineStyle, cap, join);
 }
 
 Polyline triangle(const Point & p1, const Point & p2, const Point & p3, const Style & style)
 {
-  Path path(Path::ClosedPath);
+  Path path(Path::Closed);
   path << p1 << p2 << p3;
   return Polyline(path, style.penColor, style.fillColor, style.lineWidth, style.lineStyle, style.lineCap, style.lineJoin);
 }

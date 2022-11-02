@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 CXX=${CXX-g++}
 PREFIX=/usr
 STATIC_LIB_ONLY=no
@@ -12,7 +12,8 @@ SANITIZE=""
 #
 # Get version number from CMakeLists.txt
 #
-VERSION=`grep "^Project.LibBoard" CMakeLists.txt | sed -e 's/.*VERSION\s*//' -e 's/\s*)$//'`
+VERSION=$(grep "^#define BOARD_VERSION" include/BoardConfig.h | head -1)
+VERSION=${VERSION/*VERSION }
 
 echo "Configuring build of LibBoard version $VERSION"
 

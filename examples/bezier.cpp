@@ -37,12 +37,12 @@ int main(int, char *[])
   lb << rectangle(lb.boundingBox(UseLineWidth));
 
   auto ex = b3.pathThroughLocalExtremums();
-  std::cout << Path(ex, Path::OpenPath) << std::endl;
+  std::cout << Path(ex, Path::Open) << std::endl;
   for (const Point & p : ex) {
     lb << cross(p);
   }
   lb << bezierControls(b3);
-  lb << Polyline(Path(ex, Path::OpenPath), Color::Magenta);
+  lb << Polyline(Path(ex, Path::Open), Color::Magenta);
 
   board.append(lb);
 
@@ -64,12 +64,12 @@ int main(int, char *[])
   Bezier b2(p.points(), c, Color::Green);
   l << b2;
   ex = b2.pathThroughLocalExtremums();
-  std::cout << Path(ex, Path::OpenPath);
+  std::cout << Path(ex, Path::Open);
   for (const Point & p : ex) {
     l << cross(p);
   }
   l << bezierControls(b2);
-  l << Polyline(ex, Path::OpenPath, Color::Magenta);
+  l << Polyline(ex, Path::Open, Color::Magenta);
   board.append(l);
 
   Point y0(0, 0);

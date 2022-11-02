@@ -38,7 +38,7 @@ int main(int, char *[])
   Point c(100, 0);
   Point b = c.rotated(60 * Board::Degree, a);
 
-  Polyline curve(Path::ClosedPath, Color::Null, Color::Green, 0.0, SolidStyle, RoundCap, RoundJoin);
+  Polyline curve(Path::Closed, Color::Null, Color::Green, 0.0, SolidStyle, RoundCap, RoundJoin);
 
   const int recursions = 5;
   Koch(curve, a, b, recursions);

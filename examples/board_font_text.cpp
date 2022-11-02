@@ -46,5 +46,5 @@ int main(int, char *[])
   board << text();
 
   board.saveSVG("board_font_text.svg", PageSize::BoundingBox);
-  system("svgviewer board_font_text.svg");
+  // system("svgviewer board_font_text.svg");
 }

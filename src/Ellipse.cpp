@@ -197,7 +197,7 @@ double Ellipse::perimeter() const
 
 Path Ellipse::sampledPath(int n, SamplingStart start) const
 {
-  Path path(Path::ClosedPath);
+  Path path(Path::Closed);
   double theta = 0.0;
   double dTheta = 0.0001;
   double numIntegrals = std::round(2.0 * M_PI / dTheta);

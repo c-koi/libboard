@@ -100,7 +100,7 @@ int main(int, char *[])
     }
   } while (segment.first != stop);
 
-  board << Polyline(polyline, Path::ClosedPath, Color::Cyan, Color("#a0a0c0"), 0.5);
+  board << Polyline(polyline, Path::Closed, Color::Cyan, Color("#a0a0c0"), 0.5);
 
   for (Point p : points) {
     board << Dot(p.x, p.y, Color::Blue, 1.0);

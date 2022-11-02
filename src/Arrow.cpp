@@ -100,7 +100,7 @@ Arrow * Arrow::clone() const
 Path Arrow::extremity() const
 {
   const double angle = 0.3;
-  Path result(Path::ClosedPath);
+  Path result(Path::Closed);
   Point d = (_a - _b).normalised();
   d *= 10 * lineWidth();
   const Point nd1 = d.rotated(angle);

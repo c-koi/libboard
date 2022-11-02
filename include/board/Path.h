@@ -26,12 +26,12 @@
 #ifndef BOARD_PATH_H
 #define BOARD_PATH_H
 
-#include <initializer_list>
-#include <iostream>
-#include <vector>
 #include <board/Point.h>
 #include <board/Rect.h>
 #include <board/Transforms.h>
+#include <initializer_list>
+#include <iostream>
+#include <vector>
 
 // TODO : Add a resample (uniformly wrt to length) method
 
@@ -51,11 +51,11 @@ struct Path {
    */
   enum OpenClosed
   {
-    OpenPath,  //!< The path is open
-    ClosedPath //!< The is closed
+    Open,  //!< The path is open
+    Closed //!< The is closed
   };
 
-  Path() : _openClosed(OpenPath) {}
+  Path() : _openClosed(Open) {}
 
   /**
    * @brief Construct a path from a vector of points
@@ -432,12 +432,12 @@ std::vector<Point>::const_iterator Path::cend() const
 
 bool Path::isClosed() const
 {
-  return _openClosed == ClosedPath;
+  return _openClosed == Closed;
 }
 
 bool Path::isOpen() const
 {
-  return _openClosed == OpenPath;
+  return _openClosed == Open;
 }
 
 bool Path::empty() const
@@ -452,7 +452,7 @@ std::size_t Path::size() const
 
 void Path::close()
 {
-  _openClosed = ClosedPath;
+  _openClosed = Closed;
 }
 
 Path::OpenClosed Path::openClosed() const
@@ -462,7 +462,7 @@ Path::OpenClosed Path::openClosed() const
 
 void Path::open()
 {
-  _openClosed = OpenPath;
+  _openClosed = Open;
 }
 
 const Point & Path::front() const
