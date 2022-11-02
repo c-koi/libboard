@@ -904,7 +904,7 @@ Rect Board::pageRect(PageSize size, Unit unit)
   return Rect{0, 0, 0, 0};
 }
 
-double Board::toMillimeter(double x, Board::Unit unit)
+double Board::toMillimeter(double x, Unit unit)
 {
   // enum class Unit { Point, Inch, Centimeter, Millimeter };
   switch (unit) {

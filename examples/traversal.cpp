@@ -41,11 +41,11 @@ ShapeList generateGroup(int n)
   ShapeList bottomRight = generateGroup(count[3]);
   ShapeList top;
   top << topLeft;
-  top.append(topRight, ShapeList::Right, ShapeList::AlignCenter, 0.0, UseLineWidth);
+  top.append(topRight, Direction::Right, Alignment::Center, 0.0, UseLineWidth);
   ShapeList bottom;
   bottom << bottomLeft;
-  bottom.append(bottomRight, ShapeList::Right, ShapeList::AlignCenter, 0.0, UseLineWidth);
-  top.append(bottom, ShapeList::Bottom, ShapeList::AlignCenter, 0.0, UseLineWidth);
+  bottom.append(bottomRight, Direction::Right, Alignment::Center, 0.0, UseLineWidth);
+  top.append(bottom, Direction::Bottom, Alignment::Center, 0.0, UseLineWidth);
   if (n >= 2) {
     ShapeList list;
     Group group;
@@ -71,7 +71,7 @@ template <typename T> ShapeList findAll(ShapeList & list)
   try {
     ShapeList::size_type n = 0;
     while (true) {
-      result.append(list.topLevelFindLast<T>(n), Board::Right, Board::AlignCenter);
+      result.append(list.topLevelFindLast<T>(n), Direction::Right, Alignment::Center);
       ++n;
     }
   } catch (Exception &) {
@@ -98,13 +98,13 @@ int main(int, char *[])
     int r = rand() % 3;
     switch (r) {
     case 0:
-      board.append(LibBoard::circle(0, 0, 5.0), Board::Right, Board::AlignCenter);
+      board.append(LibBoard::circle(0, 0, 5.0), Direction::Right, Alignment::Center);
       break;
     case 1:
-      board.append(LibBoard::rectangle(0, 0, 10, 10), Board::Right, Board::AlignCenter);
+      board.append(LibBoard::rectangle(0, 0, 10, 10), Direction::Right, Alignment::Center);
       break;
     case 2:
-      board.append(cross, Board::Right, Board::AlignCenter);
+      board.append(cross, Direction::Right, Alignment::Center);
       break;
     }
   }
@@ -114,16 +114,16 @@ int main(int, char *[])
   ShapeList rectangles = findAll<Polyline>(board);
   ShapeList crosses = findAll<Group>(board);
 
-  board.append(Text(0, 0, "Everything", LibBoard::Fonts::Helvetica, 7), Board::Right, Board::AlignCenter, 10.0);
+  board.append(Text(0, 0, "Everything", LibBoard::Fonts::Helvetica, 7), Direction::Right, Alignment::Center, 10.0);
 
-  board.append(circles, Board::Bottom, Board::AlignLeft);
-  board.append(rectangles, Board::Bottom, Board::AlignLeft);
-  board.append(crosses, Board::Bottom, Board::AlignLeft);
+  board.append(circles, Direction::Bottom, Alignment::Left);
+  board.append(rectangles, Direction::Bottom, Alignment::Left);
+  board.append(crosses, Direction::Bottom, Alignment::Left);
 
   for (Shape & s : circles) {
     s.scale(1, 2);
   }
-  board.append(circles, Board::Bottom, Board::AlignRight);
+  board.append(circles, Direction::Bottom, Alignment::Right);
 
   std::cout << "List of shapes at to level\n";
   std::cout << "==========================\n";
@@ -152,7 +152,7 @@ int main(int, char *[])
   }
   std::cout << "\n\n";
 
-  board.append(generateGroup(50), ShapeList::Bottom, ShapeList::AlignCenter);
+  board.append(generateGroup(50), Direction::Bottom, Alignment::Center);
 
   std::cout << "Size is " << board.size() << std::endl;
   std::cout << "Board deep size is " << board.deepSize() << std::endl;

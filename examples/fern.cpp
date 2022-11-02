@@ -50,6 +50,6 @@ int main(int, char *[])
   board.setPenColor(Color::Null);
   board.setFillColor(Color::Red);
   drawFern(board, 1 << 17);
-  board.saveEPS("fern.eps", Board::PageSize::A4);
-  board.saveSVG("fern.svg", Board::PageSize::A4);
+  board.saveEPS("fern.eps", PageSize::A4);
+  board.saveSVG("fern.svg", PageSize::A4);
 }

@@ -61,41 +61,15 @@ namespace LibBoard
 struct Board : public ShapeList {
 
 public:
-  /**
-   * @brief Page sizes
-   */
-  enum class PageSize
-  {
-    BoundingBox = 0, //!< No page size. The bounding box of the drawing will be used.
-    A0,
-    A1,
-    A2,
-    A3,
-    A4,
-    A5,
-    A6,
-    A7,
-    A8,
-    A9,
-    A10,
-    Letter,
-    Legal,
-    Executive
-  };
-
-  enum class Unit
-  {
-    Point,
-    Inch,
-    Centimeter,
-    Millimeter
-  };
   static const double Degree;
 
+  /**
+   * @brief The AspectRatio enum
+   */
   enum class AspectRatio
   {
-    Ignore,
-    Preserve
+    Ignore,  //!< Ignore aspect ratio, e.g. for resize operations
+    Preserve //!< Preserve aspect ratio, e.g. for resize operations
   };
 
   /**
@@ -154,14 +128,42 @@ public:
    */
   inline void clear(unsigned char red, unsigned char green, unsigned char blue);
 
+  /**
+   * @brief Rotate the board by an angle around a point
+   * @param angle Rotation angle (in radians)
+   * @param center Rotation center
+   * @return A reference to the board itself
+   */
   Board & rotate(double angle, const Point & center) override;
 
+  /**
+   * @brief Rotate the board by an angle around the center of its bounding box
+   * @param angle Rotation angle (in radians)
+   * @return A reference to the board itself
+   */
   Board & rotate(double angle) override;
 
+  /**
+   * @brief Translate the board by a given vector
+   * @param dx Shift in the x direction
+   * @param dy Shift in the y direction
+   * @return A reference to the board itself
+   */
   Board & translate(double dx, double dy) override;
 
+  /**
+   * @brief Scale the board in the x and y direction
+   * @param sx Scale factor in the x direction
+   * @param sy Scale factor in the y direction
+   * @return A reference to the board itself
+   */
   Board & scale(double sx, double sy) override;
 
+  /**
+   * @brief Scale the board
+   * @param s Scale factor
+   * @return A reference to the board itself
+   */
   Board & scale(double s) override;
 
   /**
@@ -237,7 +239,7 @@ public:
    * @param y2 Second coordinate of the second extremity.
    * @param type The arrow extremity type.
    */
-  void drawArrow(double x1, double y1, double x2, double y2, Arrow::ExtremityType type = Arrow::Plain);
+  void drawArrow(double x1, double y1, double x2, double y2, Arrow::ExtremityType type = Arrow::ExtremityType::Plain);
 
   /**
    * Draws a line from p to q with an arrow at (x2,y2).
@@ -246,7 +248,7 @@ public:
    * @param q Second extremity.
    * @param type The arrow extremity type.
    */
-  void drawArrow(Point p, Point q, Arrow::ExtremityType type = Arrow::Plain);
+  void drawArrow(Point p, Point q, Arrow::ExtremityType type = Arrow::ExtremityType::Plain);
 
   /**
    * Draws a triangle.
@@ -685,7 +687,7 @@ public:
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void save(const char * filename, PageSize size = Board::PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
+  void save(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
    * Save the drawing in an EPS, XFIG of SVG file depending
@@ -710,10 +712,10 @@ public:
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    * @param title Document title (Postscript comment).
    */
-  void saveEPS(std::ostream & out, PageSize size = Board::PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
+  void saveEPS(std::ostream & out, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
 
   /**
-   * Saves the drawing in an EPS file. When a size is given (not PageSize::BoundingBox), the drawing is
+   * Save the drawing in an EPS file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The EPS file name.
@@ -722,10 +724,10 @@ public:
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    * @param title Document title (Postscript comment).
    */
-  void saveEPS(const char * filename, PageSize size = Board::PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
+  void saveEPS(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
 
   /**
-   * Writes the drawing in a stream as an EPS file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   * Write the drawing in a stream as an EPS file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
    * @param pageWidth Width of the page.
@@ -737,7 +739,7 @@ public:
   void saveEPS(std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
 
   /**
-   * Saves the drawing in an EPS file. The drawing is scaled (up or down) so
+   * Save the drawing in an EPS file. The drawing is scaled (up or down) so
    * that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The EPS file name.
@@ -750,7 +752,7 @@ public:
   void saveEPS(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
 
   /**
-   * Saves the drawing in an XFig file. When a size is given (not PageSize::BoundingBox), the drawing is
+   * Save the drawing in an XFig file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The name of the FIG file.
@@ -758,7 +760,7 @@ public:
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveFIG(const char * filename, PageSize size = Board::PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
+  void saveFIG(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
    * Saves the drawing in a stream as an XFig file. When a size is given (not PageSize::BoundingBox), the drawing is
@@ -769,7 +771,7 @@ public:
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveFIG(std::ostream & out, PageSize size = Board::PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
+  void saveFIG(std::ostream & out, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
    * Saves the drawing in an XFig file. When a size is given (not PageSize::BoundingBox), the drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
@@ -783,7 +785,7 @@ public:
   void saveFIG(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Saves the drawing in a stream as an XFig file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   * Save the drawing in a stream as an XFig file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
    * @param pageWidth Width of the page.
@@ -802,7 +804,7 @@ public:
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveSVG(const char * filename, PageSize size = Board::PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
+  void saveSVG(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
    * Saves the drawing in a stream as an SVG file. When a size is given (not PageSize::BoundingBox), the drawing is
@@ -813,10 +815,10 @@ public:
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveSVG(std::ostream & out, PageSize size = Board::PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
+  void saveSVG(std::ostream & out, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Saves the drawing in an SVG file. When a size is given (not PageSize::BoundingBox), the drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   * Save the drawing in an SVG file. When a size is given (not PageSize::BoundingBox), the drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The SVG file name.
    * @param pageWidth Width of the page.
@@ -827,7 +829,7 @@ public:
   void saveSVG(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Saves the drawing in a stream as an SVG file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   * Save the drawing in a stream as an SVG file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
    * @param pageWidth Width of the page.
@@ -845,7 +847,7 @@ public:
    * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
-  void saveTikZ(const char * filename, PageSize size = Board::PageSize::BoundingBox, double margin = 0.0) const;
+  void saveTikZ(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0) const;
 
   /**
    * Save the drawing in a stream as TikZ file. When a size is given (not PageSize::BoundingBox), the drawing is
@@ -855,7 +857,7 @@ public:
    * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
-  void saveTikZ(std::ostream & out, PageSize size = Board::PageSize::BoundingBox, double margin = 0.0) const;
+  void saveTikZ(std::ostream & out, PageSize size = PageSize::BoundingBox, double margin = 0.0) const;
 
   /**
    * Save the drawing in an TikZ file. When a size is given (not PageSize::BoundingBox), the drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.

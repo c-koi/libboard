@@ -113,8 +113,8 @@ Group LeaveBox(const Node & node)
   Group top = boardFontText(Point(), node.symbol, 10, Color::Blue, 2.0);
   Group bottom = boardFontText(Point(), std::string(text), 10, Color::Blue, 2.0);
   Group codeword = boardFontText(Point(), std::string(node.codeword), 5, Color::Black, 2.0);
-  top.append(bottom, ShapeList::Bottom, ShapeList::AlignCenter, 5);
-  top.append(codeword, ShapeList::Bottom, ShapeList::AlignCenter, 5);
+  top.append(bottom, Direction::Bottom, Alignment::Center, 5);
+  top.append(codeword, Direction::Bottom, Alignment::Center, 5);
   return framed(top, Color::Blue, 1.0, 5.0);
 }
 
@@ -241,7 +241,7 @@ int main(int, char *[])
   };
 
   //  for (const Node & node : nodes) {
-  //    board.append(nodeBox(node), ShapeList::Right, ShapeList::AlignTop, 5);
+  //    board.append(nodeBox(node), Direction::Right, Alignment::Top, 5);
   //  }
 
   Node * tree = HuffmanTree(nodes);

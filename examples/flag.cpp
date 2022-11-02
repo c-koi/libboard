@@ -30,10 +30,10 @@ int main(int, char *[])
   }
 
   board.setClippingRectangle(-100, 100, 350, 250);
-  board.saveEPS("flag.eps", 210, 297, 0.0, Board::Unit::Millimeter);
+  board.saveEPS("flag.eps", 210, 297, 0.0, Unit::Millimeter);
   board.saveTikZ("flag.tikz");
 
   board.scaleToWidth(20, UseLineWidth);
-  board.saveSVG("flag.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
-  board.saveEPS("flag.eps", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("flag.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
+  board.saveEPS("flag.eps", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

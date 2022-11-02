@@ -27,6 +27,7 @@
 #define BOARD_SHAPE_VISITOR_H
 
 #include <board/Color.h>
+#include <board/Globals.h>
 #include <board/Style.h>
 #include <cstddef> // For std::size_t
 #include <functional>
@@ -245,11 +246,6 @@ private:
  * @brief Leaf visitor may be used to apply a function on each Shape with style, in back-to-front order.
  */
 struct ShapeWithStyleVisitor : public ShapeVisitor {
-  enum ColorSpecification
-  {
-    PenColor,
-    FillColor
-  };
   typedef std::function<void(ShapeWithStyle &)> Function;
   ShapeWithStyleVisitor(Function f);
   ShapeWithStyleVisitor(Style);

@@ -48,22 +48,6 @@ struct ShapeList : public Shape {
 
   typedef std::vector<Shape *>::size_type size_type;
 
-  enum Direction
-  {
-    Top,
-    Right,
-    Bottom,
-    Left
-  };
-  enum Alignment
-  {
-    AlignTop,
-    AlignBottom,
-    AlignCenter,
-    AlignLeft,
-    AlignRight
-  };
-
   inline ShapeList();
 
   ShapeList(const ShapeList & other);
@@ -228,7 +212,7 @@ struct ShapeList : public Shape {
    * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    * @return The shapelist itself, after the shape has been appended.
    */
-  ShapeList & append(const Shape & shape, Direction direction = ShapeList::Right, Alignment alignment = ShapeList::AlignCenter, double margin = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
+  ShapeList & append(const Shape & shape, Direction direction = Direction::Right, Alignment alignment = Alignment::Center, double margin = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
 
   /**
    * Insert a tiling based on a shape by repeating this shape along its
@@ -258,10 +242,9 @@ struct ShapeList : public Shape {
 
   /**
    * Duplicates the last inserted shape.
-   *
    * @param copies The number of copies.
    */
-  ShapeList & dup(std::size_t copies = 1);
+  ShapeList & duplicateLast(std::size_t copies = 1);
 
   /**
    * Return the last inserted shape with its actual type.

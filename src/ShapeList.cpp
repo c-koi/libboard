@@ -178,7 +178,7 @@ void ShapeList::addShape(const Shape & shape, double scaleFactor)
   }
 }
 
-ShapeList & ShapeList::dup(std::size_t copies)
+ShapeList & ShapeList::duplicateLast(std::size_t copies)
 {
   if (!_shapes.size()) {
     Tools::warning << "dup() called with an empty list of shapes.\n";
@@ -243,7 +243,7 @@ void ShapeList::repeat(const Shape & shape, unsigned int times, double dx, doubl
   delete s;
 }
 
-ShapeList & ShapeList::append(const Shape & shape, ShapeList::Direction direction, ShapeList::Alignment alignment, double margin, LineWidthFlag lineWidthFlag)
+ShapeList & ShapeList::append(const Shape & shape, Direction direction, Alignment alignment, double margin, LineWidthFlag lineWidthFlag)
 {
   if (_shapes.empty()) {
     (*this) << shape;
@@ -257,37 +257,37 @@ ShapeList & ShapeList::append(const Shape & shape, ShapeList::Direction directio
   double x = c.x;
   double y = c.y;
   Shape * s = shape.clone();
-  if (direction == Right || direction == Left) {
-    x = (direction == Right) ? (box.right() + shapeHalfWidth + margin) : (box.left - (margin + shapeHalfWidth));
+  if (direction == Direction::Right || direction == Direction::Left) {
+    x = (direction == Direction::Right) ? (box.right() + shapeHalfWidth + margin) : (box.left - (margin + shapeHalfWidth));
     switch (alignment) {
-    case AlignCenter:
+    case Alignment::Center:
       y = c.y;
       break;
-    case AlignTop:
+    case Alignment::Top:
       y = box.top - shapeBox.height / 2.0;
       break;
-    case AlignBottom:
+    case Alignment::Bottom:
       y = (box.top - box.height) + shapeBox.height / 2.0;
       break;
-    case AlignLeft:
-    case AlignRight:
+    case Alignment::Left:
+    case Alignment::Right:
       Tools::error << "ShapeList::append(): bad alignement\n";
       break;
     }
   } else {
-    y = (direction == Top) ? (box.top + shapeHalfHeight + margin) : (box.bottom() - (shapeHalfHeight + margin));
+    y = (direction == Direction::Top) ? (box.top + shapeHalfHeight + margin) : (box.bottom() - (shapeHalfHeight + margin));
     switch (alignment) {
-    case AlignCenter:
+    case Alignment::Center:
       x = c.x;
       break;
-    case AlignLeft:
+    case Alignment::Left:
       x = box.left + shapeBox.width / 2.0;
       break;
-    case AlignRight:
+    case Alignment::Right:
       x = (box.left + box.width) - shapeBox.width / 2.0;
       break;
-    case AlignTop:
-    case AlignBottom:
+    case Alignment::Top:
+    case Alignment::Bottom:
       Tools::error << "ShapeList::append(): bad alignement\n";
       break;
     }

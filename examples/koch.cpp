@@ -49,8 +49,8 @@ int main(int, char *[])
   Tools::notice << curve.vertexCount() << " points in the curve after " << recursions << " recursions.\n";
 
   board.saveFIG("koch.fig", 200, 200);
-  board.saveEPS("koch.eps", Board::PageSize::A4);
+  board.saveEPS("koch.eps", PageSize::A4);
 
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("koch.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("koch.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

@@ -57,9 +57,7 @@ enum CaseSensitivity
 class MessageStream {
 public:
   inline MessageStream(std::ostream & out, const char * prefix);
-
   template <typename T> inline MessageStream operator<<(const T & v);
-
   inline MessageStream operator<<(std::ostream & (*fun)(std::ostream &));
 
 private:
@@ -73,7 +71,8 @@ extern MessageStream notice;
 
 MessageStream::MessageStream(std::ostream & out, const char * prefix) : _out(out), _prefix(prefix) {}
 
-template <typename T> MessageStream MessageStream::operator<<(const T & v)
+template <typename T> //
+MessageStream MessageStream::operator<<(const T & v)
 {
   if (_prefix) {
     _out << _prefix << v;

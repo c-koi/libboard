@@ -510,9 +510,9 @@ ShapeWithStyleVisitor::ShapeWithStyleVisitor(Style style)
   _f = [style](ShapeWithStyle & shape) { shape.setStyle(style); };
 }
 
-ShapeWithStyleVisitor::ShapeWithStyleVisitor(Color color, ShapeWithStyleVisitor::ColorSpecification spec)
+ShapeWithStyleVisitor::ShapeWithStyleVisitor(Color color, ColorSpecification spec)
 {
-  if (spec == PenColor) {
+  if (spec == ColorSpecification::PenColor) {
     _f = [color](ShapeWithStyle & shape) { shape.setPenColor(color); };
   } else {
     _f = [color](ShapeWithStyle & shape) { shape.setFillColor(color); };

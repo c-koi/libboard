@@ -43,7 +43,7 @@ int main(int, char *[])
   board.saveEPS("example1.eps");
   board.saveFIG("example1.fig");
   board.saveSVG("example1.svg");
-  board.saveEPS("example1_Letter.eps", Board::PageSize::Letter);
-  board.saveFIG("example1_Letter.fig", Board::PageSize::Letter);
-  board.saveSVG("example1_Letter.svg", Board::PageSize::Letter);
+  board.saveEPS("example1_Letter.eps", PageSize::Letter);
+  board.saveFIG("example1_Letter.fig", PageSize::Letter);
+  board.saveSVG("example1_Letter.svg", PageSize::Letter);
 }

@@ -41,9 +41,9 @@ int main(int, char *[])
   board << Text(-45, -20, "LibBoard", Fonts::Helvetica, "'Bookman Old Style',Verdana", textHeight * 1.2, Color::Green);
 
   Board::enableLineWidthScaling();
-  board.saveEPS("logo_A4.eps", Board::PageSize::A4);
-  board.saveFIG("logo_A4.fig", Board::PageSize::A4);
+  board.saveEPS("logo_A4.eps", PageSize::A4);
+  board.saveFIG("logo_A4.fig", PageSize::A4);
 
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("logo.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("logo.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

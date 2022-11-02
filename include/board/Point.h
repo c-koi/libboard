@@ -245,50 +245,120 @@ struct Point {
  */
 Point mix(const Point & a, const Point & b, double t);
 
+/**
+ * @brief Check if two vectors are orthogonals
+ * @param a A vector
+ * @param b A vector
+ * @return true if the two vectors are orthogonal, otherwise false
+ */
 bool orthogonal(const Point & a, const Point & b);
 
-Point & Point::operator=(const Point & other)
-{
-  x = other.x;
-  y = other.y;
-  return *this;
-}
-
-inline void Point::get(double & x, double & y) const
-{
-  x = Point::x;
-  y = Point::y;
-}
-
+/**
+ * @brief Compute the sum of two vectors
+ * @param a A vector
+ * @param b A vector
+ * @return The sum of a and b
+ */
 inline Point operator+(const Point & a, const Point & b)
 {
   return Point(a.x + b.x, a.y + b.y);
 }
 
+/**
+ * @brief Compute the difference between two vectors
+ * @param a A vector
+ * @param b A vector
+ * @return The vector a-b
+ */
 inline Point operator-(const Point & a, const Point & b)
 {
   return Point(a.x - b.x, a.y - b.y);
 }
 
+/**
+ * @brief Compute the scalar product of two vectors
+ * @param a A vector
+ * @param b A vector
+ * @return The scalar product of a and b
+ */
 inline double operator*(const Point & a, const Point & b)
 {
   return a.x * b.x + a.y * b.y;
 }
 
+/**
+ * @brief Compute the product of a vector and a scalar
+ * @param p A vector
+ * @param s A scalar
+ * @return The product of p and s
+ */
 inline Point operator*(const Point & p, double s)
 {
   return Point(p.x * s, p.y * s);
 }
 
+/**
+ * @brief Compute the product of a vector and a scalar
+ * @param s A scalar
+ * @param p A vector
+ * @return The product of s and p
+ */
 inline Point operator*(double s, const Point & p)
 {
   return Point(s * p.x, s * p.y);
 }
 
+/**
+ * @brief Compute the division of a vector by a scalar
+ * @param p A vector
+ * @param s A scalar
+ * @return The division of p by s
+ */
 inline Point operator/(const Point & p, double s)
 {
   return Point(p.x / s, p.y / s);
 }
+
+/**
+ * @brief Check if two points are equal
+ * @param a A point
+ * @param b A point
+ * @return true if the two points are equal, otherwise false
+ */
+inline bool operator==(const Point & a, const Point & b)
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
+  return (a.x == b.x) && (a.y == b.y);
+#pragma clang diagnostic pop
+}
+
+/**
+ * @brief Check if two points are different
+ * @param a A point
+ * @param b A point
+ * @return true if the two points are different, otherwise false
+ */
+inline bool operator!=(const Point & a, const Point & b)
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
+  return (a.x != b.x) || (a.y != b.y);
+#pragma clang diagnostic push
+}
+
+/**
+ * @brief Check if two points are almost equal according to Tools::almostEqual
+ * @param a A point
+ * @param b A point
+ * @return true if a and b are almost equal
+ */
+inline bool almostEqual(const Point & a, const Point & b)
+{
+  return Tools::almostEqual((a - b).norm(), 0.0);
+}
+
+// Inline methods
 
 inline Point & Point::operator+=(const Point & other)
 {
@@ -318,25 +388,17 @@ inline Point & Point::operator/=(double s)
   return *this;
 }
 
-inline bool operator==(const Point & a, const Point & b)
+Point & Point::operator=(const Point & other)
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wfloat-equal"
-  return (a.x == b.x) && (a.y == b.y);
-#pragma clang diagnostic pop
+  x = other.x;
+  y = other.y;
+  return *this;
 }
 
-inline bool operator!=(const Point & a, const Point & b)
+void Point::get(double & x, double & y) const
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wfloat-equal"
-  return (a.x != b.x) || (a.y != b.y);
-#pragma clang diagnostic push
-}
-
-inline bool almostEqual(const Point & a, const Point & b)
-{
-  return Tools::almostEqual((a - b).norm(), 0.0);
+  x = Point::x;
+  y = Point::y;
 }
 
 Point & Point::rotate(double angle)

@@ -157,7 +157,7 @@ Shape * RoughVisitor::map(const Arrow & arrow) const
   }
 
   style.fillColor = fillColor;
-  Polyline p(points, (arrow.type() != Arrow::Stick) ? Path::ClosedPath : Path::OpenPath, style); // FIXME : Take all types into account
+  Polyline p(points, (arrow.type() != Arrow::ExtremityType::Stick) ? Path::ClosedPath : Path::OpenPath, style); // FIXME : Take all types into account
   RoughVisitor v;
   v.setRepeat(1);
   Shape * roughExtremity = v.map(p);

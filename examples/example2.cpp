@@ -54,8 +54,8 @@ int main(int, char *[])
   board << board.last<Text>().rotated(45 * Board::Degree, p);
 
   board.disableLineWidthScaling();
-  board.saveEPS("example2_A4.eps", Board::PageSize::A4);
-  board.saveFIG("example2_A4.fig", Board::PageSize::A4);
-  board.saveSVG("example2_A4.svg", Board::PageSize::A4);
+  board.saveEPS("example2_A4.eps", PageSize::A4);
+  board.saveFIG("example2_A4.fig", PageSize::A4);
+  board.saveSVG("example2_A4.svg", PageSize::A4);
   board.saveSVG("example2.svg");
 }

@@ -317,10 +317,11 @@ void parseSVGPath(const std::string & text, ShapeList & paths)
 namespace LibBoard
 {
 
-Group boardFontText(Point p, const std::string & text, double size, Color penColor, double lineWidth)
+Group boardFontText(Point baselineStart, const std::string & text, double size, Color penColor, double lineWidth)
 {
   Group group;
-  double x = p.x;
+  double x = baselineStart.x;
+  double y = baselineStart.y;
   for (const char c : text) {
     LSHOW(c);
     if (c == ' ') {
@@ -330,7 +331,7 @@ Group boardFontText(Point p, const std::string & text, double size, Color penCol
     const ShapeList & g = fontGlyph(c);
     ShapeList list = g.scaled(size);
     Rect box = list.boundingBox(IgnoreLineWidth);
-    list.translate(x - box.left, glyph_vshift(c) * size - box.bottom());
+    list.translate(x - box.left, y + glyph_vshift(c) * size - box.bottom());
     group << list;
     x += 1.1 * glyph_width(c) * size + lineWidth;
   }

@@ -74,12 +74,12 @@ int main(int, char *[])
   board.drawArrow(rect2.bottomRight(), rect2.bottomLeft());
   board.drawArrow(rect2.bottomLeft(), rect2.topLeft());
 
-  // board.saveEPS( "arrows_A4.eps", Board::PageSize::A4, 2.0, Board::Unit::Centimeter );
-  // board.saveSVG( "arrows_A4.svg", Board::PageSize::A4 );
+  // board.saveEPS( "arrows_A4.eps", PageSize::A4, 2.0, Unit::Centimeter );
+  // board.saveSVG( "arrows_A4.svg", PageSize::A4 );
   // board.saveFIG( "arrows.fig" );
 
   board.scaleToWidth(20, UseLineWidth);
-  board.saveSVG("arrows.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
-  board.saveEPS("arrows.eps", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
-  board.saveFIG("arrows.fig", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("arrows.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
+  board.saveEPS("arrows.eps", PageSize::BoundingBox, 0.0, Unit::Centimeter);
+  board.saveFIG("arrows.fig", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

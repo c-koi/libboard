@@ -43,21 +43,21 @@ struct Rect {
   double height; /**< Height of the rectangle. */
 
   /**
-   * Rect constructor.
+   * Rect constructor
    *
-   * @param left
-   * @param top
-   * @param width
-   * @param height
+   * @param left x coordinate of the left border of the rectangle
+   * @param top y coordinate of the top border of the rectangle
+   * @param width width of the rectangle
+   * @param height height of the rectangle
    */
   Rect(double left = 0.0, double top = 0.0, double width = 0.0, double height = 0.0) : left(left), top(top), width(width), height(height) {}
 
   /**
    * Rect constructor.
    *
-   * @param topLeft The top-left point of the rectangle.
-   * @param width
-   * @param height
+   * @param topLeft The top-left point of the rectangle
+   * @param width Width of the rectangle
+   * @param height Height of the rectangle
    */
   Rect(Point topLeft, double width = 0.0, double height = 0.0) : left(topLeft.x), top(topLeft.y), width(width), height(height) {}
 
@@ -69,26 +69,137 @@ struct Rect {
    */
   Rect(Point topLeft, Point bottomRight) : left(topLeft.x), top(topLeft.y), width(bottomRight.x - topLeft.x), height(topLeft.y - bottomRight.y) {}
 
+  /**
+   * @brief topLeft Top-left point of the rectangle
+   * @return The point at the top-left corner of the rectangle
+   */
   Point topLeft() const { return Point(left, top); }
+
+  /**
+   * @brief topRight Top-right point of the rectangle
+   * @return The point at the top-right corner of the rectangle
+   */
   Point topRight() const { return Point(left + width, top); }
+
+  /**
+   * @brief bottomLeft Bottom-left point of the rectangle
+   * @return The point at the bottom-left corner of the rectangle
+   */
   Point bottomLeft() const { return Point(left, top - height); }
+
+  /**
+   * @brief bottomRight Bottom-right point of the rectangle
+   * @return The point at the bottom-right corner of the rectangle
+   */
   Point bottomRight() const { return Point(left + width, top - height); }
+
+  /**
+   * @brief center The center of the rectangle
+   * @return The point at the center of the rectangle
+   */
   Point center() const { return Point(left + width / 2.0, top - height / 2.0); }
+
+  /**
+   * @brief centerLeft The center of the left border of the rectangle
+   * @return The point at the center of the left border of the rectangle
+   */
   Point centerLeft() const { return Point(left, top - height / 2.0); }
+
+  /**
+   * @brief centerRight The center of the right border of the rectangle
+   * @return The point at the center of the right border of the rectangle
+   */
   Point centerRight() const { return Point(left + width, top - height / 2.0); }
+
+  /**
+   * @brief centerTop The center of the top border of the rectangle
+   * @return The point at the center of the top border of the rectangle
+   */
   Point centerTop() const { return Point(left + width / 2.0, top); }
+
+  /**
+   * @brief centerBottom The center of the bottom border of the rectangle
+   * @return The point at the center of the bottom border of the rectangle
+   */
   Point centerBottom() const { return Point(left + width / 2.0, top - height); }
+
+  /**
+   * @brief The y coordinate of the bottom of the rectangle
+   * @return The y coordinate of the bottom of the rectangle
+   */
   double bottom() const { return top - height; }
+
+  /**
+   * @brief The x coordinate of the right side of the rectangle
+   * @return The x coordinate of the right side of the rectangle
+   */
   double right() const { return left + width; }
+
+  /**
+   * @brief Set to a rectangle with zero width and height at position (0,0)
+   */
   void clear() { left = top = width = height = 0.0; }
-  void growToContain(const Point &);
-  void growToContain(const std::vector<Point> & points);
-  bool contains(Point) const;
-  bool strictlyContains(Point) const;
-  bool intersects(const Rect &) const;
-  bool strictlyIntersects(const Rect &) const;
+
+  /**
+   * @brief Grow the rectangle so that it contains the point p
+   * @param p A point
+   * @return A reference to the rectangle itself
+   */
+  Rect & growToContain(const Point & p);
+
+  /**
+   * @brief Grow the rectangle so that it contains a set of points
+   * @param points A set of points
+   * @return A reference to the rectangle itself
+   */
+  Rect & growToContain(const std::vector<Point> & points);
+
+  /**
+   * @brief Check whether or not a point is contained in the rectangle (including its border)
+   * @param p A point
+   * @return true if the point is in the rectangle, otherwise false
+   */
+  bool contains(Point p) const;
+
+  /**
+   * @brief Check whether or not a point is strictly contained in the rectangle
+   * @param p A point
+   * @return true if the point is inside the rectangle, otherwise false
+   */
+  bool strictlyContains(Point p) const;
+
+  /**
+   * @brief Check whether the rectangle intersects another rectangle
+   * @param other Another rectangle
+   * @return true if the rectangles intersect, otherwise false
+   */
+  bool intersects(const Rect & other) const;
+
+  /**
+   * @brief Check whether the rectangle strictly intersects another rectangle
+   * @param other Another rectangle
+   * @return true if the rectangles strictly intersect, otherwise false
+   */
+  bool strictlyIntersects(const Rect & other) const;
+
+  /**
+   * @brief Grow the rectangle by a given distance (margin) in each direction
+   * @param margin The margin to be added
+   * @return A reference to the rectangle itself
+   */
   Rect & grow(double margin);
+
+  /**
+   * @brief Return the rectangle growed by a given distance (margin) in each direction
+   * @param margin The margin to be added
+   * @return A new rectangle, result of the growth
+   */
   Rect growed(double margin);
+
+  /**
+   * @brief Check if a rectangle is null (i.e., zero sized)
+   * @return true if the rectangle is null, otherwise false
+   */
   inline bool isNull() const;
 };
 
@@ -97,7 +208,6 @@ struct Rect {
  *
  * @param rectA A first rectangle.
  * @param rectB A second rectangle.
- *
  * @return The smallest rectangle that contains both rectA and rectB.
  */
 Rect operator||(const Rect & rectA, const Rect & rectB);
@@ -107,7 +217,6 @@ Rect operator||(const Rect & rectA, const Rect & rectB);
  *
  * @param rectA A first rectangle.
  * @param rectB A second rectangle.
- *
  * @return The intersecting rectangle of two bounding boxes.
  */
 Rect operator&&(const Rect & rectA, const Rect & rectB);

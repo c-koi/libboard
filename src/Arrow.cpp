@@ -113,7 +113,7 @@ void Arrow::flushPostscript(std::ostream & stream, const TransformEPS & transfor
 {
   const Point ma = transform.map(_a);
   const Path triangle = extremity();
-  const Point stop = (_type == Stick) ? transform.map(_b) : transform.map((triangle[0] + triangle[2]) / 2.0);
+  const Point stop = (_type == ExtremityType::Stick) ? transform.map(_b) : transform.map((triangle[0] + triangle[2]) / 2.0);
 
   stream << "\n% Arrow\n";
   stream << penColor().postscript() << " srgb " << _style.postscriptProperties(transform) << " "
@@ -124,7 +124,7 @@ void Arrow::flushPostscript(std::ostream & stream, const TransformEPS & transfor
   Style style = _style;
   style.lineStyle = SolidStyle;
   switch (_type) {
-  case Plain: {
+  case ExtremityType::Plain: {
     stream << "n ";
     triangle.flushPostscript(stream, transform);
     stream << " " << penColor().postscript() << " srgb " << style.postscriptProperties(transform) << " fill" << std::endl;
@@ -132,7 +132,7 @@ void Arrow::flushPostscript(std::ostream & stream, const TransformEPS & transfor
     triangle.flushPostscript(stream, transform);
     stream << " " << penColor().postscript() << " srgb " << style.postscriptProperties(transform) << " stroke" << std::endl;
   } break;
-  case Closed: {
+  case ExtremityType::Closed: {
     stream << "n ";
     triangle.flushPostscript(stream, transform);
     stream << " " << Color::White.postscript() << " srgb fill" << std::endl;
@@ -140,7 +140,7 @@ void Arrow::flushPostscript(std::ostream & stream, const TransformEPS & transfor
     triangle.flushPostscript(stream, transform);
     stream << " " << penColor().postscript() << " srgb stroke" << std::endl;
   } break;
-  case Stick: {
+  case ExtremityType::Stick: {
     // FIXME : Fixe line length to the end...
     Path p = triangle;
     p.open();
@@ -177,13 +177,13 @@ void Arrow::flushFIG(std::ostream & stream, const TransformFIG & transform, std:
   // Arrow type (0 stick, 1 closed)
   // Arrow style (0 white, 1 filled with pen color)
   switch (_type) {
-  case Stick:
+  case ExtremityType::Stick:
     stream << "       0 0";
     break;
-  case Plain:
+  case ExtremityType::Plain:
     stream << "       1 1";
     break;
-  case Closed:
+  case ExtremityType::Closed:
     stream << "       1 0";
     break;
   }
@@ -197,7 +197,7 @@ void Arrow::flushFIG(std::ostream & stream, const TransformFIG & transform, std:
 void Arrow::flushSVG(std::ostream & stream, const TransformSVG & transform) const
 {
   Path triangle = extremity();
-  const Point stop = (_type == Stick) ? _b : (triangle[0] + triangle[2]) / 2.0;
+  const Point stop = (_type == ExtremityType::Stick) ? _b : (triangle[0] + triangle[2]) / 2.0;
   stream << "<g>" << std::endl;
   // The line
   Line(_a, stop, _style).flushSVG(stream, transform);
@@ -207,13 +207,13 @@ void Arrow::flushSVG(std::ostream & stream, const TransformSVG & transform) cons
   Style style = _style;
   style.lineStyle = SolidStyle;
   switch (_type) {
-  case Plain:
+  case ExtremityType::Plain:
     style.fillColor = style.penColor;
     break;
-  case Closed:
+  case ExtremityType::Closed:
     style.fillColor = Color::White;
     break;
-  case Stick:
+  case ExtremityType::Stick:
     triangle.open();
     style.fillColor = Color::Null;
     break;

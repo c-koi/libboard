@@ -71,38 +71,38 @@ int main(int, char *[])
   losange << Point(0, 0) << Point(300, -500) << Point(600, 0) << Point(300, 500);
 
   ShapeList l;
-  l.append(strikeOut(pA, 50.0, RoundCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(strikeOut(pB, 50.0, RoundCap, BevelJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(strikeOut(pC, 50.0, RoundCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(strikeOut(pA, 50.0, RoundCap, RoundJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(Text(0, 0, "Round cap, miter/bevel/miter/round join", Fonts::Courier, 14.0), ShapeList::Right, ShapeList::AlignCenter);
-  board.append(l, ShapeList::Bottom, ShapeList::AlignLeft);
+  l.append(strikeOut(pA, 50.0, RoundCap, MiterJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(strikeOut(pB, 50.0, RoundCap, BevelJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(strikeOut(pC, 50.0, RoundCap, MiterJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(strikeOut(pA, 50.0, RoundCap, RoundJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(Text(0, 0, "Round cap, miter/bevel/miter/round join", Fonts::Courier, 14.0), Direction::Right, Alignment::Center);
+  board.append(l, Direction::Bottom, Alignment::Left);
 
   l.clear();
-  l.append(strikeOut(pA, 50.0, ButtCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(strikeOut(pB, 50.0, ButtCap, BevelJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(strikeOut(pC, 50.0, ButtCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(strikeOut(pA, 50.0, ButtCap, RoundJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(Text(0, 0, "Butt cap, miter/bevel/miter/round join", Fonts::Courier, 14.0), ShapeList::Right, ShapeList::AlignCenter);
-  board.append(l, ShapeList::Bottom, ShapeList::AlignLeft);
+  l.append(strikeOut(pA, 50.0, ButtCap, MiterJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(strikeOut(pB, 50.0, ButtCap, BevelJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(strikeOut(pC, 50.0, ButtCap, MiterJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(strikeOut(pA, 50.0, ButtCap, RoundJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(Text(0, 0, "Butt cap, miter/bevel/miter/round join", Fonts::Courier, 14.0), Direction::Right, Alignment::Center);
+  board.append(l, Direction::Bottom, Alignment::Left);
 
   l.clear();
-  l.append(strikeOut(pA, 50.0, SquareCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(strikeOut(pB, 50.0, SquareCap, BevelJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(strikeOut(pC, 50.0, SquareCap, MiterJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(strikeOut(pA, 50.0, SquareCap, RoundJoin, 3.0), ShapeList::Right, ShapeList::AlignCenter, 30.0);
-  l.append(Text(0, 0, "Square cap, miter/bevel/miter/round join", Fonts::Courier, 14.0), ShapeList::Right, ShapeList::AlignCenter);
-  board.append(l, ShapeList::Bottom, ShapeList::AlignLeft);
+  l.append(strikeOut(pA, 50.0, SquareCap, MiterJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(strikeOut(pB, 50.0, SquareCap, BevelJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(strikeOut(pC, 50.0, SquareCap, MiterJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(strikeOut(pA, 50.0, SquareCap, RoundJoin, 3.0), Direction::Right, Alignment::Center, 30.0);
+  l.append(Text(0, 0, "Square cap, miter/bevel/miter/round join", Fonts::Courier, 14.0), Direction::Right, Alignment::Center);
+  board.append(l, Direction::Bottom, Alignment::Left);
 
   ShapeList list;
   Polyline poly(Path::ClosedPath, Color::Blue, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin);
   poly << Point(0, 0) << Point(30, -50) << Point(60, 0) << Point(30, 50);
-  list.append(poly, ShapeList::Right, ShapeList::AlignCenter);
-  list.append(poly, ShapeList::Right, ShapeList::AlignCenter);
-  board.append(list, ShapeList::Right, ShapeList::AlignCenter);
-  board.append(LibBoard::rectangle(0, 0, 100, 30).rotateDeg(40).scale(1.5, 1.0), ShapeList::Right, ShapeList::AlignCenter);
+  list.append(poly, Direction::Right, Alignment::Center);
+  list.append(poly, Direction::Right, Alignment::Center);
+  board.append(list, Direction::Right, Alignment::Center);
+  board.append(LibBoard::rectangle(0, 0, 100, 30).rotateDeg(40).scale(1.5, 1.0), Direction::Right, Alignment::Center);
 
-  board.saveEPS("stroke_path.eps", Board::PageSize::A4);
+  board.saveEPS("stroke_path.eps", PageSize::A4);
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("stroke_path.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("stroke_path.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

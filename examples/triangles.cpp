@@ -103,6 +103,6 @@ int main(int, char *[])
 
   board << result;
 
-  board.saveSVG("triangles.svg", Board::PageSize::BoundingBox);
+  board.saveSVG("triangles.svg", PageSize::BoundingBox);
   // system("svgviewer triangles.svg");
 }

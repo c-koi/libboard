@@ -38,12 +38,12 @@ int main(int, char *[])
   board << text;
 #endif
 
-  board.saveEPS("images.eps", 20.0, 30.0, 2.0, Board::Unit::Inch);
-  // board.saveEPS( "images.eps", Board::PageSize::BoundingBox, 10.0, Board::UInche );
-  board.saveSVG("images_40x60cm.svg", 40.0, 60.0, 10.0, Board::Unit::Centimeter);
-  board.saveFIG("images.fig", 20.0, 20.0, 2.0, Board::Unit::Centimeter);
-  // board.saveFIG( "images.fig", Board::PageSize::BoundingBox, 10.0, Board::Unit::Centimeter );
+  board.saveEPS("images.eps", 20.0, 30.0, 2.0, Unit::Inch);
+  // board.saveEPS( "images.eps", PageSize::BoundingBox, 10.0, Board::UInche );
+  board.saveSVG("images_40x60cm.svg", 40.0, 60.0, 10.0, Unit::Centimeter);
+  board.saveFIG("images.fig", 20.0, 20.0, 2.0, Unit::Centimeter);
+  // board.saveFIG( "images.fig", PageSize::BoundingBox, 10.0, Unit::Centimeter );
 
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("images.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("images.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

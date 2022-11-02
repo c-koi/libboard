@@ -60,9 +60,9 @@ int main(int, char *[])
     board << r2.rotated(alpha, r2[0]);
   }
 
-  board.saveEPS("example4.eps", Board::PageSize::A4);
-  board.saveFIG("example4.fig", Board::PageSize::A4);
+  board.saveEPS("example4.eps", PageSize::A4);
+  board.saveFIG("example4.fig", PageSize::A4);
 
   board.scaleToWidth(10, UseLineWidth);
-  board.saveSVG("example4.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("example4.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

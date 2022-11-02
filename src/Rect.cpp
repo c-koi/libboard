@@ -74,7 +74,7 @@ Rect operator&&(const Rect & rectA, const Rect & rectB)
   return rect;
 }
 
-void Rect::growToContain(const Point & p)
+Rect & Rect::growToContain(const Point & p)
 {
   if (p.x < left) {
     double dw = left - p.x;
@@ -90,13 +90,15 @@ void Rect::growToContain(const Point & p)
   } else if (p.y < top - height) {
     height = top - p.y;
   }
+  return *this;
 }
 
-void Rect::growToContain(const std::vector<Point> & points)
+Rect & Rect::growToContain(const std::vector<Point> & points)
 {
   for (const Point & point : points) {
     growToContain(point);
   }
+  return *this;
 }
 
 bool Rect::contains(Point p) const

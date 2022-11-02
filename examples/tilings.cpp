@@ -38,32 +38,32 @@ int main(int, char *[])
   Ellipse circle = LibBoard::circle(10, 10, 20, Color::Blue, Color::Null, 1.0);
   Rect bbox = board.boundingBox(UseLineWidth);
   Line separator(bbox.topRight(), bbox.bottomRight(), Color::Black);
-  board.append(separator, ShapeList::Right, ShapeList::AlignCenter);
-  board.append(circle, ShapeList::Right, ShapeList::AlignTop);
-  board.append(separator, ShapeList::Right, ShapeList::AlignCenter);
-  board.append(circle, ShapeList::Right, ShapeList::AlignCenter);
-  board.append(separator, ShapeList::Right, ShapeList::AlignCenter);
-  board.append(circle, ShapeList::Right, ShapeList::AlignBottom);
+  board.append(separator, Direction::Right, Alignment::Center);
+  board.append(circle, Direction::Right, Alignment::Top);
+  board.append(separator, Direction::Right, Alignment::Center);
+  board.append(circle, Direction::Right, Alignment::Center);
+  board.append(separator, Direction::Right, Alignment::Center);
+  board.append(circle, Direction::Right, Alignment::Bottom);
 
   bbox = board.boundingBox(UseLineWidth);
   separator = Line(bbox.bottomLeft(), bbox.bottomRight(), Color::Black);
 
-  board.append(separator, ShapeList::Bottom, ShapeList::AlignLeft);
-  board.append(circle, ShapeList::Bottom, ShapeList::AlignLeft);
-  board.append(separator, ShapeList::Bottom, ShapeList::AlignLeft);
-  board.append(circle, ShapeList::Bottom, ShapeList::AlignCenter);
-  board.append(separator, ShapeList::Bottom, ShapeList::AlignLeft);
-  board.append(circle, ShapeList::Bottom, ShapeList::AlignRight);
-  board.append(separator, ShapeList::Bottom, ShapeList::AlignLeft);
+  board.append(separator, Direction::Bottom, Alignment::Left);
+  board.append(circle, Direction::Bottom, Alignment::Left);
+  board.append(separator, Direction::Bottom, Alignment::Left);
+  board.append(circle, Direction::Bottom, Alignment::Center);
+  board.append(separator, Direction::Bottom, Alignment::Left);
+  board.append(circle, Direction::Bottom, Alignment::Right);
+  board.append(separator, Direction::Bottom, Alignment::Left);
 
   bbox = board.boundingBox(UseLineWidth);
   separator = Line(bbox.topRight(), bbox.bottomRight(), Color::Black);
-  board.append(separator, ShapeList::Right, ShapeList::AlignCenter);
+  board.append(separator, Direction::Right, Alignment::Center);
 
-  board.append(LibBoard::grid(Point(0, 0), 12, 6, 120, 60, Color::Red, Color::Null, 0.5, SolidStyle, ButtCap, RoundJoin), ShapeList::Right, ShapeList::AlignCenter);
+  board.append(LibBoard::grid(Point(0, 0), 12, 6, 120, 60, Color::Red, Color::Null, 0.5, SolidStyle, ButtCap, RoundJoin), Direction::Right, Alignment::Center);
 
   board.saveEPS("tilings.eps");
 
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("tilings.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("tilings.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

@@ -37,7 +37,10 @@ namespace LibBoard
  */
 struct Arrow : public Line {
 
-  enum ExtremityType
+  /**
+   * @brief The ExtremityType enum
+   */
+  enum class ExtremityType
   {
     Stick,  /**< Two lines  */
     Closed, /**< Closed triangle (pen color, white filled) */
@@ -59,7 +62,7 @@ struct Arrow : public Line {
    * @param cap The line cap.
    * @param join The line join.
    */
-  inline Arrow(double x1, double y1, double x2, double y2, ExtremityType type = Plain, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(),
+  inline Arrow(double x1, double y1, double x2, double y2, ExtremityType type = ExtremityType::Plain, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(),
                double lineWidth = Style::defaultLineWidth(), //
                const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
 
@@ -88,7 +91,7 @@ struct Arrow : public Line {
    * @param cap The line cap.
    * @param join The line join.
    */
-  inline Arrow(Point p1, Point p2, ExtremityType type = Plain, //
+  inline Arrow(Point p1, Point p2, ExtremityType type = ExtremityType::Plain, //
                Color penColor = Style::defaultPenColor(),
                Color fillColor = Style::defaultFillColor(),  //
                double lineWidth = Style::defaultLineWidth(), //
@@ -236,6 +239,10 @@ struct Arrow : public Line {
   Arrow & operator=(const Arrow &) = default;
   ~Arrow() override = default;
 
+  /**
+   * @brief The extremity type of the arrow
+   * @return The extremity type of the arrow
+   */
   inline ExtremityType type() const;
 
 private:

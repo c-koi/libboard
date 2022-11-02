@@ -37,7 +37,7 @@ int main(int, char *[])
   board << curve;
   Tools::notice << curve.vertexCount() << " points in the curve after " << recursions << " recursions.\n";
   board.saveFIG("sierpinski.fig", 200, 200);
-  board.saveEPS("sierpinski.eps", Board::PageSize::A4);
+  board.saveEPS("sierpinski.eps", PageSize::A4);
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("sierpinski.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("sierpinski.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

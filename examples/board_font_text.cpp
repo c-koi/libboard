@@ -18,17 +18,17 @@ using namespace LibBoard;
 Group text()
 {
   Group g;
-  std::string s = "C'EST ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  s.clear();
+  std::string s;
   for (int c = '!'; c <= '~'; ++c) {
     s.push_back((char)c);
   }
-  g = boardFontText(Point(0, 0), s, 40); // TODO : Baseline !
+  g = boardFontText(Point(10, 20), s, 40);
+  g << Line(Point(10, 20), Point(10 + g.boundingBox(LineWidthFlag::UseLineWidth).width, 20), Color::Black);
 
-  // g << Line(0, 0, 100, 0, Color::Black); // TODO : Baseline !
   g.accept(ShapeWithStyleVisitor(Color::Red, Color::Null));
-  g.append(makeRough(boardFontText(Point(0, 0), s, 40), 1), Board::Bottom, Board::AlignLeft);
-  return g;
+  g.append(makeRough(boardFontText(Point(0, 0), s, 40), 1), Direction::Bottom, Alignment::Left);
+  g << Dot(0, 0);
+  return framed(g, Color::Null, 0.0, 30);
 }
 
 int main(int, char *[])
@@ -45,19 +45,6 @@ int main(int, char *[])
 
   board << text();
 
-  //  std::vector<Point> p = {Point(50, 50), Point(70, 75), Point(80, 75)};
-  //  std::vector<Point> q = {mid(p[0], p[1], 0.25), //
-  //                          mid(p[1], p[0], 0.25), //
-  //                          (p[1] + Point(3, -4)), //
-  //                          (p[2] + Point(-3, 2))};
-
-  //  board << rectangle(0, 0, 20, 20);
-  //  board << rectangle(100, 100, 20, 20);
-  //  board << Bezier(p, q, Color::Black);
-  //  board << Bezier(p, q, Color::Black).scaled(1.5);
-  //  board << bezierControls(Bezier(p, q, Color::Black), Style().withLineWidth(0.2));
-  //  board << bezierControls(Bezier(p, q, Color::Black).scaled(1.5), Style().withLineWidth(0.2));
-
-  board.saveSVG("board_font_text.svg", Board::PageSize::BoundingBox);
-  // system("svgviewer board_font_text.svg");
+  board.saveSVG("board_font_text.svg", PageSize::BoundingBox);
+  system("svgviewer board_font_text.svg");
 }

@@ -26,9 +26,9 @@ int main(int, char * [])
   board.addDuplicates(g, 5, 0, 15, 0.8, 0.8, -0.2);
   board << g.scaled(0.2);
 
-  board.saveEPS("scale_ellipse.eps", Board::PageSize::A4);
-  board.saveFIG("scale_ellipse.fig", Board::PageSize::A4);
+  board.saveEPS("scale_ellipse.eps", PageSize::A4);
+  board.saveFIG("scale_ellipse.fig", PageSize::A4);
 
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("scale_ellipse.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("scale_ellipse.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

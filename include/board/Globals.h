@@ -1,11 +1,10 @@
 /* -*- mode: c++ -*- */
 /**
- * @file   BoardFontText.h
+ * @file   Globals.h
  * @author Sebastien Fourey (GREYC)
  * @date   Aug 2007
  *
- * @brief  Group class
- *
+ * @brief
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
@@ -24,26 +23,77 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef BOARD_BOARD_FONT_TEXT_H
-#define BOARD_BOARD_FONT_TEXT_H
-
-#include <string>
-#include "board/Group.h"
+#ifndef BOARD_GLOBALS_H
+#define BOARD_GLOBALS_H
 
 namespace LibBoard
 {
 
 /**
- * @brief Create a text with board's font
- * @param baselineStart
- * @param text
- * @param size
- * @param penColor
- * @param lineWidth
- * @return The text as a group
+ * @brief The Direction enum
  */
-Group boardFontText(Point baselineStart, const std::string & text, double size, Color penColor = Style::defaultPenColor(), double lineWidth = 0.0);
+enum class Direction
+{
+  Top,
+  Right,
+  Bottom,
+  Left
+};
+
+/**
+ * @brief The Alignment enum
+ */
+enum Alignment
+{
+  Top,
+  Bottom,
+  Center,
+  Left,
+  Right
+};
+
+/**
+ * @brief Page sizes
+ */
+enum class PageSize
+{
+  BoundingBox = 0, //!< No page size. The bounding box of the drawing will be used.
+  A0,
+  A1,
+  A2,
+  A3,
+  A4,
+  A5,
+  A6,
+  A7,
+  A8,
+  A9,
+  A10,
+  Letter,
+  Legal,
+  Executive
+};
+
+/**
+ * @brief Length units
+ */
+enum class Unit
+{
+  Point, //!< A point is 1/72 inch
+  Inch,  //!< 25.4 mm
+  Centimeter,
+  Millimeter
+};
+
+/**
+ * @brief The ColorSpecification enum
+ */
+enum class ColorSpecification
+{
+  PenColor,
+  FillColor
+};
 
 } // namespace LibBoard
 
-#endif /* BOARD_BOARD_FONT_TEXT_H */
+#endif /* BOARD_GLOBALS_H */

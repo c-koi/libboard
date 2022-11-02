@@ -34,15 +34,15 @@ int main(int, char *[])
 
   Group pointText;
   pointText << boardFontText(Point(), "THE DAY I REALIZED", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH);
-  pointText.append(boardFontText(Point(), "I COULD COOK BACON", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH), Board::Bottom, Board::AlignLeft, 2.0);
-  pointText.append(boardFontText(Point(), "WHENEVER I WANTED", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH), Board::Bottom, Board::AlignLeft, 2.0);
+  pointText.append(boardFontText(Point(), "I COULD COOK BACON", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH), Direction::Bottom, Alignment::Left, 2.0);
+  pointText.append(boardFontText(Point(), "WHENEVER I WANTED", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH), Direction::Bottom, Alignment::Left, 2.0);
 
   // Arrow
 
   Point translation = Point(78, 58) - pointText.boundingBox(UseLineWidth).topRight();
   pointText.translate(translation.x, translation.y);
   board << pointText;
-  board << makeRough(Arrow(pointText.boundingBox(UseLineWidth).topRight(), Point(101, 77), Arrow::Stick, Color::Black, Color::Null, 0.5 * Style::defaultLineWidth()));
+  board << makeRough(Arrow(pointText.boundingBox(UseLineWidth).topRight(), Point(101, 77), Arrow::ExtremityType::Stick, Color::Black, Color::Null, 0.5 * Style::defaultLineWidth()));
 
   Group time = boardFontText(Point(), "TIME", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH);
   time.moveCenter(75, -1.25 * TEXT_SIZE);
@@ -54,7 +54,7 @@ int main(int, char *[])
 
   Group title = boardFontText(Point(), "\"STOVE OWNERSHIP\" FROM XKCD BY RUNDALL MUNROE", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH);
 
-  board.append(title, Board::Bottom, Board::AlignCenter, 5.0);
+  board.append(title, Direction::Bottom, Alignment::Center, 5.0);
 
   board.saveSVG("xkcd.svg");
   // system("svgviewer xkcd.svg");

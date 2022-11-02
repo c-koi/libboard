@@ -34,8 +34,8 @@ int main(int, char *[])
   board << g;
   board << r.translated(5, 5) << r.translated(8, 8) << r.translated(9, 9);
 
-  board.saveSVG("test_depth.svg", Board::PageSize::BoundingBox);
-  // board.saveFIG("depth.fig", Board::PageSize::BoundingBox);
+  board.saveSVG("test_depth.svg", PageSize::BoundingBox);
+  // board.saveFIG("depth.fig", PageSize::BoundingBox);
   // system("svgviewer depth.svg");
   // system("xfig depth.fig");
 }

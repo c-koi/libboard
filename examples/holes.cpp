@@ -43,7 +43,7 @@ int main(int, char *[])
 
   board.rotate(45 * Board::Degree);
 
-  board.append(board.last<Polyline>(), Board::Right, Board::AlignCenter);
+  board.append(board.last<Polyline>(), Direction::Right, Alignment::Center);
 
   Polyline square(Path::ClosedPath, Color::Black, Color(70, 70, 130), 0.1);
   square << Point(-110, 110) << Point(110, 110) << Point(110, -110) << Point(-110, -110);
@@ -64,7 +64,7 @@ int main(int, char *[])
 
   //  board << Polyline(losange,Shape::defaultPenColor(),Color::White);
 
-  board.saveEPS("holes.eps", Board::PageSize::A4);
+  board.saveEPS("holes.eps", PageSize::A4);
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("holes.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("holes.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

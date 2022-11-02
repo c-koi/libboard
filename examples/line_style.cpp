@@ -44,5 +44,5 @@ int main(int, char *[])
   board.saveFIG("line_style.fig");
 
   board.scaleToWidth(25, UseLineWidth);
-  board.saveSVG("line_style.svg", Board::PageSize::BoundingBox, 0.0, Board::Unit::Centimeter);
+  board.saveSVG("line_style.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

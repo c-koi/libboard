@@ -155,13 +155,23 @@ struct Bezier : public ShapeWithStyle {
    */
   Bezier & rotate(double angle, const Point & center) override;
 
+  /**
+   * @brief Rotated copy of the curve.
+   * @param angle A rotation angle (in radians)
+   * @param center The center of rotation
+   * @return A rotated copy of the curve
+   */
   Bezier rotated(double angle, const Point & center) const;
 
+  /**
+   * @brief Rotate the Bezier curve around its bounding box center
+   * @param angle The rotation angle.
+   * @return The curve itself.
+   */
   Bezier & rotate(double angle) override;
 
   /**
-   * @brief Return a rotated copy of the curve.
-   *
+   * @brief Return a rotated copy of the curve around its bounding box center
    * @param angle The rotation angle.
    * @return A rotated copy of the curve.
    */

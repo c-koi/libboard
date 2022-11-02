@@ -57,9 +57,9 @@ int main(int, char *[])
   board.setPenColor(Color::Blue);
   board.setFillColor(Color::Red);
 
-  board.append(interpolate(), Board::Right, Board::AlignCenter, 5);
-  board.append(mustache(), Board::Right, Board::AlignCenter, 5);
+  board.append(interpolate(), Direction::Right, Alignment::Center, 5);
+  board.append(mustache(), Direction::Right, Alignment::Center, 5);
 
-  board.saveSVG("interpolate.svg", Board::PageSize::BoundingBox);
+  board.saveSVG("interpolate.svg", PageSize::BoundingBox);
   // system("svgviewer interpolate.svg");
 }

@@ -27,15 +27,15 @@ int main(int, char *[])
   Style::setDefaultFillColor(Color::Green);
   Style::setDefaultLineWidth(1.0);
 
-  board << Arrow(Point(0, 0), Point(100, 0), Arrow::Stick);
+  board << Arrow(Point(0, 0), Point(100, 0), Arrow::ExtremityType::Stick);
   board << board.last<Arrow>().rotated(180 * Board::Degree).translated(-30, 10);
-  board << Arrow(Point(0, 50), Point(100, 50), Arrow::Closed);
+  board << Arrow(Point(0, 50), Point(100, 50), Arrow::ExtremityType::Closed);
   board << board.last<Arrow>().rotated(180 * Board::Degree).translated(-30, 10);
-  board << Arrow(Point(0, 100), Point(100, 100), Arrow::Plain);
+  board << Arrow(Point(0, 100), Point(100, 100), Arrow::ExtremityType::Plain);
   board << board.last<Arrow>().rotated(180 * Board::Degree).translated(-30, 10);
 
-  board.saveSVG("test_arrow.svg", Board::PageSize::BoundingBox);
-  // board.saveEPS("test_arrow.eps", Board::PageSize::BoundingBox);
-  // board.saveFIG("test_arrow.fig", Board::PageSize::BoundingBox);
+  board.saveSVG("test_arrow.svg", PageSize::BoundingBox);
+  // board.saveEPS("test_arrow.eps", PageSize::BoundingBox);
+  // board.saveFIG("test_arrow.fig", PageSize::BoundingBox);
   // system("svgviewer test_arrow.svg");
 }

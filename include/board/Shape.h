@@ -33,6 +33,7 @@
 #include <string>
 #include <vector>
 #include "board/Color.h"
+#include "board/Globals.h"
 #include "board/PSFonts.h"
 #include "board/Path.h"
 #include "board/Point.h"
