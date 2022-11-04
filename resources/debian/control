@@ -9,5 +9,5 @@ Package: libboard
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: The Board library
- The LibBoard C++ library allows the drawing of Postscript, SVG, and FIG (XFig)
+ LibBoard C++ library allows the drawing of Postscript, SVG, and FIG (XFig)
  vector graphics using the C++ programming language.
