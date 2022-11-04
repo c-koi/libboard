@@ -16,7 +16,7 @@ int main(int, char *[])
   Board board;
 
 #if (BOARD_HAVE_MAGICKPLUSPLUS == 1)
-  Image michel("../resources/saint_michel.jpg", 0, 0, 200);
+  Image michel("../resources/mont_saint_michel.jpg", 0, 0, 200);
   Polyline rectangle = LibBoard::rectangle(michel.boundingBox(IgnoreLineWidth), Color::Red, Color::Silver, 1);
   Group g;
   g << rectangle;
