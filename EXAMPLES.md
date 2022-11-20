@@ -80,13 +80,6 @@
   [GitHub](examples/example4.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.6/example4.svg)
 
-### fern.cpp
-
-* ![fern](http://foureys.users.greyc.fr/board/examples/0.9.6/thumbnail_fern.png)
-* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.6/examples_2fern_8cpp-example.html) doc or on
-  [GitHub](examples/fern.cpp)
-* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.6/fern.svg)
-
 ### flag.cpp
 
 * ![flag](http://foureys.users.greyc.fr/board/examples/0.9.6/thumbnail_flag.png)
