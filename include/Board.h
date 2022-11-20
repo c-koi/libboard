@@ -612,7 +612,7 @@ public:
    *
    * @param color A color (may be Color::None).
    */
-  void backgroundColor(const Color & color);
+  void setBackgroundColor(const Color & color);
 
   /**
    * Draws the current drawing's bounding box as a rectangle.
