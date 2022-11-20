@@ -14,8 +14,8 @@ using namespace LibBoard;
 int main(int, char *[])
 {
   Board board;
-
 #if (BOARD_HAVE_MAGICKPLUSPLUS == 1)
+  Tools::notice << "Magick++ is available" << std::endl;
   Image michel("../resources/mont_saint_michel.jpg", 0, 0, 200);
   Polyline rectangle = LibBoard::rectangle(michel.boundingBox(IgnoreLineWidth), Color::Red, Color::Silver, 1);
   Group g;
@@ -33,6 +33,7 @@ int main(int, char *[])
   avatars.moveCenter(board.center());
   board << avatars;
 #else
+  Tools::warning << "Magick++ not found" << std::endl;
   Text text(10, -40, "Magick++ is required", Fonts::Helvetica, 10);
   board << LibBoard::rectangle(text.boundingBox(LibBoard::IgnoreLineWidth).grow(5), Color::Red, Color::White, 1.0, SolidStyle, RoundCap, RoundJoin);
   board << text;
