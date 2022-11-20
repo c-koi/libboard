@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 9)
 
 Package: libboard
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, graphicsmagick-libmagick-dev-compat (>= 1.4)
 Description: The Board library
  LibBoard C++ library allows the drawing of Postscript, SVG, and FIG (XFig)
  vector graphics using the C++ programming language.
