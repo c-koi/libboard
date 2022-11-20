@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 CXX=${CXX-g++}
 DESTDIR=${DESTDIR-}
 PREFIX=${PREFIX-/usr}
@@ -137,7 +136,8 @@ fi
 ${ECHO} -n "Looking for ImageMagick C++ API..."
 cat > check_magick.cpp <<EOF
 #include <Magick++.h>
-int main() {
+int main(int , char * argv[]) {
+  Magick::InitializeMagick(*argv);
   Magick::Image image;
   try {
    image.read("resources/avatar.png");
@@ -149,14 +149,15 @@ int main() {
 }
 EOF
 if exists Magick++-config ; then
-  g++ -o check_magick check_magick.cpp $(Magick++-config --cppflags --cxxflags --ldflags --libs) > /dev/null 2>&1
-  ./check_magick > /dev/null 2>&1
+  g++ -o check_magick check_magick.cpp $(Magick++-config --cppflags --cxxflags --ldflags --libs) >& /dev/null
+  ./check_magick >& /dev/null
   if [[ $? = 0 ]]; then
     MAGICKPLUSPLUS=1
     IMAGE_EXAMPLES="bin/images"
     IMAGE_CXXFLAGS=$(Magick++-config --cxxflags)
     IMAGE_CXXFLAGS="${IMAGE_CXXFLAGS} -Wno-long-long"
     IMAGE_LDFLAGS=$(Magick++-config --ldflags)
+    IMAGE_LDFLAGS+=" "$(Magick++-config --libs)
     echo "Found"
   fi
 else
@@ -166,7 +167,7 @@ else
   IMAGE_LDFLAGS=""
   echo "Not found"
 fi
-rm -f check_magick check_magick.cpp > /dev/null 2>&1
+rm -f check_magick check_magick.cpp >& /dev/null
 
 ##
 ## Doxygen ?
@@ -174,7 +175,7 @@ rm -f check_magick check_magick.cpp > /dev/null 2>&1
 DOXYGEN_TARGET=""
 if [[ -n "$DOXYGEN" ]]; then
   ${ECHO} -n "Looking for doxygen..."
-  if ( $DOXYGEN --version > /dev/null 2>&1 ); then
+  if ( $DOXYGEN --version >& /dev/null ); then
     echo "Found"
     LICENSE=LICENSE.gz
     DOXYGEN_TARGET="doc"
@@ -198,7 +199,7 @@ int main()
  return x;
 }
 EOF
-if ( ${CXX} -std=c++11 cpp11.cpp -o a.out > /dev/null 2>&1 ); then
+if ( ${CXX} -std=c++11 cpp11.cpp -o a.out >& /dev/null ); then
   CPP11=yes
 else
   CPP11=no
@@ -342,7 +343,7 @@ obj/Board.o: src/Board.cpp include/Board.h
 	\$(CXX) \$(CXXFLAGSOBJ) ${IMAGE_CXXFLAGS} -c -o \$@ \$<
 
 bin/%: examples/%.cpp \$(STATICLIB)
-	\$(CXX) \$(CXXFLAGSEXEC) -o \$@ \$< ${IMAGE_CXXFLAGS} ${IMAGE_LDFLAGS} \$(STATICLIB)
+	\$(CXX) \$(CXXFLAGSEXEC) -o \$@ \$< ${IMAGE_CXXFLAGS} \$(STATICLIB) ${IMAGE_LDFLAGS}
 
 clean:
 	rm -f out/* obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ *~
