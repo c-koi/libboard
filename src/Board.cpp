@@ -8,7 +8,7 @@
  * \@copyright
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
- * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr/>
+ * Copyright (C) 2007 Sebastien Fourey <https://foureys.users.greyc.fr/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -1101,7 +1101,7 @@ Group framed(const Shape & shape, const Color & color, double lineWidth, double 
 /**
  * @mainpage LibBoard - A C++ library for simple Postscript, SVG, and XFig drawings
  *
- * <table border="0"><tr><td><img align=left src="http://foureys.users.greyc.fr/board/doc/LibBoardLogoII_Small.png"/></td>
+ * <table border="0"><tr><td><img align=left src="https://foureys.users.greyc.fr/board/doc/LibBoardLogoII_Small.png"/></td>
  * <td>(Copyleft) 2007 S&eacute;bastien Fourey - GREYC ENSICAEN</td></tr></table>
  *
  * @section intro_sec Introduction
