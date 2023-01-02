@@ -1073,7 +1073,6 @@ Group framed(const Shape & shape, const Color & color, double lineWidth, double 
  * @example examples/example2.cpp
  * @example examples/example3.cpp
  * @example examples/example4.cpp
- * @example examples/fern.cpp
  * @example examples/flag.cpp
  * @example examples/graph.cpp
  * @example examples/holes.cpp
