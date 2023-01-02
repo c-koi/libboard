@@ -25,9 +25,9 @@
  */
 #ifndef BOARD_STYLE_H
 #define BOARD_STYLE_H
+#include <board/Color.h>
 #include <iostream>
 #include <stack>
-#include <board/Color.h>
 
 namespace LibBoard
 {
@@ -222,85 +222,85 @@ extern const char * xFigDashStylesPS[];
 extern const char * xFigDashStylesSVG[];
 extern const char * xFigDashStylesTikZ[];
 
-} // namespace LibBoard
-
 // Inline methods
 
-LibBoard::Style LibBoard::Style::withPenColor(const LibBoard::Color & color) const
+Style Style::withPenColor(const Color & color) const
 {
   Style style(*this);
   style.penColor = color;
   return style;
 }
 
-LibBoard::Style LibBoard::Style::withFillColor(const LibBoard::Color & color) const
+Style Style::withFillColor(const Color & color) const
 {
   Style style(*this);
   style.fillColor = color;
   return style;
 }
 
-LibBoard::Style LibBoard::Style::withLineWidth(double width) const
+Style Style::withLineWidth(double width) const
 {
   Style style(*this);
   style.lineWidth = width;
   return style;
 }
 
-LibBoard::Style LibBoard::Style::withLineStyle(LibBoard::LineStyle lineStyle) const
+Style Style::withLineStyle(LineStyle lineStyle) const
 {
   Style style(*this);
   style.lineStyle = lineStyle;
   return style;
 }
 
-LibBoard::Style LibBoard::Style::withLineCap(LibBoard::LineCap lineCap) const
+Style Style::withLineCap(LineCap lineCap) const
 {
   Style style(*this);
   style.lineCap = lineCap;
   return style;
 }
 
-LibBoard::Style LibBoard::Style::withLineJoin(LibBoard::LineJoin lineJoin) const
+Style Style::withLineJoin(LineJoin lineJoin) const
 {
   Style style(*this);
   style.lineJoin = lineJoin;
   return style;
 }
 
-const LibBoard::Style & LibBoard::Style::defaultStyle()
+const Style & Style::defaultStyle()
 {
   return _defaultStyle;
 }
 
-const double & LibBoard::Style::defaultLineWidth()
+const double & Style::defaultLineWidth()
 {
   return _defaultStyle.lineWidth;
 }
 
-const LibBoard::Color & LibBoard::Style::defaultPenColor()
+const Color & Style::defaultPenColor()
 {
   return _defaultStyle.penColor;
 }
 
-const LibBoard::Color & LibBoard::Style::defaultFillColor()
+const Color & Style::defaultFillColor()
 {
   return _defaultStyle.fillColor;
 }
 
-const LibBoard::LineStyle & LibBoard::Style::defaultLineStyle()
+const LineStyle & Style::defaultLineStyle()
 {
   return _defaultStyle.lineStyle;
 }
 
-const LibBoard::LineCap & LibBoard::Style::defaultLineCap()
+const LineCap & Style::defaultLineCap()
 {
   return _defaultStyle.lineCap;
 }
 
-const LibBoard::LineJoin & LibBoard::Style::defaultLineJoin()
+const LineJoin & Style::defaultLineJoin()
 {
   return _defaultStyle.lineJoin;
 }
+
+} // namespace LibBoard
 
 #endif /* BOARD_STYLE_H */
