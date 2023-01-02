@@ -153,15 +153,29 @@ if exists Magick++-config ; then
   ./check_magick >& /dev/null
   if [[ $? = 0 ]]; then
     MAGICKPLUSPLUS=1
-    IMAGE_EXAMPLES="bin/images"
     IMAGE_CXXFLAGS=$(Magick++-config --cxxflags)
     IMAGE_CXXFLAGS="${IMAGE_CXXFLAGS} -Wno-long-long"
     IMAGE_LDFLAGS=$(Magick++-config --ldflags)
     IMAGE_LDFLAGS+=" "$(Magick++-config --libs)
-    echo "Found"
+  else
+    MAGICKPLUSPLUS=0
   fi
+elif exists pkg-config ; then
+  g++ -o check_magick check_magick.cpp $(pkg-config --cflags --libs Magick++) >& /dev/null
+  ./check_magick >& /dev/null
+  if [[ $? = 0 ]]; then
+    MAGICKPLUSPLUS=1
+    IMAGE_CXXFLAGS=$(pkg-config --cflags Magick++)
+    IMAGE_CXXFLAGS="${IMAGE_CXXFLAGS} -Wno-long-long"
+    IMAGE_LDFLAGS=$(pkg-config --libs Magick++)
+  else
+    MAGICKPLUSPLUS=0
+  fi
+fi
+if [[ $MAGICKPLUSPLUS == 1 ]]; then
+  IMAGE_EXAMPLES="bin/images"
+  echo "Found"
 else
-  MAGICKPLUSPLUS=0
   IMAGE_EXAMPLES=""
   IMAGE_CXXFLAGS=""
   IMAGE_LDFLAGS=""
@@ -346,7 +360,7 @@ bin/%: examples/%.cpp \$(STATICLIB)
 	\$(CXX) \$(CXXFLAGSEXEC) -o \$@ \$< ${IMAGE_CXXFLAGS} \$(STATICLIB) ${IMAGE_LDFLAGS}
 
 clean:
-	rm -f out/* obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ *~
+	rm -rf out/* obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ doc/html doc/examples *~
 
 install: all
 	install -d \$(LIBDIR)

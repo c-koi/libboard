@@ -26,15 +26,14 @@
 #ifndef BOARD_SKETCH_FILTER_H
 #define BOARD_SKETCH_FILTER_H
 
-#include <tuple>
-#include <vector>
 #include <board/Point.h>
 #include <board/Shape.h>
 #include <board/ShapeList.h>
 #include <board/Types.h>
+#include <tuple>
+#include <vector>
 
 /*
- *
  * matplotlib.pyplot.xkcd
  *
  * https://shihn.ca/posts/2020/roughjs-algorithms/

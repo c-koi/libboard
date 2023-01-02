@@ -51,17 +51,11 @@ public:
   static TransformMatrix rotation(double angle, const Point & center, Type type);
 
   TransformMatrix operator*(const TransformMatrix &) const;
-
   TransformMatrix & operator*=(const TransformMatrix &);
-
   Point operator*(const Point & point) const;
-
   TransformMatrix operator+(const Point &) const;
-
   TransformMatrix & operator+=(const Point &);
-
   void flushSVG(std::ostream &) const;
-
   void flushEPS(std::ostream &) const;
 
 private:
