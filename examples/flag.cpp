@@ -7,15 +7,15 @@
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
- * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
+ * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
 #include <cmath>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 const int RAYS = 40;
 
-int main(int, char * [])
+int main(int, char *[])
 {
   Board board;
 
@@ -30,10 +30,10 @@ int main(int, char * [])
   }
 
   board.setClippingRectangle(-100, 100, 350, 250);
-  board.saveEPS("flag.eps", 210, 297, 0.0, Board::UMillimeter);
+  board.saveEPS("flag.eps", 210, 297, 0.0, Unit::Millimeter);
   board.saveTikZ("flag.tikz");
 
-  board.scaleToWidth(20, Board::UseLineWidth);
-  board.saveSVG("flag.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
-  board.saveEPS("flag.eps", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.scaleToWidth(20, UseLineWidth);
+  board.saveSVG("flag.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
+  board.saveEPS("flag.eps", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

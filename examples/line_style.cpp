@@ -6,10 +6,10 @@
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
- * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
+ * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  *
  */
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 int main(int, char *[])
@@ -21,31 +21,28 @@ int main(int, char *[])
   int y = 10;
 
   board.setFillColor(Color::Gray);
-
-  board.setLineStyle(Shape::DashStyle);
+  board.setLineStyle(DashStyle);
   board.drawRectangle(10, y, 200, 10);
   y += 20;
-  board.setLineStyle(Shape::DotStyle);
-  board.drawRectangle(10, y, 200, 10);
+  Style style = board.style();
+  board << rectangle(10, y, 200, 10, style.withLineStyle(DotStyle));
   y += 20;
-  board.setLineStyle(Shape::DashDotStyle);
-  board.drawRectangle(10, y, 200, 10);
+  board << rectangle(10, y, 200, 10, style.withLineStyle(DashDotStyle));
   y += 20;
-  // board.setLineStyle( Shape::DashDotDotStyle );
-  board << rectangle(10, y, 200, 10, Color::Black, Color::Gray, 0.1, Shape::DashDotDotStyle);
+  board << rectangle(10, y, 200, 10, Color::Black, Color::Gray, 0.1, DashDotDotStyle);
   y += 20;
-  board.setLineStyle(Shape::DashDotDotDotStyle);
+  board.setLineStyle(DashDotDotDotStyle);
   //  board.drawArrow( 10, y, 200, y );
-  board << rectangle(10, y, 200, 10, Color::Black, Color::Gray, 0.1, Shape::DashDotDotStyle);
+  board << rectangle(10, y, 200, 10, Color::Black, Color::Gray, 0.1, DashDotDotStyle);
   y += 20;
-  board.setLineStyle(Shape::SolidStyle);
+  board.setLineStyle(SolidStyle);
   // board.drawArrow( 10, y, 200, y );
-  board << rectangle(10, y, 200, 10, Color::Black, Color::Red, 0.1, Shape::SolidStyle);
+  board << rectangle(10, y, 200, 10, Color::Black, Color::Red, 0.1, SolidStyle);
   y += 20;
 
   board.saveEPS("line_style.eps");
   board.saveFIG("line_style.fig");
 
-  board.scaleToWidth(25, Board::UseLineWidth);
-  board.saveSVG("line_style.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.scaleToWidth(25, UseLineWidth);
+  board.saveSVG("line_style.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

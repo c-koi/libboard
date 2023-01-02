@@ -23,19 +23,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Text.h"
+#include <board/Text.h>
 #include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <limits>
 #include <sstream>
 #include <vector>
-#include "BoardConfig.h"
-#include "board/PSFonts.h"
-#include "board/PathBoundaries.h"
-#include "board/Rect.h"
-#include "board/Tools.h"
-#include "board/Transforms.h"
+#include <BoardConfig.h>
+#include <board/PSFonts.h>
+#include <board/PathBoundaries.h>
+#include <board/Rect.h>
+#include <board/ShapeVisitor.h>
+#include <board/Tools.h>
+#include <board/Transforms.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846 /* pi */
@@ -48,48 +49,52 @@ extern const char * XFigPostscriptFontnames[];
 
 const std::string Text::_name("Text");
 
-Text::Text(double x, double y, const std::string & text, const Fonts::Font font, double size, Color color, int depth)
-    : Shape(color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth), _text(text), _font(font), _size(size), _xScale(1.0), _yScale(1.0)
+Text::Text(double x, double y, const std::string & text, const Fonts::Font font, double size, Color color)
+    : ShapeWithStyle(color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin), //
+      _text(text), _font(font), _size(size), _xScale(1.0), _yScale(1.0)
 {
   const double width = text.length() * size * 0.71; // Why 0.71? Well, give it a try!
   _box << Point(x, y);
   _box << _box[0] + Point(width, 0);
   _box << _box[0] + Point(width, size);
   _box << _box[0] + Point(0, size);
-  _box.setClosed(true);
+  _box.close();
 }
 
-Text::Text(Point p, const std::string & text, const Fonts::Font font, double size, Color color, int depth)
-    : Shape(color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth), _text(text), _font(font), _size(size), _xScale(1.0), _yScale(1.0)
+Text::Text(Point p, const std::string & text, const Fonts::Font font, double size, Color color)
+    : ShapeWithStyle(color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin), //
+      _text(text), _font(font), _size(size), _xScale(1.0), _yScale(1.0)
 {
   const double width = text.length() * size * 0.71; // Why 0.71? Well, give it a try!
   _box << p;
   _box << _box[0] + Point(width, 0);
   _box << _box[0] + Point(width, size);
   _box << _box[0] + Point(0, size);
-  _box.setClosed(true);
+  _box.close();
 }
 
-Text::Text(double x, double y, const std::string & text, const Fonts::Font font, const std::string & svgFont, double size, Color color, int depth)
-    : Shape(color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth), _text(text), _font(font), _svgFont(svgFont), _size(size), _xScale(1.0), _yScale(1.0)
+Text::Text(double x, double y, const std::string & text, const Fonts::Font font, const std::string & svgFont, double size, Color color)
+    : ShapeWithStyle(color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin), //
+      _text(text), _font(font), _svgFont(svgFont), _size(size), _xScale(1.0), _yScale(1.0)
 {
   const double width = text.length() * size * 0.71; // Why 0.71? Well, give it a try!
   _box << Point(x, y);
   _box << _box[0] + Point(width, 0);
   _box << _box[0] + Point(width, size);
   _box << _box[0] + Point(0, size);
-  _box.setClosed(true);
+  _box.close();
 }
 
-Text::Text(Point p, const std::string & text, const Fonts::Font font, const std::string & svgFont, double size, Color color, int depth)
-    : Shape(color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin, depth), _text(text), _font(font), _svgFont(svgFont), _size(size), _xScale(1.0), _yScale(1.0)
+Text::Text(Point p, const std::string & text, const Fonts::Font font, const std::string & svgFont, double size, Color color)
+    : ShapeWithStyle(color, Color::Null, 1.0, SolidStyle, ButtCap, MiterJoin), //
+      _text(text), _font(font), _svgFont(svgFont), _size(size), _xScale(1.0), _yScale(1.0)
 {
   const double width = text.length() * size * 0.71; // Why 0.71? Well, give it a try!
   _box << p;
   _box << _box[0] + Point(width, 0);
   _box << _box[0] + Point(width, size);
   _box << _box[0] + Point(0, size);
-  _box.setClosed(true);
+  _box.close();
 }
 
 const std::string & Text::name() const
@@ -193,7 +198,7 @@ double Text::boxHeight(const Transform & transform) const
   Point leftSide = (_box[3] - _box[0]);
   Point transformedLeftSide(transform.map(_box[3]) - transform.map(_box[0]));
   double angle = std::acos(baseline.normalised() * leftSide.normalised());
-  if (std::fabs(2 * angle - M_PI) < std::numeric_limits<float>::epsilon()) {
+  if (std::fabs(2 * angle - M_PI) < std::numeric_limits<double>::epsilon()) {
     return transformedLeftSide.norm();
   }
   return std::sin(angle) * transformedLeftSide.norm();
@@ -225,18 +230,18 @@ void Text::flushPostscript(std::ostream & stream, const TransformEPS & transform
     stream << " " << (angle() * 180.0 / M_PI) << " rot ";
   }
   stream << " (" << _text << ")"
-         << " " << _penColor.postscript() << " srgb"
+         << " " << penColor().postscript() << " srgb"
          << " sh gr" << std::endl;
 }
 
 void Text::flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const
 {
-  const float ppmm = 720.0f / 254.0f;
-  const float fig_ppmm = 45.0f;
+  const double ppmm = 720.0 / 254.0;
+  const double fig_ppmm = 45.0;
 
   stream << "4 0 ";
   // Color, depth, unused, Font
-  stream << colormap[_penColor] << " " << transform.mapDepth(_depth) << " -1 " << _font << " ";
+  stream << colormap[penColor()] << " " << transform.shapeDepth(this) << " -1 " << _font << " ";
   // Font size, Angle, Font flags
   stream << (ppmm * boxHeight(transform) / fig_ppmm) << " " << angle() << " 4 ";
   // Height
@@ -250,18 +255,18 @@ void Text::flushFIG(std::ostream & stream, const TransformFIG & transform, std::
 
 void Text::flushSVG(std::ostream & stream, const TransformSVG & transform) const
 {
-  if (angle() != 0.0f) {
+  if (angle() != 0.0) {
     stream << "<g transform=\"translate(" << transform.mapX(position().x) << "," << transform.mapY(position().y) << ")\" >"
            << "<g transform=\"rotate(" << (-angle() * 180.0 / M_PI) << ")\" >"
            << "<text x=\"0\" y=\"0\""
            << " font-family=\"" << (_svgFont.length() ? _svgFont : PSFontNames[_font]) << "\""
            << " font-size=\"" << boxHeight(transform) << "\""
-           << " fill=\"" << _penColor.svg() << "\"" << _fillColor.svgAlpha(" fill") << _penColor.svgAlpha(" stroke") << ">" << _text << "</text></g></g>" << std::endl;
+           << " fill=\"" << penColor().svg() << "\"" << fillColor().svgAlpha(" fill") << penColor().svgAlpha(" stroke") << ">" << _text << "</text></g></g>" << std::endl;
   } else {
     stream << "<text x=\"" << transform.mapX(position().x) << "\" y=\"" << transform.mapY(position().y) << "\" "
            << " font-family=\"" << (_svgFont.length() ? _svgFont : PSFontNames[_font]) << "\""
            << " font-size=\"" << boxHeight(transform) << "\""
-           << " fill=\"" << _penColor.svg() << "\"" << _fillColor.svgAlpha(" fill") << _penColor.svgAlpha(" stroke") << ">" << _text << "</text>" << std::endl;
+           << " fill=\"" << penColor().svg() << "\"" << fillColor().svgAlpha(" fill") << penColor().svgAlpha(" stroke") << ">" << _text << "</text>" << std::endl;
   }
   // DEBUG
   // Polyline(_box,Color::Black,Color::None,0.5).flushSVG(stream,transform);
@@ -312,9 +317,39 @@ void Text::flushTikZ(std::ostream & stream, const TransformTikZ & transform) con
       0                                         // ZapfDingbats
   };
 
-  stream << "\\path[" << tikzProperties(transform) << "] (" << transform.mapX(position().x) << ',' << transform.mapY(position().y) << ") node {"
+  stream << "\\path[" << _style.tikzProperties(transform) << "] (" << transform.mapX(position().x) << ',' << transform.mapY(position().y) << ") node {"
          << (fontTraits[_font] & ITALIC_FONT ? "\\itshape " : "") << (fontTraits[_font] & BOLD_FONT ? "\\bfseries " : "") << (fontTraits[_font] & MONOSPACE_FONT ? "\\ttfamily " : "")
          << (fontTraits[_font] & SANSSERIF_FONT ? "\\sffamily " : "") << _text << "};" << std::endl;
+}
+
+void Text::accept(ShapeVisitor & visitor)
+{
+  visitor.visit(*this);
+}
+
+void Text::accept(const ShapeVisitor & visitor)
+{
+  visitor.visit(*this);
+}
+
+void Text::accept(ConstShapeVisitor & visitor) const
+{
+  visitor.visit(*this);
+}
+
+void Text::accept(const ConstShapeVisitor & visitor) const
+{
+  visitor.visit(*this);
+}
+
+Shape * Text::accept(CompositeShapeTransform & transform) const
+{
+  return transform.map(*this);
+}
+
+Shape * Text::accept(const CompositeShapeTransform & transform) const
+{
+  return transform.map(*this);
 }
 
 Rect Text::boundingBox(LineWidthFlag) const

@@ -1,12 +1,12 @@
 #  LibBoard CMake file
-#  Contribution of Jason Gauci, University of Central Florida, http://eplex.cs.ucf.edu/
-#  Modified by Guillaume Nee, GREYC, http://www.greyc.fr
+#  Initial version by Jason Gauci, University of Central Florida, http://eplex.cs.ucf.edu/
+#  Modified by Guillaume Nee, GREYC, http://www.greyc.fr, then by Sebastien Fourey
 
 if(POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif()
 
-Project(LibBoard VERSION 0.9.5)
+Project(LibBoard VERSION 0.9.6)
 
 ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
 
@@ -14,10 +14,11 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX11)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
-    set(CMAKE_CXX_STANDARD 11)
+if(NOT COMPILER_SUPPORTS_CXX11)
+  message(FATAL_ERROR "c++ compiler does not support C++11, which is required")
 endif()
+
+set(CMAKE_CXX_STANDARD 11)
 
 find_package(ImageMagick COMPONENTS Magick++)
 IF ( ImageMagick_Magick++_FOUND )
@@ -51,14 +52,14 @@ IF(MSVC)
   SET(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /EHsc")
   SET(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /EHsc")
 ELSE(MSVC)
-  SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -Wall -Wno-unused-variable")
-  SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -Wall -Wno-unused-variable")
+  SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -DBOARD_DEBUG -Wall -Wno-unused-variable -Wno-unknown-pragmas")
+  SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -DBOARD_DEBUG -Wall -Wno-unused-variable -Wno-unknown-pragmas")
 
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} -pg")
   SET(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_DEBUG} -pg")
 
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} -g")
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_DEBUG} -g")
+  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} -Wno-unknown-pragmas")
+  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_DEBUG} -Wno-unknown-pragmas")
 ENDIF(MSVC)
 
 IF(NOT MYPROJ_RAN_ONCE)
@@ -107,53 +108,68 @@ INCLUDE_DIRECTORIES( include/ include/board )
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib/ )
 
 SET(lib_src
-  src/Shape.cpp
-  src/Dot.cpp
-  src/Line.cpp
-  src/Arrow.cpp
-  src/Polyline.cpp
-  src/Bezier.cpp
-  src/Ellipse.cpp
-  src/Text.cpp
-  src/Board.cpp
-  src/Color.cpp
-  src/Exception.cpp
-  src/Rect.cpp
-  src/Path.cpp
-  src/Image.cpp
-  src/ShapeList.cpp
-  src/ShapeVisitor.cpp
-  src/Transforms.cpp
-  src/TransformMatrix.cpp
-  src/Tools.cpp
-  src/PathBoundaries.cpp
-  src/PSFonts.cpp
-  src/Point.cpp
-
-  include/Board.h
-
-  include/board/Shape.h
-  include/board/Dot.h
-  include/board/Line.h
-  include/board/Arrow.h
-  include/board/Polyline.h
-  include/board/Bezier.h
-  include/board/Ellipse.h
-  include/board/Text.h
-  include/board/Color.h
-  include/board/Exception.h
-  include/board/Image.h
-  include/board/PSFonts.h
-  include/board/Path.h
-  include/board/Point.h
-  include/board/Rect.h
-  include/board/ShapeList.h
-  include/board/ShapeVisitor.h
-  include/board/Tools.h
-  include/board/PathBoundaries.h
+  include/BoardConfig.h
+  include/board/Group.h
   include/board/TransformMatrix.h
+  include/board/Debug.h
+  include/board/BoardFontText.h
+  include/board/PSFonts.h
+  include/board/Bezier.h
+  include/board/Polyline.h
+  include/board/Globals.h
+  include/board/Rect.h
+  include/board/SketchFilter.h
+  include/board/Arrow.h
+  include/board/Exception.h
+  include/board/Color.h
+  include/board/Types.h
   include/board/Transforms.h
-  )
+  include/board/PathBoundaries.h
+  include/board/Line.h
+  include/board/Image.h
+  include/board/Point.h
+  include/board/Text.h
+  include/board/Tools.h
+  include/board/Ellipse.h
+  include/board/Path.h
+  include/board/Dot.h
+  include/board/RoughVisitor.h
+  include/board/Shape.h
+  include/board/Style.h
+  include/board/ShapeWithStyle.h
+  include/board/ShapeVisitor.h
+  include/board/ShapeList.h
+  include/Board.h
+  src/Arrow.cpp
+  src/Ellipse.cpp
+  src/BoardFontText.cpp
+  src/Color.cpp
+  src/ShapeWithStyle.cpp
+  src/ShapeVisitor.cpp
+  src/Text.cpp
+  src/Exception.cpp
+  src/Point.cpp
+  src/Path.cpp
+  src/Dot.cpp
+  src/Bezier.cpp
+  src/Shape.cpp
+  src/ShapeList.cpp
+  src/RoughVisitor.cpp
+  src/Rect.cpp
+  src/Line.cpp
+  src/PSFonts.cpp
+  src/SketchFilter.cpp
+  src/Polyline.cpp
+  src/Tools.cpp
+  src/Style.cpp
+  src/PathBoundaries.cpp
+  src/Image.cpp
+  src/Group.cpp
+  src/inc/BoardFont.cpp
+  src/TransformMatrix.cpp
+  src/Transforms.cpp
+  src/Board.cpp
+)
 
 ADD_LIBRARY(board STATIC ${lib_src})
 SET_TARGET_PROPERTIES(board PROPERTIES DEBUG_POSTFIX _d)
@@ -164,28 +180,27 @@ SET_TARGET_PROPERTIES(board-dynamic PROPERTIES PREFIX "lib")
 
 install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY include/board/ DESTINATION include/board FILES_MATCHING PATTERN "*.h")
-install(DIRECTORY include/board/ DESTINATION include/board FILES_MATCHING PATTERN "*.ih")
 install(TARGETS board DESTINATION lib)
 install(TARGETS board-dynamic DESTINATION lib)
 install(DIRECTORY examples/ DESTINATION share/libboard/examples FILES_MATCHING PATTERN "*.cpp")
 install(FILES README.md LICENSE AUTHORS DESTINATION share/libboard )
 
-FOREACH( EXAMPLE logo example1 example2 example3 example4
-         arithmetic ellipse graph arrows ruler koch fern clipping
-         flag scale_ellipse line_style images line_segment tilings stroke_path
-         holes bezier traversal hull)
+FILE(GLOB EXAMPLES examples/*.cpp)
+
+FOREACH( EXAMPLE_SRC_PATH ${EXAMPLES} )
+  get_filename_component(EXAMPLE_EXE ${EXAMPLE_SRC_PATH} NAME_WE)
   ADD_EXECUTABLE(
-    ${EXAMPLE}
-    examples/${EXAMPLE}.cpp
+    ${EXAMPLE_EXE}
+    examples/${EXAMPLE_EXE}.cpp
     )
   TARGET_LINK_LIBRARIES(
-    ${EXAMPLE}
+    ${EXAMPLE_EXE}
     debug board_d
     optimized board
     )
   TARGET_LINK_LIBRARIES(
-   ${EXAMPLE}
+   ${EXAMPLE_EXE}
    ${ImageMagick_LIBRARIES}
   )
-  SET_TARGET_PROPERTIES(${EXAMPLE} PROPERTIES DEBUG_POSTFIX _d)
-ENDFOREACH(EXAMPLE)
+  SET_TARGET_PROPERTIES(${EXAMPLE_EXE} PROPERTIES DEBUG_POSTFIX _d)
+ENDFOREACH(EXAMPLE_SRC_PATH)

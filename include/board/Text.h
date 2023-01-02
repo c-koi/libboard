@@ -23,14 +23,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_TEXT_H_
-#define _BOARD_TEXT_H_
+#ifndef BOARD_TEXT_H
+#define BOARD_TEXT_H
 
-#include "board/Shape.h"
+#include <board/ShapeWithStyle.h>
 
-#if __cplusplus < 201100
-#define override
-#endif
+// TODO : Add a sketchy line text font
 
 namespace LibBoard
 {
@@ -39,7 +37,7 @@ namespace LibBoard
  * The text structure.
  * @brief A piece of text.
  */
-struct Text : public Shape {
+struct Text : public ShapeWithStyle {
 
   /**
    * Create a Text sctucture.
@@ -50,11 +48,8 @@ struct Text : public Shape {
    * @param font
    * @param size
    * @param color
-   * @param depth
-   *
-   * @return
    */
-  Text(double x, double y, const std::string & text, const Fonts::Font font, double size, Color color = Color::Black, int depth = -1);
+  Text(double x, double y, const std::string & text, const Fonts::Font font, double size, Color color = Color::Black);
 
   /**
    * Create a Text sctucture.
@@ -64,11 +59,8 @@ struct Text : public Shape {
    * @param font
    * @param size
    * @param color
-   * @param depth
-   *
-   * @return
    */
-  Text(Point p, const std::string & text, const Fonts::Font font, double size, Color color = Color::Black, int depth = -1);
+  Text(Point p, const std::string & text, const Fonts::Font font, double size, Color color = Color::Black);
 
   /**
    * Create a Text sctucture.
@@ -80,11 +72,8 @@ struct Text : public Shape {
    * @param svgFont The font family for an SVG file. (E.g. "Verdana, Arial" or "'Time New Roman', Serif" )
    * @param size
    * @param color
-   * @param depth
-   *
-   * @return
    */
-  Text(double x, double y, const std::string & text, const Fonts::Font font, const std::string & svgFont, double size, Color color = Color::Black, int depth = -1);
+  Text(double x, double y, const std::string & text, const Fonts::Font font, const std::string & svgFont, double size, Color color = Color::Black);
 
   /**
    * Create a Text sctucture.
@@ -95,11 +84,8 @@ struct Text : public Shape {
    * @param svgFont The font family for an SVG file. (E.g. "Verdana, Arial" or "'Time New Roman', Serif" )
    * @param size
    * @param color
-   * @param depth
-   *
-   * @return
    */
-  Text(Point p, const std::string & text, const Fonts::Font font, const std::string & svgFont, double size, Color color = Color::Black, int depth = -1);
+  Text(Point p, const std::string & text, const Fonts::Font font, const std::string & svgFont, double size, Color color = Color::Black);
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -192,9 +178,56 @@ struct Text : public Shape {
 
   void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const override;
 
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(const ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(const ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accept a composite shape transform.
+   * @param transform A composite shape transform object.
+   */
+  virtual Shape * accept(CompositeShapeTransform & transform) const override;
+
+  /**
+   * @brief Accept a constant composite shape transform.
+   *
+   * @param transform A constant composite shape transform object..
+   */
+  virtual Shape * accept(const CompositeShapeTransform & transform) const override;
+
   Rect boundingBox(LineWidthFlag) const override;
 
   Text * clone() const override;
+
+  Text(const Text &) = default;
+  Text(Text &&) = default;
+  Text & operator=(Text &&) = default;
+  Text & operator=(const Text &) = default;
+  ~Text() override = default;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
@@ -218,8 +251,4 @@ protected:
 
 } // namespace LibBoard
 
-#if __cplusplus < 201100
-#undef override
-#endif
-
-#endif /* _BOARD_TEXT_H_ */
+#endif /* BOARD_TEXT_H */

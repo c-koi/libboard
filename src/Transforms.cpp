@@ -24,18 +24,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "board/Transforms.h"
+#include <board/Transforms.h>
 #include <cmath>
-#include "BoardConfig.h"
-#include "board/Rect.h"
-#include "board/Shape.h"
-#include "board/ShapeList.h"
+#include <BoardConfig.h>
+#include <board/Rect.h>
+#include <board/Shape.h>
+#include <board/ShapeList.h>
 
 namespace
 {
-const float ppmm = 72.0f / 25.4f;
-const float fig_ppmm = 1143 / 25.4f;
-}
+const double ppmm = 72.0 / 25.4;
+const double fig_ppmm = 1143 / 25.4;
+} // namespace
 
 namespace LibBoard
 {
@@ -48,6 +48,8 @@ double Transform::rounded(double x) const
 {
   return Transform::round(1000000 * x) / 1000000;
 }
+
+Transform::~Transform() {}
 
 double Transform::mapX(double x) const
 {
@@ -145,8 +147,9 @@ int TransformFIG::mapWidth(double width) const
 {
   // FIG thickness unit is 1/80 inch, reduced to 1/160 when exporting to EPS.
   // Postscript points are 1/72 inch
-  if (width == 0.0)
+  if (width == 0.0) {
     return 0;
+  }
   int result = static_cast<int>(Transform::round(80 * (width * _postscriptScale / 72.0)));
   return result > 0 ? result : 1;
 }
@@ -184,24 +187,37 @@ void TransformFIG::setBoundingBox(const Rect & rect, const double pageWidth, con
   // float ppmm = (1200/25.4);
 }
 
-void TransformFIG::setDepthRange(const ShapeList & shapes)
+unsigned int TransformFIG::shapeDepth(const Shape * shape) const
 {
-  _maxDepth = shapes.maxDepth();
-  _minDepth = shapes.minDepth();
+  if (_depthMap) {
+    auto it = _depthMap->find(shape);
+    if (it != _depthMap->end()) {
+      return mapDepth(it->second);
+    }
+  }
+  return 50;
 }
 
-int TransformFIG::mapDepth(int depth) const
+unsigned int TransformFIG::mapDepth(unsigned int depth) const
 {
-  if (depth > _maxDepth)
+  if (depth > _maxDepth) {
     return 999;
-  if (_maxDepth - _minDepth > 998) {
-    double range = _maxDepth - _minDepth;
-    int r = static_cast<int>(1 + Transform::round(((depth - _minDepth) / range) * 998));
-    return r >= 0 ? r : 0;
-  } else {
-    int r = 1 + depth - _minDepth;
-    return r >= 0 ? r : 0;
   }
+  if (_maxDepth - _minDepth > 998) {
+    const double range = _maxDepth - _minDepth;
+    const unsigned int r = static_cast<unsigned int>(1 + Transform::round(((depth - _minDepth) / range) * 998));
+    return r; // r >= 0 ? r : 0;
+  } else {
+    const unsigned int r = 1 + depth - _minDepth;
+    return r; // r >= 0 ? r : 0; // TODO : Check this
+  }
+}
+
+void TransformFIG::setDepthMap(const std::map<const Shape *, unsigned int> * depthMap, unsigned int min)
+{
+  _depthMap = depthMap;
+  _maxDepth = std::numeric_limits<unsigned int>::max();
+  _minDepth = min;
 }
 
 //
@@ -210,7 +226,7 @@ int TransformFIG::mapDepth(int depth) const
 
 double TransformSVG::rounded(double x) const
 {
-  return Transform::round(100 * x) / 100.0f;
+  return Transform::round(100000.0 * x) / 100000.0;
 }
 
 double TransformSVG::mapY(double y) const
@@ -273,5 +289,7 @@ double TransformSVG::deltaY() const
 {
   return _height - _deltaY;
 }
+
+TransformTikZ::~TransformTikZ() {}
 
 } // namespace LibBoard

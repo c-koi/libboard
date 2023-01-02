@@ -23,21 +23,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_SHAPE_H_
-#define _BOARD_SHAPE_H_
+#ifndef BOARD_SHAPE_H
+#define BOARD_SHAPE_H
 
 #include <cmath>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
-#include "board/Color.h"
-#include "board/PSFonts.h"
-#include "board/Path.h"
-#include "board/Point.h"
-#include "board/Rect.h"
-#include "board/Tools.h"
-#include "board/Transforms.h"
+#include <board/Color.h>
+#include <board/Globals.h>
+#include <board/PSFonts.h>
+#include <board/Path.h>
+#include <board/Point.h>
+#include <board/Rect.h>
+#include <board/Style.h>
+#include <board/Tools.h>
+#include <board/Transforms.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -47,15 +50,12 @@
 #define M_PI_2 1.57079632679489661923
 #endif
 
-#if __cplusplus < 201100
-#define override
-#endif
-
 namespace LibBoard
 {
 
 struct ShapeVisitor;
 struct ConstShapeVisitor;
+struct CompositeShapeTransform;
 
 /**
  * Shape structure.
@@ -63,50 +63,15 @@ struct ConstShapeVisitor;
  */
 struct Shape {
 
-  enum LineCap
-  {
-    ButtCap = 0,
-    RoundCap,
-    SquareCap
-  };
-  enum LineJoin
-  {
-    MiterJoin = 0,
-    RoundJoin,
-    BevelJoin
-  };
-  enum LineStyle
-  {
-    SolidStyle = 0,
-    DashStyle,
-    DotStyle,
-    DashDotStyle,
-    DashDotDotStyle,
-    DashDotDotDotStyle
-  };
-  enum LineWidthFlag
-  {
-    IgnoreLineWidth,
-    UseLineWidth
-  };
-
   /**
    * Shape constructor.
-   *
-   * @param penColor The pen color of the shape.
-   * @param fillColor The fill color of the shape.
-   * @param lineWidth The line thickness.
-   * @param style The line style.
-   * @param cap The line cap style.
-   * @param join The line join style.
-   * @param depth The depth of the shape.
    */
-  inline Shape(Color penColor, Color fillColor, double lineWidth, LineStyle style, const LineCap cap, const LineJoin join, int depth);
+  inline Shape();
 
   /**
    * Shape destructor.
    */
-  virtual ~Shape() {}
+  virtual ~Shape();
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -121,13 +86,6 @@ struct Shape {
    * @return A copy of the shape.
    */
   virtual Shape * clone() const = 0;
-
-  /**
-   * Checks whether a shape is filled with a color or not.
-   *
-   * @return true if the shape is filled.
-   */
-  inline bool filled() const { return _fillColor != Color::Null; }
 
   /**
    * Returns the center of the shape.
@@ -170,7 +128,6 @@ struct Shape {
    * Rotate the shape around its center.
    *
    * @param angle The rotation angle in degree.
-   * @param center The center of rotation.
    *
    * @return A reference to the shape itself.
    */
@@ -272,20 +229,6 @@ struct Shape {
   inline Rect bbox(LineWidthFlag) const;
 
   /**
-   * Decrement the depth of the shape. (Pull the shape toward the foreground.)
-   *
-   * @return A reference to the shape itself.
-   */
-  inline Shape & operator--();
-
-  /**
-   * Increment the depth of the shape. (Push the shape toward the background.)
-   *
-   * @return A reference to the shape itself.
-   */
-  inline Shape & operator++();
-
-  /**
    * Scale all the values (positions, dimensions, etc.) associated
    * with the shape.
    *
@@ -308,6 +251,7 @@ struct Shape {
    *
    * @param stream The output stream.
    * @param transform A 2D transform to be applied.
+   * @param colormap
    */
   virtual void flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const = 0;
 
@@ -326,74 +270,6 @@ struct Shape {
    * @param transform A 2D transform to be applied.
    */
   virtual void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const = 0;
-
-  /**
-   *  Globally enable linewidth scaling when using scale functions.
-   */
-  static void enableLineWidthScaling();
-
-  /**
-   *  Globally disable linewidth scaling when using scale functions.
-   */
-  static void disableLineWidthScaling();
-
-  /**
-   *  Globally enable/disable linewidth scaling when using scale functions.
-   */
-  static void setLineWidthScaling(bool);
-
-  inline int depth() const;
-
-  virtual void depth(int);
-
-  virtual void shiftDepth(int shift);
-
-  inline const Color & penColor() const;
-
-  inline const Color & fillColor() const;
-
-  static void setDefaultLineWidth(double);
-  static void setDefaultPenColor(Color);
-  static void setDefaultFillColor(Color);
-  static void setDefaultLineStyle(Shape::LineStyle);
-  static void setDefaultLineCap(Shape::LineCap);
-  static void setDefaultLineJoin(Shape::LineJoin);
-
-  /**
-   * @brief defaultLineWidth
-   * @return Default lineWidth value for shapes (intialized as 1.0).
-   */
-  static double defaultLineWidth();
-
-  /**
-   * @brief defaultPenColor
-   * @return Default pen color for shapes (initialized as Black)
-   */
-  static Color defaultPenColor();
-
-  /**
-   * @brief defaultFillColor
-   * @return Default fill color for shapes (initialized as Color::None)
-   */
-  static Color defaultFillColor();
-
-  /**
-   * @brief defaultLineStyle
-   * @return Default line style for shapes (initialized as SolidStyle)
-   */
-  static Shape::LineStyle defaultLineStyle();
-
-  /**
-   * @brief defaultLineCap
-   * @return Default line cap for shapes (initialized as ButtCap)
-   */
-  static Shape::LineCap defaultLineCap();
-
-  /**
-   * @brief defaultLineJoin
-   * @return Default line join for shapes (initialized as MiterJoin)
-   */
-  static Shape::LineJoin defaultLineJoin();
 
   /**
    * @brief Accepts a visitor object.
@@ -423,66 +299,25 @@ struct Shape {
    */
   virtual void accept(const ConstShapeVisitor & visitor) const;
 
+  /**
+   * @brief Accept a composite shape transform.
+   *
+   * @param transform A composite shape transform object.
+   */
+  virtual Shape * accept(CompositeShapeTransform & transform) const;
+
+  /**
+   * @brief Accept a constant composite shape transform.
+   *
+   * @param transform A constant composite shape transform object..
+   */
+  virtual Shape * accept(const CompositeShapeTransform & transform) const;
+
+  Shape(const Shape & other);
+
 private:
   static const std::string _name; /**< The generic name of the shape. */
-
-protected:
-  static bool _lineWidthScaling; /**< Linewidth should be scaled by
-                                      scaling functions. */
-
-  static double _defaultLineWidth;
-  static Color _defaultPenColor;
-  static Color _defaultFillColor;
-  static Shape::LineStyle _defaultLineStyle;
-  static Shape::LineCap _defaultLineCap;
-  static Shape::LineJoin _defaultLineJoin;
-
-  inline void updateLineWidth(double s);
-
-  int _depth;           /**< The depth of the shape. */
-  Color _penColor;      /**< The color of the shape. */
-  Color _fillColor;     /**< The color of the shape. */
-  double _lineWidth;    /**< The line thickness. */
-  LineStyle _lineStyle; /**< The line style (solid, dashed, etc.). */
-  LineCap _lineCap;     /**< The linecap attribute. (The way line terminates.) */
-  LineJoin _lineJoin;   /**< The linejoin attribute. (The shape of line junctions.) */
-
-  /**
-   * Return a string of the svg properties lineWidth, opacity, penColor, fillColor,
-   * lineCap, and lineJoin.
-   *
-   * @return A string of the properties suitable for inclusion in an svg tag.
-   */
-  std::string svgProperties(const TransformSVG & transform) const;
-
-  /**
-   * Return a string of the properties lineWidth, penColor, lineCap, and lineJoin
-   * as Postscript commands.
-   * @return A string of the Postscript commands.
-   */
-  std::string postscriptProperties(const TransformEPS & transform) const;
-
-  /**
-   * Return a string of the properties lineWidth, penColor, lineCap, and lineJoin
-   * as TikZ commands.
-   * @return A string of the TikZ commands.
-   */
-  std::string tikzProperties(const TransformTikZ & transform) const;
 };
-
-/**
- * Compares two shapes according to their depths.
- *
- * @param s1 A pointer to a first shape.
- * @param s2 A pointer to a second shape.
- *
- * @return
- */
-bool shapeGreaterDepth(const Shape * s1, const Shape * s2);
-
-extern const char * xFigDashStylesPS[];
-extern const char * xFigDashStylesSVG[];
-extern const char * xFigDashStylesTikZ[];
 
 } // namespace LibBoard
 
@@ -492,41 +327,11 @@ extern const char * xFigDashStylesTikZ[];
 
 namespace LibBoard
 {
-Shape::Shape(Color penColor, Color fillColor, double lineWidth, LineStyle style, const LineCap cap, const LineJoin join, int depth)
-    : _depth(depth), _penColor(penColor), _fillColor(fillColor), _lineWidth(lineWidth), _lineStyle(style), _lineCap(cap), _lineJoin(join)
-{
-}
+Shape::Shape() {}
 
 Rect Shape::bbox(LineWidthFlag flag) const
 {
   return boundingBox(flag);
-}
-
-Shape & Shape::operator++()
-{
-  ++_depth;
-  return *this;
-}
-
-Shape & Shape::operator--()
-{
-  --_depth;
-  return *this;
-}
-
-int Shape::depth() const
-{
-  return _depth;
-}
-
-const Color & Shape::penColor() const
-{
-  return _penColor;
-}
-
-const Color & Shape::fillColor() const
-{
-  return _fillColor;
 }
 
 Shape & Shape::rotateDeg(double angle, const Point & center)
@@ -539,16 +344,6 @@ Shape & Shape::rotateDeg(double angle)
   return rotate(angle * (M_PI / 180.0), center());
 }
 
-void Shape::updateLineWidth(double s)
-{
-  if (_lineWidthScaling) {
-    _lineWidth *= s;
-  }
-}
-}
+} // namespace LibBoard
 
-#if __cplusplus < 201100
-#undef override
-#endif
-
-#endif /* _BOARD_SHAPE_H_ */
+#endif /* BOARD_SHAPE_H */

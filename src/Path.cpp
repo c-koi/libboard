@@ -23,8 +23,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Path.h"
+#include <BoardConfig.h>
 #include <algorithm>
+#include <board/Path.h>
+#include <board/Transforms.h>
 #include <iterator>
 #include "BoardConfig.h"
 #include "board/Transforms.h"
@@ -38,6 +40,12 @@ Path & Path::pop_back()
   return *this;
 }
 
+Path & Path::push_back(const Point & p)
+{
+  _points.push_back(p);
+  return *this;
+}
+
 Path & Path::operator<<(const Point & p)
 {
   _points.push_back(p);
@@ -48,6 +56,17 @@ Path & Path::operator<<(const std::vector<Point> & v)
 {
   std::copy(v.begin(), v.end(), std::back_inserter(_points));
   return *this;
+}
+
+Path::Path(std::initializer_list<Point> points)
+{
+  _openClosed = Open;
+  _points = points;
+}
+
+void Path::setOpenClosed(Path::OpenClosed openClosed)
+{
+  _openClosed = openClosed;
 }
 
 Point Path::center() const
@@ -151,12 +170,8 @@ Path & Path::scale(double sx, double sy)
 {
   Point c = center();
   translate(-c.x, -c.y);
-  std::vector<Point>::iterator i = _points.begin();
-  std::vector<Point>::iterator end = _points.end();
-  while (i != end) {
-    i->x *= sx;
-    i->y *= sy;
-    ++i;
+  for (Point & p : _points) {
+    p.scale(sx, sy);
   }
   Point delta = c - center();
   translate(delta.x, delta.y);
@@ -201,31 +216,30 @@ void Path::flushPostscript(std::ostream & stream, const TransformEPS & transform
     stream << " " << transform.mapX(i->x) << " " << transform.mapY(i->y) << " l";
     ++i;
   }
-  if (_closed)
-    stream << " cp";
-  stream << " ";
+  stream << (isClosed() ? " cp " : " ");
 }
 
 void Path::flushFIG(std::ostream & stream, const TransformFIG & transform) const
 {
-  if (_points.empty())
+  if (_points.empty()) {
     return;
-
+  }
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
   while (i != end) {
     stream << " " << static_cast<int>(transform.mapX(i->x)) << " " << static_cast<int>(transform.mapY(i->y));
     ++i;
   }
-  if (_closed) {
+  if (isClosed()) {
     stream << " " << static_cast<int>(transform.mapX(_points.begin()->x)) << " " << static_cast<int>(transform.mapY(_points.begin()->y));
   }
 }
 
 void Path::flushSVGCommands(std::ostream & stream, const TransformSVG & transform) const
 {
-  if (_points.empty())
+  if (_points.empty()) {
     return;
+  }
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
   int count = 0;
@@ -239,15 +253,16 @@ void Path::flushSVGCommands(std::ostream & stream, const TransformSVG & transfor
     if (!count)
       stream << "\n                  ";
   }
-  if (_closed) {
+  if (isClosed()) {
     stream << " Z" << std::endl;
   }
 }
 
 void Path::flushSVGPoints(std::ostream & stream, const TransformSVG & transform) const
 {
-  if (_points.empty())
+  if (_points.empty()) {
     return;
+  }
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
   int count = 0;
@@ -264,8 +279,9 @@ void Path::flushSVGPoints(std::ostream & stream, const TransformSVG & transform)
 
 void Path::flushTikZPoints(std::ostream & stream, const TransformTikZ & transform) const
 {
-  if (_points.empty())
+  if (_points.empty()) {
     return;
+  }
   std::vector<Point>::const_iterator i = _points.begin();
   std::vector<Point>::const_iterator end = _points.end();
   stream << '(' << transform.mapX(i->x) << "," << transform.mapY(i->y) << ')';
@@ -274,6 +290,15 @@ void Path::flushTikZPoints(std::ostream & stream, const TransformTikZ & transfor
     stream << " -- " << '(' << transform.mapX(i->x) << "," << transform.mapY(i->y) << ')';
     ++i;
   }
+}
+
+Path Path::transformed(const Transform & transform) const
+{
+  Path path(_openClosed);
+  for (const Point & p : _points) {
+    path.push_back(transform.map(p));
+  }
+  return path;
 }
 
 bool Path::isClockwise() const
@@ -335,12 +360,9 @@ Rect Path::boundingBox() const
   if (_points.empty()) {
     return Rect(0, 0, 0, 0);
   }
-  std::vector<Point>::const_iterator it = _points.begin();
-  std::vector<Point>::const_iterator end = _points.end();
-  Rect rect(*it, 0.0, 0.0);
-  ++it;
-  while (it != end) {
-    rect.growToContain(*it++);
+  Rect rect(_points.front(), 0.0, 0.0);
+  for (const Point & p : _points) {
+    rect.growToContain(p);
   }
   return rect;
 }
@@ -362,6 +384,21 @@ std::ostream & Path::flush(std::ostream & out) const
   }
   out << ")";
   return out;
+}
+
+Path mix(const Path & a, const Path & b, double time)
+{
+  if (a.size() != b.size()) {
+    Tools::error << "Path::mid() cannot interpolate path with different sizes";
+    return a;
+  }
+  Path result(a.openClosed());
+  auto ita = a.begin();
+  auto itb = b.begin();
+  while (ita != a.end()) {
+    result.push_back(mix(*ita++, *itb++, time));
+  }
+  return result;
 }
 
 } // namespace LibBoard

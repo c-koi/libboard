@@ -23,14 +23,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Image.h"
+#include <BoardConfig.h>
+#include <board/Image.h>
+#include <board/ShapeVisitor.h>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <sstream>
-#include "BoardConfig.h"
 
-#if (_BOARD_HAVE_MAGICKPLUSPLUS_ == 1)
+#if (BOARD_HAVE_MAGICKPLUSPLUS == 1)
 #define MAGICKCORE_QUANTUM_DEPTH 16
 #define MAGICKCORE_HDRI_ENABLE 0
 #include <Magick++.h>
@@ -41,18 +42,18 @@ namespace LibBoard
 
 const std::string LibBoard::Image::_name("Image");
 
-Image::Image(const char * filename, double left, double top, double width, double height, int depth)
-    : Shape(Color::Null, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth),
-      _rectangle(LibBoard::rectangle(left, top, width, height, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth)),
-      _originalRectangle(LibBoard::rectangle(left, top, width, height, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth)), _filename(filename)
+Image::Image(const char * filename, double left, double top, double width, double height)
+    : _rectangle(LibBoard::rectangle(left, top, width, height, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin)),
+      _originalRectangle(LibBoard::rectangle(left, top, width, height, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin)), //
+      _filename(filename)
 {
   if (height == 0.0) {
-#if (_BOARD_HAVE_MAGICKPLUSPLUS_ == 1)
+#if (BOARD_HAVE_MAGICKPLUSPLUS == 1)
     try {
       Magick::Image image;
       image.read(_filename);
       height = width * (image.rows() / (double)image.columns());
-      _rectangle = _originalRectangle = LibBoard::rectangle(left, top, width, height, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth);
+      _rectangle = _originalRectangle = LibBoard::rectangle(left, top, width, height, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin);
     } catch (std::exception & e) {
       Tools::error << "Image::Image(): ";
       std::cerr << e.what() << std::endl;
@@ -63,9 +64,9 @@ Image::Image(const char * filename, double left, double top, double width, doubl
   }
 }
 
-Image::Image(const char * filename, const Rect & rect, int depth)
-    : Shape(Color::Null, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth), _rectangle(LibBoard::rectangle(rect, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth)),
-      _originalRectangle(LibBoard::rectangle(rect, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin, depth)), _filename(filename)
+Image::Image(const char * filename, const Rect & rect)
+    : _rectangle(LibBoard::rectangle(rect, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin)),
+      _originalRectangle(LibBoard::rectangle(rect, Color::Black, Color::Null, 0.0, SolidStyle, ButtCap, MiterJoin)), _filename(filename)
 {
 }
 
@@ -161,12 +162,13 @@ void Image::scaleAll(double s)
 
 void Image::flushPostscript(std::ostream & stream, const TransformEPS & transform) const
 {
-#if (_BOARD_HAVE_MAGICKPLUSPLUS_ == 1)
+#if (BOARD_HAVE_MAGICKPLUSPLUS == 1)
   Magick::Image image;
   image.read(_filename);
   const char * tmpFilename = Tools::temporaryFilename(".eps");
   image.write(tmpFilename);
-  Rect rect = Tools::getEPSBoundingBox(tmpFilename);
+  Rect rect;
+  Tools::getEPSBoundingBox(tmpFilename, rect);
 
   double originalWidth = (_originalRectangle[1] - _originalRectangle[0]).norm();
   double originalHeight = (_originalRectangle[2] - _originalRectangle[1]).norm();
@@ -201,7 +203,7 @@ void Image::flushFIG(std::ostream & stream, const TransformFIG & transform, std:
   _rectangle.flushFIG(stream, transform, colormap);
   Rect bbox = _rectangle.boundingBox(UseLineWidth);
   Polyline rectangle = LibBoard::rectangle(bbox, Color::Null, Color::Null, 0.0);
-  stream << "2 5 0 1 0 -1 " << transform.mapDepth(_depth) << " -1 -1 0.000 0 0 -1 0 0 5\n";
+  stream << "2 5 0 1 0 -1 " << transform.shapeDepth(this) << " -1 -1 0.000 0 0 -1 0 0 5\n";
   stream << "\t0 " << _filename << "\n";
   stream << "\t";
   for (std::size_t i = 0; i < rectangle.vertexCount(); ++i) {
@@ -239,6 +241,36 @@ void Image::flushTikZ(std::ostream & stream, const TransformTikZ & transform) co
 {
   _rectangle.flushTikZ(stream, transform);
   Tools::error << "Image::flushTikZ(): not available.\n";
+}
+
+void Image::accept(ShapeVisitor & visitor)
+{
+  visitor.visit(*this);
+}
+
+void Image::accept(const ShapeVisitor & visitor)
+{
+  visitor.visit(*this);
+}
+
+void Image::accept(ConstShapeVisitor & visitor) const
+{
+  visitor.visit(*this);
+}
+
+void Image::accept(const ConstShapeVisitor & visitor) const
+{
+  visitor.visit(*this);
+}
+
+Shape * Image::accept(CompositeShapeTransform & transform) const
+{
+  return transform.map(*this);
+}
+
+Shape * Image::accept(const CompositeShapeTransform & transform) const
+{
+  return transform.map(*this);
 }
 
 } // namespace LibBoard

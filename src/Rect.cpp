@@ -23,25 +23,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Rect.h"
-#include "BoardConfig.h"
+#include <board/Rect.h>
+#include <BoardConfig.h>
 
 namespace LibBoard
 {
 
 Rect operator||(const Rect & rectA, const Rect & rectB)
 {
+  if (rectA.isNull() && rectB.isNull()) {
+    return Rect();
+  } else if (rectA.isNull()) {
+    return rectB;
+  } else if (rectB.isNull()) {
+    return rectA;
+  }
   Rect rect;
   rect.top = (rectA.top > rectB.top) ? rectA.top : rectB.top;
   rect.left = (rectA.left < rectB.left) ? rectA.left : rectB.left;
-  if (rectA.left + rectA.width > rectB.left + rectB.width)
+  if (rectA.left + rectA.width > rectB.left + rectB.width) {
     rect.width = rectA.left + rectA.width - rect.left;
-  else
+  } else {
     rect.width = rectB.left + rectB.width - rect.left;
-  if (rectA.top - rectA.height < rectB.top - rectB.height)
+  }
+  if (rectA.top - rectA.height < rectB.top - rectB.height) {
     rect.height = rect.top - (rectA.top - rectA.height);
-  else
+  } else {
     rect.height = rect.top - (rectB.top - rectB.height);
+  }
   return rect;
 }
 
@@ -65,7 +74,7 @@ Rect operator&&(const Rect & rectA, const Rect & rectB)
   return rect;
 }
 
-void Rect::growToContain(Point p)
+Rect & Rect::growToContain(const Point & p)
 {
   if (p.x < left) {
     double dw = left - p.x;
@@ -81,11 +90,37 @@ void Rect::growToContain(Point p)
   } else if (p.y < top - height) {
     height = top - p.y;
   }
+  return *this;
+}
+
+Rect & Rect::growToContain(const std::vector<Point> & points)
+{
+  for (const Point & point : points) {
+    growToContain(point);
+  }
+  return *this;
 }
 
 bool Rect::contains(Point p) const
 {
   return p.x >= left && p.x <= left + width && p.y <= top && p.y >= top - height;
+}
+
+bool Rect::strictlyContains(Point p) const
+{
+  return p.x > left && p.x < left + width && p.y < top && p.y > top - height;
+}
+
+bool Rect::intersects(const Rect & other) const
+{
+  return contains(other.topLeft()) || contains(other.topRight()) || contains(other.bottomLeft()) || contains(other.bottomRight()) //
+         || other.contains(topLeft()) || other.contains(topRight()) || other.contains(bottomLeft()) || other.contains(bottomRight());
+}
+
+bool Rect::strictlyIntersects(const Rect & other) const
+{
+  return strictlyContains(other.topLeft()) || strictlyContains(other.topRight()) || strictlyContains(other.bottomLeft()) || strictlyContains(other.bottomRight()) //
+         || other.strictlyContains(topLeft()) || other.strictlyContains(topRight()) || other.strictlyContains(bottomLeft()) || other.strictlyContains(bottomRight());
 }
 
 Rect & Rect::grow(double margin)
@@ -95,6 +130,11 @@ Rect & Rect::grow(double margin)
   width += 2 * margin;
   height += 2 * margin;
   return *this;
+}
+
+Rect Rect::growed(double margin)
+{
+  return Rect(*this).grow(margin);
 }
 
 } // namespace LibBoard

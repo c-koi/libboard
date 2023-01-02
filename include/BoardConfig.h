@@ -23,24 +23,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_CONFIG_H_
-#define _BOARD_CONFIG_H_
+#ifndef BOARD_CONFIG_H
+#define BOARD_CONFIG_H
 
-#define _BOARD_HAVE_MAGICKPLUSPLUS_ 1
+#define BOARD_HAVE_MAGICKPLUSPLUS 1
 
-#define _BOARD_WIN32_ 0
+#define BOARD_WIN32 0
 
-#define _BOARD_VERSION_ 0.9.5
+#define BOARD_VERSION 0.9.6
 
 #define BOARD_STRINGIFY( X ) # X
 #define BOARD_XSTRINGIFY( X ) BOARD_STRINGIFY( X )
 
-#define _BOARD_VERSION_STRING_  BOARD_XSTRINGIFY( _BOARD_VERSION_ )
-
-#if __cplusplus<201100
-#define BOARD_NOEXCEPT throw()
-#else
-#define BOARD_NOEXCEPT noexcept
-#endif
+#define BOARD_VERSION_STRING  BOARD_XSTRINGIFY( BOARD_VERSION )
 
 #endif

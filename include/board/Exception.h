@@ -23,8 +23,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_EXCEPTION_H_
-#define _BOARD_EXCEPTION_H_
+#ifndef BOARD_EXCEPTION_H
+#define BOARD_EXCEPTION_H
 
 #include <stdexcept>
 #include <string>
@@ -35,15 +35,16 @@ namespace LibBoard
 
 class Exception : public std::exception {
 public:
-  Exception() BOARD_NOEXCEPT;
-  Exception(const char * what) BOARD_NOEXCEPT;
-  Exception(const std::string & what) BOARD_NOEXCEPT;
-  ~Exception() BOARD_NOEXCEPT;
-  const char * what() const BOARD_NOEXCEPT;
+  Exception() noexcept;
+  Exception(const char * what) noexcept;
+  Exception(const std::string & what) noexcept;
+  Exception(const Exception &) = default;
+  ~Exception() noexcept;
+  const char * what() const noexcept;
 
 private:
   std::string _what;
 };
-}
+} // namespace LibBoard
 
-#endif // _BOARD_EXCEPTION_H_
+#endif // BOARD_EXCEPTION_H

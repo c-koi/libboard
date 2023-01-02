@@ -6,7 +6,7 @@
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
- * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
+ * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
 #include <algorithm>
 #include <cassert>
@@ -15,7 +15,8 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-#include "Board.h"
+#include <Board.h>
+#include <board/Tools.h>
 using namespace LibBoard;
 
 /**
@@ -44,7 +45,7 @@ bool isSeparing(Point & a, Point & b, const std::vector<Point> & points)
           return true;
         }
       }
-      if ((sign > 0 && wp < 0.0) || (sign < 0 && wp > 0.0)) {
+      if (((sign > 0) && (wp < 0.0)) || ((sign < 0) && (wp > 0.0))) {
         return true;
       }
       sign = (wp > 0.0) ? 1 : -1;
@@ -56,20 +57,18 @@ bool isSeparing(Point & a, Point & b, const std::vector<Point> & points)
   return false;
 }
 
-int main(int, char * [])
+int main(int, char *[])
 {
-  srand(time(0));
-  // srand(10000);
   Board board;
 
-  Shape::setDefaultLineWidth(0.5);
-  Shape::setDefaultPenColor(Color::Blue);
-  Shape::setDefaultFillColor(Color::Null);
+  Style::setDefaultLineWidth(0.5);
+  Style::setDefaultPenColor(Color::Blue);
+  Style::setDefaultFillColor(Color::Null);
 
   std::vector<Point> points;
   int n = 25;
   while (n--) {
-    points.push_back(Point(4 * (rand() % 50), 4 * (rand() % 50)));
+    points.push_back(Point(4 * (Tools::boardRand() % 50), 4 * (Tools::boardRand() % 50)));
   }
 
   typedef std::pair<Point, Point> Segment;
@@ -99,10 +98,9 @@ int main(int, char * [])
         break;
       }
     }
-    // std::cout << segment.first << " " << segment.second << std::endl;
   } while (segment.first != stop);
 
-  board << Polyline(polyline, true, Color::Cyan, Color("#a0a0c0"), 0.5);
+  board << Polyline(polyline, Path::Closed, Color::Cyan, Color("#a0a0c0"), 0.5);
 
   for (Point p : points) {
     board << Dot(p.x, p.y, Color::Blue, 1.0);

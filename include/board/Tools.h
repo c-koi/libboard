@@ -23,13 +23,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_TOOLS_H_
-#define _BOARD_TOOLS_H_
+#ifndef BOARD_TOOLS_H
+#define BOARD_TOOLS_H
 
+#include <cmath>
 #include <cstring>
 #include <ctime>
 #include <iostream>
-#include "Rect.h"
 
 #if defined(_MSC_VER)
 #define secured_sprintf sprintf_s
@@ -39,6 +39,8 @@
 
 namespace LibBoard
 {
+
+struct Rect;
 
 namespace Tools
 {
@@ -55,9 +57,7 @@ enum CaseSensitivity
 class MessageStream {
 public:
   inline MessageStream(std::ostream & out, const char * prefix);
-
   template <typename T> inline MessageStream operator<<(const T & v);
-
   inline MessageStream operator<<(std::ostream & (*fun)(std::ostream &));
 
 private:
@@ -71,14 +71,15 @@ extern MessageStream notice;
 
 MessageStream::MessageStream(std::ostream & out, const char * prefix) : _out(out), _prefix(prefix) {}
 
-template <typename T> MessageStream MessageStream::operator<<(const T & v)
+template <typename T> //
+MessageStream MessageStream::operator<<(const T & v)
 {
   if (_prefix) {
     _out << _prefix << v;
   } else {
     _out << v;
   }
-  return MessageStream(_out, 0);
+  return MessageStream(_out, nullptr);
 }
 
 MessageStream MessageStream::operator<<(std::ostream & (*fun)(std::ostream &))
@@ -88,7 +89,7 @@ MessageStream MessageStream::operator<<(std::ostream & (*fun)(std::ostream &))
   } else {
     _out << fun;
   }
-  return MessageStream(_out, 0);
+  return MessageStream(_out, nullptr);
 }
 
 inline void secured_strncpy(char * dst, const char * src, size_t count);
@@ -101,7 +102,7 @@ bool stringEndsWith(const char * str, const char * end, CaseSensitivity sensitiv
 
 void flushFile(const char * filename, std::ostream & out);
 
-Rect getEPSBoundingBox(const char * filename);
+void getEPSBoundingBox(const char * filename, Rect & rect);
 
 bool canCreateFile(const char * filename);
 
@@ -109,7 +110,20 @@ bool canReadFile(const char * filename);
 
 const char * temporaryFilename(const char * extension);
 
+void initBoardRand(unsigned long seed);
+
 unsigned int boardRand();
+
+double boardRandDouble();
+
+double boardRandDouble(double min, double max);
+
+inline bool almostEqual(const double & a, const double & b);
+
+inline double mix(const double & a, const double & b, const double & time)
+{
+  return a + time * (b - a);
+}
 
 template <typename T> inline void unused(const T &, ...) {}
 
@@ -133,8 +147,43 @@ void secured_ctime(char * str, const time_t * t, size_t count)
 #endif // defined( _MSC_VER )
 }
 
+inline bool almostEqual(const double & a, const double & b)
+{
+  const double nothing = 1e-10;
+  return a > b ? ((a - b) < nothing) : (a < b) ? ((b - a) < nothing) : true;
+}
+
+template <typename T> void clamp(T & value, const T & min, const T & max)
+{
+  if (value < min) {
+    value = min;
+    return;
+  }
+  if (value > max) {
+    value = max;
+    return;
+  }
+}
+
+template <typename T> inline T square(const T & t)
+{
+  return t * t;
+}
+
+bool solveQuadratic(double a, double b, double c, double & x1, double & x2);
+
+inline double rad2deg(double angle)
+{
+  return (angle / M_PI) * 180;
+}
+
+inline double deg2rad(double angle)
+{
+  return (angle / 180) * M_PI;
+}
+
 } // namespace Tools
 
 } // namespace LibBoard
 
-#endif /* _SHAPE_H_ */
+#endif /* BOARD_TOOLS_H */

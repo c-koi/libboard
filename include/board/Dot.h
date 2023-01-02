@@ -23,14 +23,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_DOT_H_
-#define _BOARD_DOT_H_
+#ifndef BOARD_DOT_H
+#define BOARD_DOT_H
 
-#include "board/Shape.h"
-
-#if __cplusplus < 201100
-#define override
-#endif
+#include <board/ShapeWithStyle.h>
 
 namespace LibBoard
 {
@@ -43,9 +39,11 @@ namespace LibBoard
  *
  * @brief A line between two points.
  */
-struct Dot : public Shape {
+struct Dot : public ShapeWithStyle {
 
-  inline Dot(double x, double y, Color color, double lineWidth = Shape::defaultLineWidth(), int depth = -1);
+  inline Dot(double x, double y, Color color = Style::defaultPenColor(), double lineWidth = Style::defaultLineWidth());
+
+  inline Dot(const Point & p, Color color = Style::defaultPenColor(), double lineWidth = Style::defaultLineWidth());
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -173,6 +171,48 @@ struct Dot : public Shape {
   void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const override;
 
   /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(const ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(const ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accept a composite shape transform.
+   *
+   * @param transform A composite shape transform object.
+   */
+  virtual Shape * accept(CompositeShapeTransform & transform) const override;
+
+  /**
+   * @brief Accept a constant composite shape transform.
+   *
+   * @param transform A constant composite shape transform object..
+   */
+  virtual Shape * accept(const CompositeShapeTransform & transform) const override;
+
+  /**
    * Returns the bounding box of the dot.
    *
    * @return The rectangle of the bounding box.
@@ -181,6 +221,12 @@ struct Dot : public Shape {
 
   Dot * clone() const override;
 
+  Dot(const Dot &) = default;
+  Dot(Dot &&) = default;
+  Dot & operator=(Dot &&) = default;
+  Dot & operator=(const Dot &) = default;
+  ~Dot() override = default;
+
 private:
   static const std::string _name; /**< The generic name of the shape. */
 
@@ -188,7 +234,7 @@ protected:
   double _x; /**< First coordinate of the dot. */
   double _y; /**< Second coordinate of the dot. */
 };
-}
+} // namespace LibBoard
 
 /*
  * Inline methods
@@ -196,11 +242,15 @@ protected:
 
 namespace LibBoard
 {
-Dot::Dot(double x, double y, Color color, double lineWidth, int depth) : Shape(color, Color::Null, lineWidth, SolidStyle, RoundCap, MiterJoin, depth), _x(x), _y(y) {}
+Dot::Dot(double x, double y, Color color, double lineWidth) //
+    : ShapeWithStyle(color, Color::Null, lineWidth, SolidStyle, RoundCap, MiterJoin), _x(x), _y(y)
+{
 }
 
-#if __cplusplus < 201100
-#undef override
-#endif
+Dot::Dot(const Point & p, Color color, double lineWidth) //
+    : ShapeWithStyle(color, Color::Null, lineWidth, SolidStyle, RoundCap, MiterJoin), _x(p.x), _y(p.y)
+{
+}
+} // namespace LibBoard
 
-#endif /* _BOARD_DOT_H_ */
+#endif /* BOARD_DOT_H */

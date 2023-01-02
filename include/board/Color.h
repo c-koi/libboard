@@ -23,13 +23,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_COLOR_H_
-#define _BOARD_COLOR_H_
+#ifndef BOARD_COLOR_H
+#define BOARD_COLOR_H
 
+#include <board/Tools.h>
+#include <cstddef>
 #include <cstdio>
 #include <ostream>
 #include <string>
-#include "Tools.h"
 
 namespace LibBoard
 {
@@ -47,13 +48,27 @@ public:
   inline Color(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 255);
   inline Color(unsigned char gray, unsigned char alpha = 255);
 
+  static inline Color fromRGBf(float red, float green, float blue, float alpha = 1.0f);
+  static inline Color gray(unsigned char grayLevel, unsigned char alpha = 255);
   /**
-   * @brief Build a color from an HTML color string (#RRGGBB)
+   * @brief Build a color from an HTML color string (\#RRGGBB)
    * @param htmlColor An HTML color string
    * @param alpha The alpha value
    */
-  inline Color(const std::string & htmlColor, unsigned char alpha = 255);
+  inline Color(const std::string & htmlColor, unsigned char alpha);
+
+  /**
+   * @brief Build a color from an HTML color string (\#RRGGBB or \#RRGGBBAA)
+   * @param htmlColor An HTML color string
+   */
+  inline Color(const std::string & htmlColor);
+
   inline Color(const char * htmlColor, unsigned char alpha = 255);
+
+  /**
+   * Create a null color
+   */
+  inline Color(std::nullptr_t);
 
   inline void red(unsigned char red);
   inline void green(unsigned char green);
@@ -65,7 +80,25 @@ public:
   inline unsigned char blue() const;
   inline unsigned char alpha() const;
 
+  /**
+   * @brief setRGBi
+   * @param red
+   * @param green
+   * @param blue
+   * @param alpha
+   * @return
+   */
   inline Color & setRGBi(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha = 255);
+
+  /**
+   * @brief setHSV
+   * @param hue
+   * @param saturation
+   * @param value
+   * @param alpha
+   * @return
+   */
+  Color & setHSV(float hue, float saturation, float value, float alpha = 1.0);
 
   Color & setRGBf(float red, float green, float blue, float alpha = 1.0);
 
@@ -79,13 +112,16 @@ public:
 
   std::string svg() const;
 
+  inline bool isNull() const;
+
+  inline bool isValid() const;
+
   /**
    * Return a an SVG parameter string for the opacity value.
    *
-   * @param prefix A prefix string to be appended to the returned
-   * string if not empty.
+   * @param prefix A prefix string to be appended to the returned string if not empty.
    *
-   * @return An empty string if alpha == 255, otherwise the string <prefix>-opacity="<alpha-value>".
+   * @return An empty string if alpha == 255, otherwise the string \<prefix\>-opacity="\<alpha-value\>".
    */
   std::string svgAlpha(const char * prefix) const;
 
@@ -101,18 +137,34 @@ public:
    */
   std::string tikz() const;
 
+  void toHSV(float & hue, float & saturation, float & value, float & alpha) const;
+
   inline bool valid() const { return (*this) != Color::Null; }
+
+  static Color fromHSV(float hue, float saturation, float value, float alpha = 1.0f);
+
+  static Color mixRGB(const Color & a, const Color & b, float t);
+
+  static Color mixHSV(const Color & a, const Color & b, float t);
+
+  static Color fromHueColormap(float t);
+
+  std::ostream & flush(std::ostream & out) const;
 
 public:
   static const Color Null;
   static const Color Black;
+  static const Color Brown;
+  static const Color Pink;
   static const Color Gray;
   static const Color White;
   static const Color Red;
   static const Color Green;
+  static const Color DarkGreen;
   static const Color Lime;
   static const Color Blue;
   static const Color Cyan;
+  static const Color DarkCyan;
   static const Color Magenta;
   static const Color Yellow;
   static const Color Silver;
@@ -127,7 +179,11 @@ private:
   int _alpha; /**< The opacity. */
 };
 
-inline Color & Color::setRGBi(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
+std::ostream & operator<<(std::ostream & out, const Color & color);
+
+// Inline methods
+
+Color & Color::setRGBi(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
 {
   _red = red;
   _green = green;
@@ -136,75 +192,112 @@ inline Color & Color::setRGBi(const unsigned char red, const unsigned char green
   return *this;
 }
 
-inline Color::Color() : _red(0), _green(0), _blue(0), _alpha(255) {}
+bool Color::isNull() const
+{
+  return _red == -1 && _green == -1 && _blue == -1;
+}
 
-inline Color::Color(const unsigned int rgb, unsigned char alpha) : _alpha(alpha)
+bool Color::isValid() const
+{
+  return !isNull();
+}
+
+Color::Color() : _red(0), _green(0), _blue(0), _alpha(255) {}
+
+Color::Color(std::nullptr_t)
+{
+  _red = _green = _blue = -1;
+  _alpha = 255;
+}
+
+Color::Color(const unsigned int rgb, unsigned char alpha) : _alpha(alpha)
 {
   _red = (rgb & 0xFF0000u) >> 16;
   _green = (rgb & 0xFF00u) >> 8;
   _blue = rgb & 0xFF;
 }
 
-inline Color::Color(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) : _red(red), _green(green), _blue(blue), _alpha(alpha) {}
+Color::Color(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) : _red(red), _green(green), _blue(blue), _alpha(alpha) {}
 
-inline Color::Color(unsigned char gray, unsigned char alpha) : _red(gray), _green(gray), _blue(gray), _alpha(alpha) {}
+Color::Color(unsigned char gray, unsigned char alpha) : _red(gray), _green(gray), _blue(gray), _alpha(alpha) {}
 
-inline Color::Color(const std::string & htmlColor, unsigned char alpha) : Color(htmlColor.c_str(), alpha) {}
-
-inline Color::Color(const char * htmlColor, unsigned char alpha) : _alpha(alpha)
+Color Color::fromRGBf(float red, float green, float blue, float alpha)
 {
-  unsigned int r, g, b;
+  return Color(static_cast<unsigned char>(red * 255), static_cast<unsigned char>(green * 255), static_cast<unsigned char>(blue * 255), static_cast<unsigned char>(alpha * 255));
+}
+
+Color Color::gray(unsigned char grayLevel, unsigned char alpha)
+{
+  return Color(grayLevel, grayLevel, grayLevel, alpha);
+}
+
+// FIXME : Make alpha parameter take precedence over AA in html string
+Color::Color(const std::string & htmlColor, unsigned char alpha) : Color(htmlColor.c_str(), alpha) {}
+
+Color::Color(const std::string & htmlColor) : Color(htmlColor.c_str(), 255) {}
+
+Color::Color(const char * htmlColor, unsigned char alpha) : _alpha(alpha)
+{
+  unsigned int r, g, b, a = alpha;
   if (!htmlColor || *htmlColor == '\0') {
-    _red = _green = _blue = -1;
-    _alpha = 255;
+    *this = Color::Null;
     return;
   }
   if (strlen(htmlColor) == 7 && sscanf(htmlColor, "#%2x%2x%2x", &r, &g, &b) == 3) {
     _red = (int)r;
     _green = (int)g;
     _blue = (int)b;
+    _alpha = (int)a;
+  } else if (strlen(htmlColor) == 9 && sscanf(htmlColor, "#%2x%2x%2x%2x", &r, &g, &b, &a) == 4) {
+    _red = (int)r;
+    _green = (int)g;
+    _blue = (int)b;
+    _alpha = (int)a;
   } else {
     *this = Color::Null;
     Tools::error << "Color::Color(htmlcolor): cannot parse color string\n";
   }
 }
 
-inline void Color::red(const unsigned char red)
+void Color::red(const unsigned char red)
 {
   _red = red;
 }
 
-inline void Color::green(unsigned char green)
+void Color::green(unsigned char green)
 {
   _green = green;
 }
 
-inline void Color::blue(unsigned char blue)
+void Color::blue(unsigned char blue)
 {
   _blue = blue;
 }
 
-inline void Color::alpha(unsigned char alpha)
+void Color::alpha(unsigned char alpha)
 {
   _alpha = alpha;
 }
 
-inline unsigned char Color::red() const
+unsigned char Color::red() const
 {
-  return _red;
-}
-inline unsigned char Color::green() const
-{
-  return _green;
-}
-inline unsigned char Color::blue() const
-{
-  return _blue;
-}
-inline unsigned char Color::alpha() const
-{
-  return _alpha;
-}
+  return static_cast<unsigned char>(_red);
 }
 
-#endif // _COLOR_H_
+unsigned char Color::green() const
+{
+  return static_cast<unsigned char>(_green);
+}
+
+unsigned char Color::blue() const
+{
+  return static_cast<unsigned char>(_blue);
+}
+
+unsigned char Color::alpha() const
+{
+  return static_cast<unsigned char>(_alpha);
+}
+} // namespace LibBoard
+
+#endif // BOARD_COLOR_H

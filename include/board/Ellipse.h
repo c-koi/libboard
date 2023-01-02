@@ -23,14 +23,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_ELLIPSE_H_
-#define _BOARD_ELLIPSE_H_
+#ifndef BOARD_ELLIPSE_H
+#define BOARD_ELLIPSE_H
 
-#include "board/Shape.h"
-
-#if __cplusplus < 201100
-#define override
-#endif
+#include <board/ShapeWithStyle.h>
 
 namespace LibBoard
 {
@@ -39,27 +35,25 @@ namespace LibBoard
  * The ellipse structure.
  * @brief An ellipse.
  */
-struct Ellipse : public Shape {
+struct Ellipse : public ShapeWithStyle {
 
-  Ellipse(double x, double y, double xRadius, double yRadius, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-          const LineStyle lineStyle = Shape::defaultLineStyle(), int depth = -1)
-      : Shape(penColor, fillColor, lineWidth, lineStyle, ButtCap, MiterJoin, depth), _center(x, y), _xRadius(xRadius), _yRadius(yRadius), _angle(0.0), _isCreatedAsCircle(false)
+  enum SamplingStart
   {
-    while (_angle > M_PI_2)
-      _angle -= M_PI;
-    while (_angle < -M_PI_2)
-      _angle += M_PI;
-  }
+    SamplingFromRight,
+    SamplingFromTop,
+    SamplingFromLeft,
+    SamplingFromBottom
+  };
 
-  Ellipse(Point center, double xRadius, double yRadius, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-          const LineStyle lineStyle = Shape::defaultLineStyle(), int depth = -1)
-      : Shape(penColor, fillColor, lineWidth, lineStyle, ButtCap, MiterJoin, depth), _center(center), _xRadius(xRadius), _yRadius(yRadius), _angle(0.0), _isCreatedAsCircle(false)
-  {
-    while (_angle > M_PI_2)
-      _angle -= M_PI;
-    while (_angle < -M_PI_2)
-      _angle += M_PI;
-  }
+  inline Ellipse(double x, double y, double xRadius, double yRadius,                                     //
+                 Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), //
+                 double lineWidth = Style::defaultLineWidth(), LineStyle lineStyle = Style::defaultLineStyle());
+
+  inline Ellipse(Point center, double xRadius, double yRadius,                                           //
+                 Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), //
+                 double lineWidth = Style::defaultLineWidth(), const LineStyle lineStyle = Style::defaultLineStyle());
+
+  inline Ellipse(Point center, double xRadius, double yRadius, Style style);
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -69,6 +63,10 @@ struct Ellipse : public Shape {
   const std::string & name() const override;
 
   Point center(LineWidthFlag lineWidthFlag = IgnoreLineWidth) const override;
+
+  inline double xRadius() const;
+  inline double yRadius() const;
+  inline double angle() const;
 
   Ellipse & rotate(double angle, const Point & center) override;
 
@@ -177,6 +175,48 @@ struct Ellipse : public Shape {
 
   void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const override;
 
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(const ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(const ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accept a composite shape transform.
+   *
+   * @param transform A composite shape transform object.
+   */
+  virtual Shape * accept(CompositeShapeTransform & transform) const override;
+
+  /**
+   * @brief Accept a constant composite shape transform.
+   *
+   * @param transform A constant composite shape transform object..
+   */
+  virtual Shape * accept(const CompositeShapeTransform & transform) const override;
+
   Rect boundingBox(LineWidthFlag) const override;
 
   Ellipse * clone() const override;
@@ -186,9 +226,30 @@ struct Ellipse : public Shape {
    */
   void setCircleFlag();
 
+  /**
+   * Estimated perimeter of the ellipse.
+   * @return The estimated perimeter.
+   */
+  double perimeter() const;
+
+  /**
+   * Return uniformly sampled points along the ellipse (counterclockwise).
+   * @param n Number of sample points
+   * @param start Position of the first point
+   * @return A path of the samples points
+   */
+  Path sampledPath(int n, SamplingStart start = SamplingFromRight) const;
+
+  Ellipse(const Ellipse &) = default;
+  Ellipse(Ellipse &&) = default;
+  Ellipse & operator=(Ellipse &&) = default;
+  Ellipse & operator=(const Ellipse &) = default;
+  ~Ellipse() override = default;
+
 private:
   static const std::string _name; /**< The generic name of the shape. */
   bool isACircle() const;
+  inline void normaliseAngle();
 
 protected:
   Point _center;
@@ -198,16 +259,64 @@ protected:
   bool _isCreatedAsCircle;
 };
 
-Ellipse circle(double x, double y, double radius, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-               const Shape::LineStyle lineStyle = Shape::defaultLineStyle(), int depth = -1);
+Ellipse circle(double x, double y, double radius,                                                      //
+               Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), //
+               double lineWidth = Style::defaultLineWidth(), const LineStyle lineStyle = Style::defaultLineStyle());
 
-Ellipse circle(Point center, double radius, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-               const Shape::LineStyle lineStyle = Shape::defaultLineStyle(), int depth = -1);
+Ellipse circle(Point center, double radius,                                                            //
+               Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), //
+               double lineWidth = Style::defaultLineWidth(), const LineStyle lineStyle = Style::defaultLineStyle());
+
+Ellipse circle(Point center, double radius, Style style);
+
+// Inline methods
+
+Ellipse::Ellipse(double x, double y, double xRadius, double yRadius, Color penColor, Color fillColor, double lineWidth, LineStyle lineStyle)
+    : ShapeWithStyle(penColor, fillColor, lineWidth, lineStyle, ButtCap, MiterJoin), //
+      _center(x, y), _xRadius(xRadius), _yRadius(yRadius), _angle(0.0), _isCreatedAsCircle(false)
+{
+  normaliseAngle();
+}
+
+Ellipse::Ellipse(Point center, double xRadius, double yRadius, Color penColor, Color fillColor, double lineWidth, const LineStyle lineStyle)
+    : ShapeWithStyle(penColor, fillColor, lineWidth, lineStyle, ButtCap, MiterJoin), //
+      _center(center), _xRadius(xRadius), _yRadius(yRadius), _angle(0.0), _isCreatedAsCircle(false)
+{
+  normaliseAngle();
+}
+
+inline Ellipse::Ellipse(Point center, double xRadius, double yRadius, Style style) //
+    : ShapeWithStyle(style),                                                       //
+      _center(center), _xRadius(xRadius), _yRadius(yRadius), _angle(0.0), _isCreatedAsCircle(false)
+{
+  normaliseAngle();
+}
+
+inline void Ellipse::normaliseAngle()
+{
+  while (_angle > M_PI_2) {
+    _angle -= M_PI;
+  }
+  while (_angle < -M_PI_2) {
+    _angle += M_PI;
+  }
+}
+
+double Ellipse::xRadius() const
+{
+  return _xRadius;
+}
+
+double Ellipse::yRadius() const
+{
+  return _yRadius;
+}
+
+double Ellipse::angle() const
+{
+  return _angle;
+}
 
 } // namespace LibBoard
 
-#if __cplusplus < 201100
-#undef override
-#endif
-
-#endif /* _BOARD_ELLIPSE_H_ */
+#endif /* BOARD_ELLIPSE_H */

@@ -23,20 +23,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Dot.h"
+#include <BoardConfig.h>
 #include <algorithm>
+#include <board/Dot.h>
+#include <board/PSFonts.h>
+#include <board/PathBoundaries.h>
+#include <board/Rect.h>
+#include <board/ShapeVisitor.h>
+#include <board/Tools.h>
+#include <board/Transforms.h>
 #include <cmath>
 #include <cstring>
 #include <limits>
 #include <sstream>
 #include <vector>
-#include "BoardConfig.h"
-#include "board/PSFonts.h"
-#include "board/PathBoundaries.h"
-#include "board/Rect.h"
-#include "board/ShapeVisitor.h"
-#include "board/Tools.h"
-#include "board/Transforms.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846 /* pi */
@@ -119,27 +119,27 @@ void Dot::scaleAll(double s)
 void Dot::flushPostscript(std::ostream & stream, const TransformEPS & transform) const
 {
   stream << "\n% Dot\n";
-  stream << postscriptProperties(transform) << " "
+  stream << _style.postscriptProperties(transform) << " "
          << "n " << transform.mapX(_x) << " " << transform.mapY(_y) << " "
          << "m " << transform.mapX(_x) << " " << transform.mapY(_y) << " "
-         << "l " << _penColor.postscript() << " srgb stroke" << std::endl;
+         << "l " << penColor().postscript() << " srgb stroke" << std::endl;
 }
 
 void Dot::flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const
 {
   stream << "2 1 0 ";
   // Thickness
-  stream << (_penColor.valid() ? transform.mapWidth(_lineWidth) : 0) << " ";
+  stream << (penColor().valid() ? transform.mapWidth(lineWidth()) : 0) << " ";
   // Pen color
-  stream << colormap[_penColor] << " ";
+  stream << colormap[penColor()] << " ";
   // Fill color
   stream << "0 ";
   // Depth
-  stream << transform.mapDepth(_depth) << " ";
+  stream << transform.shapeDepth(this) << " ";
   // Pen style
   stream << "-1 ";
   // Area fill, style val, join style, cap style, radius, f_arrow, b_arrow
-  stream << "-1 0.000 " << _lineJoin << " " << _lineCap << " -1 0 0 ";
+  stream << "-1 0.000 " << lineJoin() << " " << lineCap() << " -1 0 0 ";
   // Number of points
   stream << "2\n";
   stream << "         ";
@@ -152,7 +152,7 @@ void Dot::flushSVG(std::ostream & stream, const TransformSVG & transform) const
   stream << "<line x1=\"" << transform.mapX(_x) << "\""
          << " y1=\"" << transform.mapY(_y) << "\""
          << " x2=\"" << transform.mapX(_x) << "\""
-         << " y2=\"" << transform.mapY(_y) << "\"" << svgProperties(transform) << " />" << std::endl;
+         << " y2=\"" << transform.mapY(_y) << "\"" << _style.svgProperties(transform) << " />" << std::endl;
 }
 
 void Dot::flushTikZ(std::ostream & stream, const TransformTikZ & /*transform*/) const
@@ -162,20 +162,45 @@ void Dot::flushTikZ(std::ostream & stream, const TransformTikZ & /*transform*/) 
   stream << "% FIXME: Dot::flushTikZ unimplemented" << std::endl;
 }
 
+void Dot::accept(ShapeVisitor & visitor)
+{
+  visitor.visit(*this);
+}
+
+void Dot::accept(const ShapeVisitor & visitor)
+{
+  visitor.visit(*this);
+}
+
+void Dot::accept(ConstShapeVisitor & visitor) const
+{
+  visitor.visit(*this);
+}
+
+void Dot::accept(const ConstShapeVisitor & visitor) const
+{
+  visitor.visit(*this);
+}
+
+Shape * Dot::accept(CompositeShapeTransform & transform) const
+{
+  return transform.map(*this);
+}
+
+Shape * Dot::accept(const CompositeShapeTransform & transform) const
+{
+  return transform.map(*this);
+}
+
 Rect Dot::boundingBox(LineWidthFlag lineWidthFlag) const
 {
   switch (lineWidthFlag) {
   case IgnoreLineWidth:
     return Rect(_x, _y, 0.0, 0.0);
-    break;
   case UseLineWidth:
-    return Rect(_x - 0.5 * _lineWidth, _y + 0.5 * _lineWidth, _lineWidth, _lineWidth);
-    break;
-  default:
-    Tools::error << "LineWidthFlag incorrect value (" << lineWidthFlag << ")\n";
-    return Rect();
-    break;
+    return Rect(_x - 0.5 * lineWidth(), _y + 0.5 * lineWidth(), lineWidth(), lineWidth());
   }
+  return Rect();
 }
 
 Dot * Dot::clone() const

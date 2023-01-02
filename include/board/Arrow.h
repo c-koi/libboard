@@ -23,14 +23,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_ARROW_H_
-#define _BOARD_ARROW_H_
+#ifndef BOARD_ARROW_H
+#define BOARD_ARROW_H
 
-#include "board/Line.h"
-
-#if __cplusplus < 201100
-#define override
-#endif
+#include <board/Line.h>
 
 namespace LibBoard
 {
@@ -42,32 +38,75 @@ namespace LibBoard
 struct Arrow : public Line {
 
   /**
+   * @brief The ExtremityType enum
+   */
+  enum class ExtremityType
+  {
+    Stick,  /**< Two lines  */
+    Closed, /**< Closed triangle (pen color, white filled) */
+    Plain   /**< Plain triangle (with pen color)  */
+  };
+
+  /**
    * Constructs an arrow.
    *
    * @param x1 First coordinate of the start point.
    * @param y1 Second coordinate of the start point.
    * @param x2 First coordinate of the end point.
    * @param y2 Second coordinate of the end point.
+   * @param type Arrow type.
    * @param penColor The color of the line.
    * @param fillColor The fill color of the sharp end.
    * @param lineWidth The line thickness.
-   * @param depth The depth of the line.
+   * @param lineStyle The line style.
+   * @param cap The line cap.
+   * @param join The line join.
    */
-  inline Arrow(double x1, double y1, double x2, double y2, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-               const LineStyle lineStyle = Shape::defaultLineStyle(), const LineCap cap = Shape::defaultLineCap(), const LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+  inline Arrow(double x1, double y1, double x2, double y2, ExtremityType type = ExtremityType::Plain, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(),
+               double lineWidth = Style::defaultLineWidth(), //
+               const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
+
+  /**
+   * Constructs an arrow.
+   *
+   * @param x1 First coordinate of the start point.
+   * @param y1 Second coordinate of the start point.
+   * @param x2 First coordinate of the end point.
+   * @param y2 Second coordinate of the end point.
+   * @param type Arrow type.
+   * @param style The shape style.
+   */
+  inline Arrow(double x1, double y1, double x2, double y2, ExtremityType type, const Style & style);
 
   /**
    * Constructs an arrow.
    *
    * @param p1 Start point.
    * @param p2 End point.
+   * @param type Arrow type.
    * @param penColor The color of the line.
    * @param fillColor The fill color of the sharp end.
    * @param lineWidth The line thickness.
-   * @param depth The depth of the line.
+   * @param lineStyle The line style.
+   * @param cap The line cap.
+   * @param join The line join.
    */
-  inline Arrow(Point p1, Point p2, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-               const LineStyle lineStyle = Shape::defaultLineStyle(), const LineCap cap = Shape::defaultLineCap(), const LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+  inline Arrow(Point p1, Point p2, ExtremityType type = ExtremityType::Plain, //
+               Color penColor = Style::defaultPenColor(),
+               Color fillColor = Style::defaultFillColor(),  //
+               double lineWidth = Style::defaultLineWidth(), //
+               const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
+
+  /**
+   * Constructs an arrow.
+   *
+   * @param p1 Start point.
+   * @param p2 End point.
+   * @param type Arrow type.
+   * @param style The shape style.
+   */
+  inline Arrow(Point p1, Point p2, ExtremityType type, const Style & style);
+
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -149,10 +188,67 @@ struct Arrow : public Line {
 
   void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const override;
 
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(const ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(const ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accept a composite shape transform.
+   *
+   * @param transform A composite shape transform object.
+   */
+  virtual Shape * accept(CompositeShapeTransform & transform) const override;
+
+  /**
+   * @brief Accept a constant composite shape transform.
+   *
+   * @param transform A constant composite shape transform object..
+   */
+  virtual Shape * accept(const CompositeShapeTransform & transform) const override;
+
   Arrow * clone() const override;
+
+  Path extremity() const;
+
+  Arrow(const Arrow &) = default;
+  Arrow(Arrow &&) = default;
+  Arrow & operator=(Arrow &&) = default;
+  Arrow & operator=(const Arrow &) = default;
+  ~Arrow() override = default;
+
+  /**
+   * @brief The extremity type of the arrow
+   * @return The extremity type of the arrow
+   */
+  inline ExtremityType type() const;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
+  ExtremityType _type;
 };
 
 } // namespace LibBoard
@@ -163,31 +259,53 @@ private:
 
 namespace LibBoard
 {
-
-Arrow::Arrow(double x1, double y1, double x2, double y2, Color penColor, Color fillColor, double lineWidth, const LineStyle style, const LineCap cap, const LineJoin join, int depth)
-    : Line(x1, y1, x2, y2, penColor, lineWidth, style, cap, join, depth)
+Arrow::Arrow(double x1, double y1, double x2, double y2, ExtremityType type, Color penColor, Color fillColor, double lineWidth, const LineStyle style, const LineCap cap, const LineJoin join)
+    : Line(x1, y1, x2, y2, penColor, lineWidth, style, cap, join), _type(type)
 {
-
+  // FIXME : Handle fill color of the tip properly
   if (fillColor == Color::Null) {
-    Shape::_fillColor = penColor;
+    _style.fillColor = penColor;
   } else {
-    Shape::_fillColor = fillColor;
+    _style.fillColor = fillColor;
   }
 }
 
-Arrow::Arrow(Point p1, Point p2, Color penColor, Color fillColor, double lineWidth, const LineStyle style, const LineCap cap, const LineJoin join, int depth)
-    : Line(p1, p2, penColor, lineWidth, style, cap, join, depth)
+Arrow::Arrow(double x1, double y1, double x2, double y2, ExtremityType type, const Style & style) //
+    : Line(x1, y1, x2, y2, style), _type(type)
 {
-  if (fillColor == Color::Null) {
-    Shape::_fillColor = penColor;
+  if (style.fillColor == Color::Null) {
+    _style.fillColor = style.penColor;
   } else {
-    Shape::_fillColor = fillColor;
+    _style.fillColor = style.fillColor;
   }
 }
+
+Arrow::Arrow(Point p1, Point p2, ExtremityType type,                        //
+             Color penColor, Color fillColor, double lineWidth,             //
+             const LineStyle style, const LineCap cap, const LineJoin join) //
+    : Line(p1, p2, penColor, lineWidth, style, cap, join), _type(type)
+{
+  if (fillColor == Color::Null) {
+    _style.fillColor = penColor;
+  } else {
+    _style.fillColor = fillColor;
+  }
 }
 
-#if __cplusplus < 201100
-#undef override
-#endif
+Arrow::Arrow(Point p1, Point p2, ExtremityType type, const Style & style) //
+    : Line(p1, p2, style), _type(type)
+{
+  if (style.fillColor == Color::Null) {
+    _style.fillColor = style.penColor;
+  } else {
+    _style.fillColor = style.fillColor;
+  }
+}
 
-#endif /* _BOARD_ARROW_H_ */
+Arrow::ExtremityType Arrow::type() const
+{
+  return _type;
+}
+} // namespace LibBoard
+
+#endif /* BOARD_ARROW_H */

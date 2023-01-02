@@ -23,8 +23,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_PSFONTS_H_
-#define _BOARD_PSFONTS_H_
+#ifndef BOARD_PSFONTS_H
+#define BOARD_PSFONTS_H
 
 #include <cmath>
 
@@ -91,4 +91,4 @@ extern const char * PSFontNames[];
 
 } // mamespace LibBoard
 
-#endif // _BOARD_PSFONTS_H_
+#endif // BOARD_PSFONTS_H

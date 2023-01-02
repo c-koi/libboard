@@ -7,12 +7,12 @@
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
- * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
+ * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 const int NbColors = 4;
@@ -21,21 +21,15 @@ const Color Colors[NbColors] = {Color("#cc0000"), Color("#00cc00"), Color("#0000
 ShapeList generateGroup(int n)
 {
   if (!n) {
-    return ShapeList() << (Group() << LibBoard::rectangle(0, 0, 10, 10, Color("#404040"), Color::Null, 0.1, Shape::DashStyle));
+    return ShapeList() << (Group() << LibBoard::rectangle(0, 0, 10, 10, Color("#404040"), Color::Null, 0.1, DashStyle));
   }
   if (n == 1) {
-    Group g;
     switch (rand() % 2) {
     case 0:
-      g << LibBoard::circle(0, 0, 5, Colors[rand() % NbColors], Color::Null, 1.0);
-      break;
+      return ShapeList() << circle(0, 0, 5, Colors[rand() % NbColors], Color::Null, 1.0);
     case 1:
-      g << LibBoard::rectangle(0, 0, 10, 10, Colors[rand() % NbColors], Color::Null, 1.0);
-      break;
-    default:
-      break;
+      return ShapeList() << rectangle(0, 0, 10, 10, Colors[rand() % NbColors], Color::Null, 1.0);
     }
-    return g;
   }
   int count[4] = {0, 0, 0, 0};
   while (count[0] + count[1] + count[2] + count[3] != n) {
@@ -47,16 +41,16 @@ ShapeList generateGroup(int n)
   ShapeList bottomRight = generateGroup(count[3]);
   ShapeList top;
   top << topLeft;
-  top.append(topRight, ShapeList::Right, ShapeList::AlignCenter, 0.0, ShapeList::UseLineWidth);
+  top.append(topRight, Direction::Right, Alignment::Center, 0.0, UseLineWidth);
   ShapeList bottom;
   bottom << bottomLeft;
-  bottom.append(bottomRight, ShapeList::Right, ShapeList::AlignCenter, 0.0, ShapeList::UseLineWidth);
-  top.append(bottom, ShapeList::Bottom, ShapeList::AlignCenter, 0.0, ShapeList::UseLineWidth);
+  bottom.append(bottomRight, Direction::Right, Alignment::Center, 0.0, UseLineWidth);
+  top.append(bottom, Direction::Bottom, Alignment::Center, 0.0, UseLineWidth);
   if (n >= 2) {
     ShapeList list;
     Group group;
     group << top;
-    Rect r = top.bbox(Shape::UseLineWidth);
+    Rect r = top.bbox(UseLineWidth);
     group << LibBoard::rectangle(r, Color::Black, Color::Null, 0.1);
     list << group;
     return list;
@@ -75,9 +69,9 @@ template <typename T> ShapeList findAll(ShapeList & list)
 {
   ShapeList result;
   try {
-    int n = 0;
+    ShapeList::size_type n = 0;
     while (true) {
-      result.append(list.topLevelFindLast<T>(n), Board::Right, Board::AlignCenter);
+      result.append(list.topLevelFindLast<T>(n), Direction::Right, Alignment::Center);
       ++n;
     }
   } catch (Exception &) {
@@ -85,15 +79,15 @@ template <typename T> ShapeList findAll(ShapeList & list)
   return result;
 }
 
-int main(int, char * [])
+int main(int, char *[])
 {
   // srand(time(0));
   srand(1000);
   Board board;
 
-  Shape::setDefaultLineWidth(0.5);
-  Shape::setDefaultPenColor(Color::Blue);
-  Shape::setDefaultFillColor(Color::Null);
+  Style::setDefaultLineWidth(0.5);
+  Style::setDefaultPenColor(Color::Blue);
+  Style::setDefaultFillColor(Color::Null);
 
   Group cross;
   cross << Line(0, 0, 10, 10, Color::Green) << Line(0, 10, 10, 0, Color::Green);
@@ -104,13 +98,13 @@ int main(int, char * [])
     int r = rand() % 3;
     switch (r) {
     case 0:
-      board.append(LibBoard::circle(0, 0, 5.0), Board::Right, Board::AlignCenter);
+      board.append(circle(0, 0, 5.0), Direction::Right, Alignment::Center);
       break;
     case 1:
-      board.append(LibBoard::rectangle(0, 0, 10, 10), Board::Right, Board::AlignCenter);
+      board.append(rectangle(0, 0, 10, 10), Direction::Right, Alignment::Center);
       break;
     case 2:
-      board.append(cross, Board::Right, Board::AlignCenter);
+      board.append(cross, Direction::Right, Alignment::Center);
       break;
     }
   }
@@ -120,26 +114,16 @@ int main(int, char * [])
   ShapeList rectangles = findAll<Polyline>(board);
   ShapeList crosses = findAll<Group>(board);
 
-  board.append(Text(0, 0, "Everything", LibBoard::Fonts::Helvetica, 7), Board::Right, Board::AlignCenter, 10.0);
+  board.append(Text(0, 0, "Everything", LibBoard::Fonts::Helvetica, 7), Direction::Right, Alignment::Center, 10.0);
 
-  board.append(circles, Board::Bottom, Board::AlignLeft);
-  board.append(rectangles, Board::Bottom, Board::AlignLeft);
-  board.append(crosses, Board::Bottom, Board::AlignLeft);
+  board.append(circles, Direction::Bottom, Alignment::Left);
+  board.append(rectangles, Direction::Bottom, Alignment::Left);
+  board.append(crosses, Direction::Bottom, Alignment::Left);
 
-#if __cplusplus < 201100
-  // Use an iterator
-  ShapeList::TopLevelIterator it = circles.begin();
-  while (it != circles.end()) {
-    (*it).scale(1, 2);
-    ++it;
-  }
-#else
-  // Use a C++11 for loop
   for (Shape & s : circles) {
     s.scale(1, 2);
   }
-#endif
-  board.append(circles, Board::Bottom, Board::AlignRight);
+  board.append(circles, Direction::Bottom, Alignment::Right);
 
   std::cout << "List of shapes at to level\n";
   std::cout << "==========================\n";
@@ -168,7 +152,7 @@ int main(int, char * [])
   }
   std::cout << "\n\n";
 
-  board.append(generateGroup(50), ShapeList::Bottom, ShapeList::AlignCenter);
+  board.append(generateGroup(50), Direction::Bottom, Alignment::Center);
 
   std::cout << "Size is " << board.size() << std::endl;
   std::cout << "Board deep size is " << board.deepSize() << std::endl;
@@ -190,7 +174,7 @@ int main(int, char * [])
       r = dynamic_cast<Ellipse *>(dfi.pointer());
     }
     if (r) {
-      shade.setRGBf(0.2 + 0.8 * (counter / (float)deepSize), 0, 0, 1.0);
+      shade.setRGBf(0.2f + 0.8f * (counter / (float)deepSize), 0, 0, 1.0);
       points << LibBoard::circle(r->center(), 1, Color::Null, shade, 0.0);
       path << r->center();
     }
@@ -199,6 +183,6 @@ int main(int, char * [])
   }
   std::cout << counter << " shapes visited.\n";
   board << points;
-  board << Polyline(path, Color("#00c000"), Color::Null, 0.5, Shape::SolidStyle, Shape::RoundCap, Shape::RoundJoin);
+  board << Polyline(path, Color("#00c000"), Color::Null, 0.5, SolidStyle, RoundCap, RoundJoin);
   board.saveSVG("traversal.svg");
 }

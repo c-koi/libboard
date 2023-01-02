@@ -23,14 +23,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_LINE_H_
-#define _BOARD_LINE_H_
+#ifndef BOARD_LINE_H
+#define BOARD_LINE_H
 
-#include "board/Shape.h"
-
-#if __cplusplus < 201100
-#define override
-#endif
+#include <board/ShapeWithStyle.h>
 
 namespace LibBoard
 {
@@ -39,7 +35,7 @@ namespace LibBoard
  * The line structure.
  * @brief A line between two points.
  */
-struct Line : public Shape {
+struct Line : public ShapeWithStyle {
 
   /**
    * Constructs a line.
@@ -50,10 +46,24 @@ struct Line : public Shape {
    * @param y2 Second coordinate of the end point.
    * @param color The color of the line.
    * @param lineWidth The line thickness.
-   * @param depth The depth of the line.
+   * @param lineStyle The line style.
+   * @param cap   The line cap.
+   * @param join  The line join.
    */
-  inline Line(double x1, double y1, double x2, double y2, Color color, double lineWidth = Shape::defaultLineWidth(), const LineStyle lineStyle = Shape::defaultLineStyle(),
-              const LineCap cap = Shape::defaultLineCap(), const LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+  inline Line(double x1, double y1, double x2, double y2,                //
+              Color color, double lineWidth = Style::defaultLineWidth(), //
+              const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
+
+  /**
+   * Constructs a line.
+   *
+   * @param x1 First coordinate of the start point.
+   * @param y1 Second coordinate of the start point.
+   * @param x2 First coordinate of the end point.
+   * @param y2 Second coordinate of the end point.
+   * @param style The shape style.
+   */
+  inline Line(double x1, double y1, double x2, double y2, const Style & style);
 
   /**
    * Constructs a line.
@@ -62,10 +72,21 @@ struct Line : public Shape {
    * @param b Second extremity.
    * @param color The color of the line.
    * @param lineWidth The line thickness.
-   * @param depth The depth of the line.
+   * @param lineStyle The line style.
+   * @param cap   The line cap.
+   * @param join  The line join.
    */
-  inline Line(Point a, Point b, Color color, double lineWidth = Shape::defaultLineWidth(), const LineStyle lineStyle = Shape::defaultLineStyle(), const LineCap cap = Shape::defaultLineCap(),
-              const LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+  inline Line(Point a, Point b, Color color, double lineWidth = Style::defaultLineWidth(), //
+              const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
+
+  /**
+   * Constructs a line.
+   *
+   * @param a First extremity.
+   * @param b Second extremity.
+   * @param style The shape style.
+   */
+  inline Line(Point a, Point b, const Style & style);
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -190,16 +211,75 @@ struct Line : public Shape {
 
   void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const override;
 
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(const ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(const ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accept a composite shape transform.
+   *
+   * @param transform A composite shape transform object.
+   */
+  virtual Shape * accept(CompositeShapeTransform & transform) const override;
+
+  /**
+   * @brief Accept a constant composite shape transform.
+   *
+   * @param transform A constant composite shape transform object..
+   */
+  virtual Shape * accept(const CompositeShapeTransform & transform) const override;
+
+  /**
+   * The first extremity of the line.
+   *
+   * @return The first extremity of the line.
+   */
+  inline const Point & a() const;
+
+  /**
+   * The second extremity of the line.
+   *
+   * @return The second extremity of the line.
+   */
+  inline const Point & b() const;
+
+  Line(const Line & other);
+  Line(Line &&) = default;
+  Line & operator=(const Line & line);
+  ~Line() override = default;
+
 private:
   static const std::string _name; /**< The generic name of the shape. */
 
 protected:
-  double _x1; /**< First coordinate of the start point. */
-  double _y1; /**< Second coordinate of the start point. */
-  double _x2; /**< First coordinate of the end point. */
-  double _y2; /**< Second coordinate of the end point. */
+  Point _a; /**< Start point. */
+  Point _b; /**< End point. */
 };
-}
+} // namespace LibBoard
 
 /*
  * Inline methods
@@ -208,19 +288,35 @@ protected:
 namespace LibBoard
 {
 
-Line::Line(double x1, double y1, double x2, double y2, Color color, double lineWidth, const LineStyle style, const LineCap cap, const LineJoin join, int depth)
-    : Shape(color, Color::Null, lineWidth, style, cap, join, depth), _x1(x1), _y1(y1), _x2(x2), _y2(y2)
+Line::Line(double x1, double y1, double x2, double y2, Color color, double lineWidth, const LineStyle style, const LineCap cap, const LineJoin join)
+    : ShapeWithStyle(color, Color::Null, lineWidth, style, cap, join), _a(x1, y1), _b(x2, y2)
 {
 }
 
-Line::Line(Point a, Point b, Color color, double lineWidth, const LineStyle style, const LineCap cap, const LineJoin join, int depth)
-    : Shape(color, Color::Null, lineWidth, style, cap, join, depth), _x1(a.x), _y1(a.y), _x2(b.x), _y2(b.y)
+Line::Line(double x1, double y1, double x2, double y2, const Style & style) //
+    : ShapeWithStyle(style), _a(x1, y1), _b(x2, y2)
 {
 }
+
+Line::Line(Point a, Point b, Color color, double lineWidth, const LineStyle style, const LineCap cap, const LineJoin join)
+    : ShapeWithStyle(color, Color::Null, lineWidth, style, cap, join), _a(a), _b(b)
+{
 }
 
-#if __cplusplus < 201100
-#undef override
-#endif
+Line::Line(Point a, Point b, const Style & style) //
+    : ShapeWithStyle(style), _a(a), _b(b)
+{
+}
 
-#endif /* _BOARD_LINE_H_ */
+const Point & Line::a() const
+{
+  return _a;
+}
+
+const Point & Line::b() const
+{
+  return _b;
+}
+} // namespace LibBoard
+
+#endif /* BOARD_LINE_H */

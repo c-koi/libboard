@@ -23,10 +23,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/TransformMatrix.h"
+#include <board/TransformMatrix.h>
 #include <cmath>
-#include "BoardConfig.h"
-#include "board/Point.h"
+#include <BoardConfig.h>
+#include <board/Point.h>
 
 namespace LibBoard
 {
@@ -48,14 +48,10 @@ TransformMatrix TransformMatrix::scaling(double sx, double sy)
 
 TransformMatrix TransformMatrix::rotation(double angle, Type type)
 {
-  switch (type) {
-  case SVG:
+  if (type == SVG) {
     return TransformMatrix(cos(angle), sin(angle), 0.0, -sin(angle), cos(angle), 0.0);
-    break;
-  default:
-    return TransformMatrix(cos(angle), -sin(angle), 0.0, sin(angle), cos(angle), 0.0);
-    break;
   }
+  return TransformMatrix(cos(angle), -sin(angle), 0.0, sin(angle), cos(angle), 0.0);
 }
 
 TransformMatrix TransformMatrix::rotation(double angle, const Point & center, Type type)

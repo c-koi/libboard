@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: LibBoard
+Upstream-Contact: Sebastien Fourey <Sebastien.Fourey@unicaen.fr>
+Source: https://github.com/c-koi/libboard
+
+Files: include/* include/board/* src/* examples/* CMakeLists.txt configure
+Copyright: 2007-2021 Sébastien Fourey
+License: LGPL-3+

@@ -23,14 +23,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_TRANSFORMS_H_
-#define _BOARD_TRANSFORMS_H_
+#ifndef BOARD_TRANSFORMS_H
+#define BOARD_TRANSFORMS_H
 
+#include <board/Point.h>
+#include <board/Rect.h>
+#include <board/TransformMatrix.h>
 #include <cmath>
 #include <limits>
+#include <map>
 #include <vector>
-#include "TransformMatrix.h"
-#include "board/Rect.h"
 namespace LibBoard
 {
 
@@ -42,9 +44,8 @@ struct ShapeList;
  * @brief
  */
 struct Transform {
-public:
   inline Transform();
-  virtual ~Transform() {}
+  virtual ~Transform();
   virtual double mapX(double x) const;
   virtual double mapY(double y) const = 0;
   virtual Point map(const Point &) const;
@@ -68,7 +69,6 @@ protected:
  * suitable for an EPS output.
  */
 struct TransformEPS : public Transform {
-public:
   double mapWidth(double w) const;
   double mapY(double y) const;
   void setBoundingBox(const Rect & rect, const double pageWidth, const double pageHeight, const double margin);
@@ -85,19 +85,20 @@ private:
  * suitable for an XFig output.
  */
 struct TransformFIG : public Transform {
-public:
   inline TransformFIG();
   double rounded(double x) const;
   double mapY(double y) const;
   int mapWidth(double width) const;
   void setBoundingBox(const Rect & rect, const double pageWidth, const double pageHeight, const double margin);
-  void setDepthRange(const ShapeList & shapes);
-  int mapDepth(int depth) const;
+  unsigned int shapeDepth(const Shape *) const;
+  unsigned int mapDepth(unsigned int depth) const;
+  void setDepthMap(const std::map<const Shape *, unsigned int> *, unsigned int min);
 
 private:
-  int _maxDepth;
-  int _minDepth;
+  unsigned int _maxDepth;
+  unsigned int _minDepth;
   double _postscriptScale;
+  const std::map<const Shape *, unsigned int> * _depthMap;
 };
 
 /**
@@ -106,7 +107,6 @@ private:
  * suitable for an SVG output.
  */
 struct TransformSVG : public Transform {
-public:
   double rounded(double x) const;
   double mapY(double y) const;
   double mapWidth(double width) const;
@@ -124,28 +124,32 @@ public:
  * suitable for an TikZ output.
  */
 struct TransformTikZ : public TransformSVG {
+  ~TransformTikZ() override;
 };
 
 // Inline methods and functions
 
 #if defined(max)
 #undef max
-#define _HAS_MSVC_MAX_ true
+#define HAS_MSVC_MAX true
 #endif
 
 Transform::Transform() : _scale(1.0), _deltaX(0.0), _deltaY(0.0), _height(0.0) {}
 
-TransformFIG::TransformFIG() : _maxDepth(std::numeric_limits<int>::max()), _minDepth(0), _postscriptScale(1.0) {}
+TransformFIG::TransformFIG() : _maxDepth(std::numeric_limits<int>::max()), _minDepth(0), _postscriptScale(1.0)
+{
+  _depthMap = nullptr;
+}
 
 double Transform::round(const double & x)
 {
   return std::floor(x + 0.5);
 }
 
-#if defined(_HAS_MSVC_MAX_)
+#if defined(HAS_MSVC_MAX)
 #define max(A, B) ((A) > (B) ? (A) : (B))
 #endif
 
 } // namespace LibBoard
 
-#endif /* _BOARD_TRANSFORMS_H_ */
+#endif /* BOARD_TRANSFORMS_H */

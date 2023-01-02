@@ -23,12 +23,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_TRANSFORM_MATRIX_H_
-#define _BOARD_TRANSFORM_MATRIX_H_
+#ifndef BOARD_TRANSFORM_MATRIX_H
+#define BOARD_TRANSFORM_MATRIX_H
 
+#include <board/Point.h>
 #include <cmath>
 #include <iostream>
-#include "Point.h"
 
 namespace LibBoard
 {
@@ -50,18 +50,12 @@ public:
   static TransformMatrix rotation(double angle, Type type);
   static TransformMatrix rotation(double angle, const Point & center, Type type);
 
-  TransformMatrix operator*(const TransformMatrix &)const;
-
+  TransformMatrix operator*(const TransformMatrix &) const;
   TransformMatrix & operator*=(const TransformMatrix &);
-
   Point operator*(const Point & point) const;
-
   TransformMatrix operator+(const Point &) const;
-
   TransformMatrix & operator+=(const Point &);
-
   void flushSVG(std::ostream &) const;
-
   void flushEPS(std::ostream &) const;
 
 private:
@@ -85,4 +79,4 @@ TransformMatrix::TransformMatrix(double m11, double m12, double m13, double m21,
 
 } // namespace LibBoard
 
-#endif /* _TRANSFORMS_MATRIX_H_ */
+#endif /* BOARD_TRANSFORM_MATRIX_H */

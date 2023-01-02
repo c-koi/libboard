@@ -23,9 +23,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/PathBoundaries.h"
-#include "BoardConfig.h"
-#include "board/Shape.h"
+#include <board/PathBoundaries.h>
+#include <BoardConfig.h>
+#include <board/Shape.h>
 namespace LibBoard
 {
 
@@ -218,14 +218,14 @@ std::vector<Point> roundCapExtremities(Point p1, Point p2, double strokeWidth)
   return result;
 }
 
-std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, Shape::LineCap lineCap, Shape::LineJoin lineJoin, double miterLimit)
+std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, LineCap lineCap, LineJoin lineJoin, double miterLimit)
 {
   if (strokeWidth == 0.0) {
     return path.points();
   }
   std::vector<Point> result;
   std::vector<Point> unclosedPath = path.points();
-  if (path.closed()) {
+  if (path.isClosed()) {
     while (unclosedPath.size() > 1 && (unclosedPath.front() == unclosedPath.back())) {
       unclosedPath.pop_back();
     }
@@ -260,13 +260,13 @@ std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, Sha
     result.push_back(simplePath[0]);
     return result;
   }
-  size_t limit = path.closed() ? simplePath.size() : (simplePath.size() - 2);
+  size_t limit = path.isClosed() ? simplePath.size() : (simplePath.size() - 2);
   for (size_t i = 0; i < limit; ++i) {
     Point p0 = simplePath[i];
     Point p1 = simplePath[(i + 1) % simplePath.size()];
     Point p2 = simplePath[(i + 2) % simplePath.size()];
     switch (lineJoin) {
-    case Shape::MiterJoin: {
+    case MiterJoin: {
       Point exterior = exteriorMiterIntersection(p0, p1, p2, strokeWidth);
       // Point interior = interiorMiterIntersection(p0,p1,p2,strokeWidth);
       // const double miterLength = (exterior-interior).norm();
@@ -286,13 +286,13 @@ std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, Sha
         result.push_back(exterior);
       }
     } break;
-    case Shape::BevelJoin: {
+    case BevelJoin: {
       Point a, b;
       exteriorBevelIntersection(p0, p1, p2, strokeWidth, a, b);
       result.push_back(a);
       result.push_back(b);
     } break;
-    case Shape::RoundJoin: {
+    case RoundJoin: {
       std::vector<Point> points = exteriorRoundIntersection(p0, p1, p2, strokeWidth);
       std::copy(points.begin(), points.end(), std::back_inserter(result));
     } break;
@@ -300,10 +300,10 @@ std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, Sha
   }
 
   // Extremities if not closed
-  if (!path.closed()) {
+  if (!path.isClosed()) {
     Point a, b;
     switch (lineCap) {
-    case Shape::ButtCap: {
+    case ButtCap: {
       Point p = simplePath[1];
       Point q = simplePath[0];
       butCapExtremities(p, q, strokeWidth, a, b);
@@ -315,7 +315,7 @@ std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, Sha
       result.push_back(a);
       result.push_back(b);
     } break;
-    case Shape::SquareCap: {
+    case SquareCap: {
       Point p = simplePath[1];
       Point q = simplePath[0];
       squareCapExtremities(p, q, strokeWidth, a, b);
@@ -327,7 +327,7 @@ std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, Sha
       result.push_back(a);
       result.push_back(b);
     } break;
-    case Shape::RoundCap: {
+    case RoundCap: {
       std::vector<Point> points;
       Point p = simplePath[1];
       Point q = simplePath[0];
@@ -343,7 +343,7 @@ std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, Sha
   return result;
 }
 
-Rect pathBoundingBox(const Path & path, double strokeWidth, Shape::LineCap lineCap, Shape::LineJoin lineJoin, double miterLimit)
+Rect pathBoundingBox(const Path & path, double strokeWidth, LineCap lineCap, LineJoin lineJoin, double miterLimit)
 {
   if (strokeWidth == 0.0) {
     return path.boundingBox();
@@ -360,6 +360,6 @@ Rect pathBoundingBox(const Path & path, double strokeWidth, Shape::LineCap lineC
   return result;
 }
 
-} // namespace Tools;
+} // namespace Tools
 
-} // namespace LibBoard;
+} // namespace LibBoard

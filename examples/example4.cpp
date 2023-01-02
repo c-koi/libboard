@@ -6,20 +6,20 @@
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
- * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
+ * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
 #include <cmath>
-#include "Board.h"
+#include <Board.h>
 
 using namespace LibBoard;
 
-int main(int, char * [])
+int main(int, char *[])
 {
   Board board;
   board.clear(Color(200, 255, 200));
 
   board.setLineWidth(0.01);         // For Board drawing methods.
-  Shape::setDefaultLineWidth(0.02); // For all Shapes constructors.
+  Style::setDefaultLineWidth(0.02); // For all Shapes constructors.
 
   for (double x = -20.0; x <= 20; x += 1.0)
     for (double y = -20.0; y <= 20; y += 1.0) {
@@ -60,9 +60,9 @@ int main(int, char * [])
     board << r2.rotated(alpha, r2[0]);
   }
 
-  board.saveEPS("example4.eps", Board::A4);
-  board.saveFIG("example4.fig", Board::A4);
+  board.saveEPS("example4.eps", PageSize::A4);
+  board.saveFIG("example4.fig", PageSize::A4);
 
-  board.scaleToWidth(10, Board::UseLineWidth);
-  board.saveSVG("example4.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.scaleToWidth(10, UseLineWidth);
+  board.saveSVG("example4.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

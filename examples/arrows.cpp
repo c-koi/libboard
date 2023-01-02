@@ -6,7 +6,7 @@
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
- * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
+ * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  *
  */
 #include <cmath>
@@ -16,7 +16,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 #ifndef M_PI
@@ -28,16 +28,15 @@ float random_gray()
   return rand() / static_cast<float>(RAND_MAX);
 }
 
-int main(int, char * [])
+int main(int, char *[])
 {
   Board board;
   board.clear(Color(233, 250, 140));
   board.setLineWidth(0.25);
-  srand(static_cast<unsigned int>(time(0)));
+  srand(static_cast<unsigned int>(time(nullptr)));
+
   double angle = 0.0;
-
   board << LibBoard::rectangle(-8, 12, 16, 24, Color::Black, Color::Null, 0.1);
-
   double radius = 10;
 
   board.setFont(Fonts::CourierBold, 2);
@@ -61,9 +60,9 @@ int main(int, char * [])
   board.setFont(Fonts::PalatinoRoman, 24);
   board.drawText(0, 15, "Arrows");
 
-  board << LibBoard::rectangle(board.boundingBox(Shape::IgnoreLineWidth));
+  board << LibBoard::rectangle(board.boundingBox(IgnoreLineWidth));
 
-  Rect rect = board.last<Polyline>().boundingBox(Shape::UseLineWidth);
+  Rect rect = board.last<Polyline>().boundingBox(UseLineWidth);
   board.setPenColor(Color::Red);
   board.setFillColor(Color::Green);
   board.setLineWidth(1);
@@ -75,10 +74,12 @@ int main(int, char * [])
   board.drawArrow(rect2.bottomRight(), rect2.bottomLeft());
   board.drawArrow(rect2.bottomLeft(), rect2.topLeft());
 
-  // board.saveEPS( "arrows_A4.eps", Board::A4, 2.0, Board::UCentimeter );
-  // board.saveSVG( "arrows_A4.svg", Board::A4 );
+  // board.saveEPS( "arrows_A4.eps", PageSize::A4, 2.0, Unit::Centimeter );
+  // board.saveSVG( "arrows_A4.svg", PageSize::A4 );
   // board.saveFIG( "arrows.fig" );
 
-  board.scaleToWidth(20, Board::UseLineWidth);
-  board.saveSVG("arrows.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.scaleToWidth(20, UseLineWidth);
+  board.saveSVG("arrows.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
+  board.saveEPS("arrows.eps", PageSize::BoundingBox, 0.0, Unit::Centimeter);
+  board.saveFIG("arrows.fig", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

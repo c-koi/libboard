@@ -23,13 +23,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_PATH_BOUNDARIES_H_
-#define _BOARD_PATH_BOUNDARIES_H_
+#ifndef BOARD_PATH_BOUNDARIES_H
+#define BOARD_PATH_BOUNDARIES_H
 
 #include <vector>
-#include "board/Point.h"
-#include "board/Rect.h"
-#include "board/Shape.h"
+#include <board/Point.h>
+#include <board/Rect.h>
+#include <board/Shape.h>
 namespace LibBoard
 {
 
@@ -52,12 +52,12 @@ struct EuclideanLine {
   double a, b, c;
 };
 
-std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, Shape::LineCap lineCap, Shape::LineJoin lineJoin, double miterLimit = 4.0);
+std::vector<Point> pathBoundaryPoints(const Path & path, double strokeWidth, LineCap lineCap, LineJoin lineJoin, double miterLimit = 4.0);
 
-Rect pathBoundingBox(const Path & path, double strokeWidth, Shape::LineCap lineCap, Shape::LineJoin lineJoin, double miterLimit = 4.0);
+Rect pathBoundingBox(const Path & path, double strokeWidth, LineCap lineCap, LineJoin lineJoin, double miterLimit = 4.0);
 
 } // namespace Tools
 
 } // namespace LibBoard
 
-#endif /* _PATH_BOUNDARIES_H_ */
+#endif /* PATH_BOUNDARIES_H */

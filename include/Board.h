@@ -24,27 +24,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_BOARD_H_
-#define _BOARD_BOARD_H_
+#ifndef BOARD_BOARD_H
+#define BOARD_BOARD_H
 
 #include <ostream>
 #include <string>
 #include <vector>
 
-#include "BoardConfig.h"
-#include "board/Arrow.h"
-#include "board/Bezier.h"
-#include "board/Dot.h"
-#include "board/Ellipse.h"
-#include "board/Exception.h"
-#include "board/Image.h"
-#include "board/Line.h"
-#include "board/Path.h"
-#include "board/Point.h"
-#include "board/Polyline.h"
-#include "board/Shape.h"
-#include "board/ShapeList.h"
-#include "board/Text.h"
+#include <BoardConfig.h>
+#include <board/Arrow.h>
+#include <board/Bezier.h>
+#include <board/BoardFontText.h>
+#include <board/Dot.h>
+#include <board/Ellipse.h>
+#include <board/Exception.h>
+#include <board/Group.h>
+#include <board/Image.h>
+#include <board/Line.h>
+#include <board/Path.h>
+#include <board/Point.h>
+#include <board/Polyline.h>
+#include <board/RoughVisitor.h>
+#include <board/Shape.h>
+#include <board/ShapeList.h>
+#include <board/SketchFilter.h>
+#include <board/Style.h>
+#include <board/Text.h>
 
 namespace LibBoard
 {
@@ -52,43 +57,19 @@ namespace LibBoard
 /**
  * The Board class.
  * @brief Class for EPS, FIG or SVG drawings.
- * @version 0.5
  */
-class Board : public ShapeList {
+struct Board : public ShapeList {
 
 public:
-  enum PageSize
-  {
-    BoundingBox = 0,
-    A0,
-    A1,
-    A2,
-    A3,
-    A4,
-    A5,
-    A6,
-    A7,
-    A8,
-    A9,
-    A10,
-    Letter,
-    Legal,
-    Executive
-  };
-
-  enum Unit
-  {
-    UPoint,
-    UInche,
-    UCentimeter,
-    UMillimeter
-  };
   static const double Degree;
 
-  enum AspectRatioFlag
+  /**
+   * @brief The AspectRatio enum
+   */
+  enum class AspectRatio
   {
-    IgnoreAspectRatio,
-    KeepAspectRatio
+    Ignore,  //!< Ignore aspect ratio, e.g. for resize operations
+    Preserve //!< Preserve aspect ratio, e.g. for resize operations
   };
 
   /**
@@ -105,7 +86,7 @@ public:
    */
   Board(const Board & other);
 
-  ~Board();
+  ~Board() override;
 
   /**
    * The operator =
@@ -126,6 +107,12 @@ public:
   Board & operator<<(const Shape & shape);
 
   /**
+   * Add of shapes from a vector to the shape list.
+   */
+  template <typename S> //
+  Board & operator<<(const std::vector<S> & shapes);
+
+  /**
    * Clears the board with a given background color.
    *
    * @param color The board background color (may be Color::None).
@@ -141,24 +128,81 @@ public:
    */
   inline void clear(unsigned char red, unsigned char green, unsigned char blue);
 
-  Board & rotate(double angle, const Point & center);
+  /**
+   * @brief Rotate the board by an angle around a point
+   * @param angle Rotation angle (in radians)
+   * @param center Rotation center
+   * @return A reference to the board itself
+   */
+  Board & rotate(double angle, const Point & center) override;
 
-  Board & rotate(double angle);
+  /**
+   * @brief Rotate the board by an angle around the center of its bounding box
+   * @param angle Rotation angle (in radians)
+   * @return A reference to the board itself
+   */
+  Board & rotate(double angle) override;
 
-  Board & translate(double dx, double dy);
+  /**
+   * @brief Translate the board by a given vector
+   * @param dx Shift in the x direction
+   * @param dy Shift in the y direction
+   * @return A reference to the board itself
+   */
+  Board & translate(double dx, double dy) override;
 
-  Board & scale(double sx, double sy);
+  /**
+   * @brief Scale the board in the x and y direction
+   * @param sx Scale factor in the x direction
+   * @param sy Scale factor in the y direction
+   * @return A reference to the board itself
+   */
+  Board & scale(double sx, double sy) override;
 
-  Board & scale(double s);
+  /**
+   * @brief Scale the board
+   * @param s Scale factor
+   * @return A reference to the board itself
+   */
+  Board & scale(double s) override;
 
+  /**
+   * Get a rotated copy of the Board around a specified rotation center.
+   * @param angle Rotation angle in radian
+   * @param center Center of rotation
+   * @return Rotated copy of the Board object.
+   */
   Board rotated(double angle, const Point & center);
 
+  /**
+   * Get a rotated copy of the Board around its bounding box's center.
+   *
+   * @param angle Rotation angle in radian
+   * @return Rotated copy of the Board object.
+   */
   Board rotated(double angle);
 
+  /**
+   * Get a translated copy of the Board.
+   * @param dx x shift value
+   * @param dy y shift value
+   * @return Translated copy of the Board object.
+   */
   Board translated(double dx, double dy);
 
+  /**
+   * Get a scaled copy of the Board.
+   * @param sx x scaling factor
+   * @param sy y scaling factor
+   * @return Scaled copy of the Board object.
+   */
   Board scaled(double sx, double sy);
 
+  /**
+   * Get a scaled copy of the Board.
+   * @param s scaling factor
+   * @return Scaled copy of the Board object.
+   */
   Board scaled(double s);
 
   /**
@@ -166,50 +210,45 @@ public:
    *
    * @param x First coordinate of the dot.
    * @param y Second coordinate of the dot.
-   * @param depth Depth of the line.
    */
-  void drawDot(double x, double y, int depth = -1);
+  void drawDot(double x, double y);
 
   /**
-   * Draws a line from (x1,y1) to (x2,y2).
-   *
+   * Draws a line from (x1,y1) to (x2,y2) using current style parameters.
    * @param x1 First coordinate of the first extremity.
    * @param y1 Second coordinate of the first extremity.
    * @param x2 First coordinate of the second extremity.
    * @param y2 Second coordinate of the second extremity.
-   * @param depth Depth of the line.
    */
-  void drawLine(double x1, double y1, double x2, double y2, int depth = -1);
+  void drawLine(double x1, double y1, double x2, double y2);
 
   /**
-   * Draws a line from p to q.
+   * Draws a line from p to q using current style parameters.
    *
    * @param p First extremity.
    * @param q Second extremity.
-   * @param filled Whether or not the arrow is filled.
-   * @param depth Depth of the line.
    */
-  void drawLine(Point p, Point q, int depth = -1);
+  void drawLine(Point p, Point q);
 
   /**
-   * Draws a line from (x1,y1) to (x2,y2) with an arrow at (x2,y2).
+   * Draws a line from (x1,y1) to (x2,y2) with an arrow at (x2,y2) using current style parameters.
    *
    * @param x1 First coordinate of the first extremity.
    * @param y1 Second coordinate of the first extremity.
    * @param x2 First coordinate of the second extremity.
    * @param y2 Second coordinate of the second extremity.
-   * @param depth Depth of the line.
+   * @param type The arrow extremity type.
    */
-  void drawArrow(double x1, double y1, double x2, double y2, int depth = -1);
+  void drawArrow(double x1, double y1, double x2, double y2, Arrow::ExtremityType type = Arrow::ExtremityType::Plain);
 
   /**
    * Draws a line from p to q with an arrow at (x2,y2).
    *
    * @param p First extremity.
    * @param q Second extremity.
-   * @param depth Depth of the line.
+   * @param type The arrow extremity type.
    */
-  void drawArrow(Point p, Point q, int depth = -1);
+  void drawArrow(Point p, Point q, Arrow::ExtremityType type = Arrow::ExtremityType::Plain);
 
   /**
    * Draws a triangle.
@@ -217,12 +256,11 @@ public:
    * @param x1 First coordinate of the first vertex.
    * @param y1 Second coordinate of the first vertex.
    * @param x2 First coordinate of the second vertex.
-   * @param y3 Second coordinate of the second vertex.
+   * @param y2 Second coordinate of the second vertex.
    * @param x3 First coordinate of the third vertex.
    * @param y3 Second coordinate of the third vertex.
-   * @param depth Depth of the triangle.
    */
-  void drawTriangle(double x1, double y1, double x2, double y2, double x3, double y3, int depth = -1);
+  void drawTriangle(double x1, double y1, double x2, double y2, double x3, double y3);
 
   /**
    * Draws a triangle.
@@ -230,9 +268,8 @@ public:
    * @param p1 First vertex.
    * @param p2 Second vertex.
    * @param p3 Third vertex.
-   * @param depth Depth of the triangle.
    */
-  void drawTriangle(const Point & p1, const Point & p2, const Point & p3, int depth = -1);
+  void drawTriangle(const Point & p1, const Point & p2, const Point & p3);
 
   /**
    * Draws a filled triangle.
@@ -240,12 +277,11 @@ public:
    * @param x1 First coordinate of the first vertex.
    * @param y1 Second coordinate of the first vertex.
    * @param x2 First coordinate of the second vertex.
-   * @param y3 Second coordinate of the second vertex.
+   * @param y2 Second coordinate of the second vertex.
    * @param x3 First coordinate of the third vertex.
    * @param y3 Second coordinate of the third vertex.
-   * @param depth Depth of the triangle.
    */
-  void fillTriangle(double x1, double y1, double x2, double y2, double x3, double y3, int depth = -1);
+  void fillTriangle(double x1, double y1, double x2, double y2, double x3, double y3);
 
   /**
    * Draws a triangle with Gouraud-like shaded colors.
@@ -257,9 +293,10 @@ public:
    * @param p3
    * @param color3
    * @param divisions number of triangle subdivisions.
-   * @param depth The depth of the triangle.
    */
-  void fillGouraudTriangle(const Point & p1, const Color & color1, const Point & p2, const Color & color2, const Point & p3, const Color & color3, unsigned char divisions = 3, int depth = -1);
+  void fillGouraudTriangle(const Point & p1, const Color & color1, //
+                           const Point & p2, const Color & color2, //
+                           const Point & p3, const Color & color3, unsigned char divisions = 3);
 
   /**
    * Draws a triangle with Gouraud-like shaded colors.
@@ -274,10 +311,10 @@ public:
    * @param y3
    * @param color3
    * @param divisions
-   * @param depth
    */
-  inline void fillGouraudTriangle(const double x1, const double y1, const Color & color1, const double x2, const double y2, const Color & color2, const double x3, const double y3,
-                                  const Color & color3, unsigned char divisions = 3, int depth = -1);
+  inline void fillGouraudTriangle(const double x1, const double y1, const Color & color1, //
+                                  const double x2, const double y2, const Color & color2, //
+                                  const double x3, const double y3, const Color & color3, unsigned char divisions = 3);
 
   /**
    * Draws a triangle with a Gouraud-like shaded color according to
@@ -289,10 +326,10 @@ public:
    * @param p3
    * @param brightness3
    * @param divisions number of triangle subdivisions.
-   * @param depth The depth of the triangle.
    */
-  void fillGouraudTriangle(const Point & p1, const float brightness1, const Point & p2, const float brightness2, const Point & p3, const float brightness3, unsigned char divisions = 3,
-                           int depth = -1);
+  void fillGouraudTriangle(const Point & p1, const float brightness1, //
+                           const Point & p2, const float brightness2, //
+                           const Point & p3, const float brightness3, unsigned char divisions = 3);
 
   /**
    * Draws a triangle with a Gouraud-like shaded color according to
@@ -308,10 +345,11 @@ public:
    * @param y3
    * @param brightness3
    * @param divisions
-   * @param depth
    */
-  inline void fillGouraudTriangle(const double x1, const double y1, const float brightness1, const double x2, const double y2, const float brightness2, const double x3, const double y3,
-                                  const float brightness3, unsigned char divisions = 3, int depth = -1);
+  inline void fillGouraudTriangle(const double x1, const double y1, const float brightness1, //
+                                  const double x2, const double y2, const float brightness2, //
+                                  const double x3, const double y3, const float brightness3, //
+                                  unsigned char divisions = 3);
 
   /**
    * Draws a filled triangle.
@@ -319,9 +357,8 @@ public:
    * @param p1 First vertex.
    * @param p2 Second vertex.
    * @param p3 Third vertex.
-   * @param depth Depth of the triangle.
    */
-  void fillTriangle(const Point & p1, const Point & p2, const Point & p3, int depth = -1);
+  void fillTriangle(const Point & p1, const Point & p2, const Point & p3);
 
   /**
    * Draws a rectangle.
@@ -330,17 +367,15 @@ public:
    * @param top Second coordinate of the upper left corner.
    * @param width Width of the rectangle.
    * @param height Height of the rectangle.
-   * @param depth Depth of the rectangle.
    */
-  void drawRectangle(double left, double top, double width, double height, int depth = -1);
+  void drawRectangle(double left, double top, double width, double height);
 
   /**
    * Draws a rectangle.
    *
    * @param rect Position and size of the rectangle.
-   * @param depth Depth of the rectangle.
    */
-  void drawRectangle(const Rect & r, int depth = -1);
+  void drawRectangle(const Rect & rect);
 
   /**
    * Draws a rectangle filled with the current pen color.
@@ -349,17 +384,14 @@ public:
    * @param top Second coordinate of the upper left corner.
    * @param width Width of the rectangle.
    * @param height Height of the rectangle.
-   * @param depth Depth of the rectangle.
    */
-  void fillRectangle(double left, double top, double width, double height, int depth = -1);
+  void fillRectangle(double left, double top, double width, double height);
 
   /**
    * Draws a rectangle filled with the current pen color.
-   *
    * @param rect Position and size of the rectangle.
-   * @param depth Depth of the rectangle.
    */
-  void fillRectangle(const Rect & r, int depth = -1);
+  void fillRectangle(const Rect & rect);
 
   /**
    * Draws a circle.
@@ -367,9 +399,8 @@ public:
    * @param x First coordinate of the circle's center.
    * @param y Second coordinate of the circle's center.
    * @param radius Radius of the circle.
-   * @param depth Depth of the circle.
    */
-  void drawCircle(double x, double y, double radius, int depth = -1);
+  void drawCircle(double x, double y, double radius);
 
   /**
    * Draws a circle filled with the current pen color.
@@ -377,19 +408,18 @@ public:
    * @param x First coordinate of the circle's center.
    * @param y Second coordinate of the circle's center.
    * @param radius Radius of the circle.
-   * @param depth Depth of the circle.
    */
-  void fillCircle(double x, double y, double radius, int depth = -1);
+  void fillCircle(double x, double y, double radius);
 
   /**
    * Draws an ellipse.
    *
    * @param x First coordinate of the circle's center.
    * @param y Second coordinate of the circle's center.
-   * @param radius Radius of the circle.
-   * @param depth Depth of the circle.
+   * @param xRadius Radius of the circle along the x axis.
+   * @param yRadius Radius of the circle along the y axis.
    */
-  void drawEllipse(double x, double y, double xRadius, double yRadius, int depth = -1);
+  void drawEllipse(double x, double y, double xRadius, double yRadius);
 
   /**
    * Draws an ellipse filled with the current pen color.
@@ -398,33 +428,29 @@ public:
    * @param y Second coordinate of the circle's center.
    * @param xRadius X axis radius of the ellipse.
    * @param yRadius Y axis radius of the ellipse.
-   * @param depth Depth of the circle.
    */
-  void fillEllipse(double x, double y, double xRadius, double yRadius, int depth = -1);
+  void fillEllipse(double x, double y, double xRadius, double yRadius);
 
   /**
    * Draws a polygonal line.
    *
    * @param points A vector of points.
-   * @param depth The depth of the polyline.
    */
-  void drawPolyline(const std::vector<Point> & points, int depth = -1);
+  void drawPolyline(const std::vector<Point> & points);
 
   /**
    * Draws a closed polygonal line.
    *
    * @param points A vector of points.
-   * @param depth The depth of the polyline.
    */
-  void drawClosedPolyline(const std::vector<Point> & points, int depth = -1);
+  void drawClosedPolyline(const std::vector<Point> & points);
 
   /**
    * Draws a filled polygon.
    *
    * @param points A vector of points.
-   * @param depth The depth of the polygon.
    */
-  void fillPolyline(const std::vector<Point> & points, int depth = -1);
+  void fillPolyline(const std::vector<Point> & points);
 
   /**
    * Draws a string of text.
@@ -432,18 +458,16 @@ public:
    * @param x The first coordinates of the lower left corner.
    * @param y The second coordinates of the lower left corner.
    * @param text The text.
-   * @param depth The depth of the text.
    */
-  void drawText(double x, double y, const char * text, int depth = -1);
+  void drawText(double x, double y, const char * text);
 
   /**
    * Draws a string of text.
    *
    * @param p Position of the bottom-left corner.
    * @param text The text.
-   * @param depth The depth of the text.
    */
-  void drawText(Point p, const char * text, int depth = -1);
+  void drawText(Point p, const char * text);
 
   /**
    * Draws a string of text.
@@ -451,18 +475,16 @@ public:
    * @param x The first coordinates of the lower left corner.
    * @param y The second coordinates of the lower left corner.
    * @param text The text.
-   * @param depth The depth of the text.
    */
-  void drawText(double x, double y, const std::string & str, int depth = -1);
+  void drawText(double x, double y, const std::string & text);
 
   /**
    * Draws a string of text.
    *
    * @param p Position of the bottom-left corner.
    * @param str The text.
-   * @param depth The depth of the text.
    */
-  void drawText(Point p, const std::string & str, int depth = -1);
+  void drawText(Point p, const std::string & str);
 
   /**
    * Changes the current font and font size.
@@ -484,9 +506,10 @@ public:
   /**
    * Changes the current pen color.
    *
-   * @param red Red component.
-   * @param green Green component.
-   * @param blue Blue component.
+   * @param red Red component [0..255].
+   * @param green Green component [0..255].
+   * @param blue Blue component [0..255].
+   * @param alpha Transparency channel [0..255].
    * @return The board itself.
    */
   Board & setPenColorRGBi(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 255);
@@ -494,10 +517,11 @@ public:
   /**
    * Changes the current pen color.
    *
-   * @param red Red
-   * @param green
-   * @param blue
-   * @param alpha
+   * @param red Red component [0..1].
+   * @param green Green component [0..1].
+   * @param blue Blue component [0..1].
+   * @param alpha Transparency [0..1].
+   *
    * @return The board itself.
    */
   Board & setPenColorRGBf(float red, float green, float blue, float alpha = 1.0f);
@@ -523,7 +547,7 @@ public:
   Board & setFillColorRGBi(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 255);
 
   /**
-   * Changes the current fill color.
+   * Changes the current fill color (RGB version).
    *
    * @param red Red component.
    * @param green Green component.
@@ -532,6 +556,17 @@ public:
    * @return The board itself.
    */
   Board & setFillColorRGBf(float red, float green, float blue, float alpha = 1.0f);
+
+  /**
+   * Changes the current fill color (HSV version)
+   *
+   * @param hue
+   * @param saturation
+   * @param value
+   * @param alpha
+   * @return
+   */
+  Board & setFillColorHSV(float hue, float saturation, float value, float alpha = 1.0f);
 
   /**
    * Changes the current fill color.
@@ -556,42 +591,35 @@ public:
    * @param style The new line style.
    * @return The board itself.
    */
-  Board & setLineStyle(Shape::LineStyle style);
+  Board & setLineStyle(LineStyle style);
 
   /**
    * Set the line cap style.
-   *
-   * @param cap The cap-style which can be Shape::ButtCap,
-   * Shape::RoundCap or Shape::SquareCap.
-   *
+   * @param cap The cap-style.
    * @return The board itself.
    */
-  inline Board & setLineCap(Shape::LineCap cap);
+  inline Board & setLineCap(LineCap cap);
 
   /**
-   * Set the line joine style.
-   *
-   * @param cap The join-style which can be Shape::MiterJoin,
-   * Shape::RoundJoin or Shape::BevelJoin.
-   *
+   * Set the line join style.
+   * @param join The join-style
    * @return The board itself.
    */
-  inline Board & setLineJoin(Shape::LineJoin join);
+  inline Board & setLineJoin(LineJoin join);
 
   /**
    * Changes the background color of the whole drawing.
    *
    * @param color A color (may be Color::None).
    */
-  void backgroundColor(const Color & color);
+  void setBackgroundColor(const Color & color);
 
   /**
    * Draws the current drawing's bounding box as a rectangle.
    *
-   * @param depth The depth of the rectangle.
    * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
    */
-  void drawBoundingBox(LineWidthFlag lineWidthFlag, int depth = -1);
+  void drawBoundingBox(LineWidthFlag lineWidthFlag);
 
   /**
    * Define a clipping rectangle for the whole drawing.
@@ -619,8 +647,7 @@ public:
 
   /**
    * Define a clipping path for the whole drawing.
-   *
-   * @param points A path.
+   * @param path A path.
    */
   void setClippingPath(const Path & path);
 
@@ -652,19 +679,19 @@ public:
 
   /**
    * Save the drawing in an EPS, XFIG of SVG file depending
-   * on the filename extension. When a size is given (not BoundingBox), the drawing is
+   * on the filename extension. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename Path of the file to be created.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void save(const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter) const;
+  void save(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
    * Save the drawing in an EPS, XFIG of SVG file depending
-   * on the filename extension. When a size is given (not BoundingBox), the drawing is
+   * on the filename extension. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename Path of the file to be created.
@@ -673,48 +700,46 @@ public:
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void save(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter) const;
+  void save(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Writes the drawing in a stream as an EPS file. When a size is given (not BoundingBox), the drawing is
+   * Writes the drawing in a stream as an EPS file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    * @param title Document title (Postscript comment).
    */
-  void saveEPS(std::ostream & out, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter, const std::string & title = std::string()) const;
+  void saveEPS(std::ostream & out, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
 
   /**
-   * Saves the drawing in an EPS file. When a size is given (not BoundingBox), the drawing is
+   * Save the drawing in an EPS file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The EPS file name.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    * @param title Document title (Postscript comment).
    */
-  void saveEPS(const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter, const std::string & title = std::string()) const;
+  void saveEPS(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
 
   /**
-   * Writes the drawing in a stream as an EPS file. The drawing is scaled (up or
-   * down) so that it fits within the dimension while keeping its aspect ratio.
+   * Write the drawing in a stream as an EPS file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param pageWidth Width of the page.
    * @param pageHeight Height of the page.
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the previous length parameters (default value is millimeter).
    * @param title Document title (Postscript comment).
    */
-  void saveEPS(std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter, const std::string & title = std::string()) const;
+  void saveEPS(std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
 
   /**
-   * Saves the drawing in an EPS file. The drawing is scaled (up or down) so
+   * Save the drawing in an EPS file. The drawing is scaled (up or down) so
    * that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The EPS file name.
@@ -724,130 +749,120 @@ public:
    * @param unit The unit used to express the previous length parameters (default value is millimeter).
    * @param title Document title (Postscript comment).
    */
-  void saveEPS(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter, const std::string & title = std::string()) const;
+  void saveEPS(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter, const std::string & title = std::string()) const;
 
   /**
-   * Saves the drawing in an XFig file. When a size is given (not BoundingBox), the drawing is
+   * Save the drawing in an XFig file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The name of the FIG file.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveFIG(const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter) const;
+  void saveFIG(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Saves the drawing in a stream as an XFig file. When a size is given (not BoundingBox), the drawing is
+   * Saves the drawing in a stream as an XFig file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveFIG(std::ostream & out, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter) const;
+  void saveFIG(std::ostream & out, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Saves the drawing in an XFig file. When a size is given (not BoundingBox), the drawing is
-   * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   * Saves the drawing in an XFig file. When a size is given (not PageSize::BoundingBox), the drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The XFig file name.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param pageWidth Width of the page.
    * @param pageHeight Height of the page.
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void saveFIG(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter) const;
+  void saveFIG(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Saves the drawing in a stream as an XFig file. The drawing is scaled (up or
-   * down) so that it fits within the dimension while keeping its aspect ratio.
+   * Save the drawing in a stream as an XFig file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param pageWidth Width of the page.
    * @param pageHeight Height of the page.
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void saveFIG(std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter) const;
+  void saveFIG(std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Save the drawing in an SVG file. When a size is given (not BoundingBox), the drawing is
+   * Save the drawing in an SVG file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The name of the file.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveSVG(const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter) const;
+  void saveSVG(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Saves the drawing in a stream as an SVG file. When a size is given (not BoundingBox), the drawing is
+   * Saves the drawing in a stream as an SVG file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the margin (default value is millimeter). If size is "BoundingBox", this unit is used for the bounding box as well.
    */
-  void saveSVG(std::ostream & out, PageSize size = Board::BoundingBox, double margin = 0.0, Unit unit = UMillimeter) const;
+  void saveSVG(std::ostream & out, PageSize size = PageSize::BoundingBox, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Saves the drawing in an SVG file. When a size is given (not BoundingBox), the drawing is
-   * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   * Save the drawing in an SVG file. When a size is given (not PageSize::BoundingBox), the drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The SVG file name.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param pageWidth Width of the page.
    * @param pageHeight Height of the page.
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void saveSVG(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter) const;
+  void saveSVG(const char * filename, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Saves the drawing in a stream as an SVG file. The drawing is scaled (up or down) so
-   * that it fits within the dimension while keeping its aspect ratio.
+   * Save the drawing in a stream as an SVG file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param pageWidth Width of the page.
    * @param pageHeight Height of the page.
    * @param margin Minimal margin around the figure in the page.
    * @param unit The unit used to express the previous length parameters (default value is millimeter).
    */
-  void saveSVG(std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = UMillimeter) const;
+  void saveSVG(std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0, Unit unit = Unit::Millimeter) const;
 
   /**
-   * Save the drawing in an TikZ file. When a size is given (not BoundingBox), the drawing is
+   * Save the drawing in an TikZ file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The name of the file.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
-  void saveTikZ(const char * filename, PageSize size = Board::BoundingBox, double margin = 0.0) const;
+  void saveTikZ(const char * filename, PageSize size = PageSize::BoundingBox, double margin = 0.0) const;
 
   /**
-   * Save the drawing in a stream as TikZ file. When a size is given (not BoundingBox), the drawing is
+   * Save the drawing in a stream as TikZ file. When a size is given (not PageSize::BoundingBox), the drawing is
    * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
+   * @param size Page size (Either PageSize::BoundingBox (default), A4 or Letter).
    * @param margin Minimal margin around the figure in the page, in millimeters.
    */
-  void saveTikZ(std::ostream & out, PageSize size = Board::BoundingBox, double margin = 0.0) const;
+  void saveTikZ(std::ostream & out, PageSize size = PageSize::BoundingBox, double margin = 0.0) const;
 
   /**
-   * Save the drawing in an TikZ file. When a size is given (not BoundingBox), the drawing is
-   * scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
+   * Save the drawing in an TikZ file. When a size is given (not PageSize::BoundingBox), the drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param filename The name of the file.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param pageWidth Width of the page in millimeters.
    * @param pageHeight Height of the page in millimeters.
    * @param margin Minimal margin around the figure in the page, in millimeters.
@@ -855,11 +870,9 @@ public:
   void saveTikZ(const char * filename, double pageWidth, double pageHeight, double margin = 0.0) const;
 
   /**
-   * Save the drawing in a stream as a TikZ file. The drawing is scaled (up or
-   * down) so that it fits within the dimension while keeping its aspect ratio.
+   * Save the drawing in a stream as a TikZ file. The drawing is scaled (up or down) so that it fits within the dimension while keeping its aspect ratio.
    *
    * @param out The output stream.
-   * @param size Page size (Either BoundingBox (default), A4 or Letter).
    * @param pageWidth Width of the page in millimeters.
    * @param pageHeight Height of the page in millimeters.
    * @param margin Minimal margin around the figure in the page, in millimeters.
@@ -867,61 +880,141 @@ public:
   void saveTikZ(std::ostream & out, double pageWidth, double pageHeight, double margin = 0.0) const;
 
   /**
-   * Build a grid with specified number of rows and columns and a given size.
-   *
-   * @param topLeft Coordinates of the top left point of the grid.
-   * @param columns Number of columns of the grid.
-   * @param rows Number of rows of the grid.
-   * @param width Width of the grid.
-   * @param height Height of the grid.
-   * @param penColor Color of the lines.
-   * @param fillColor Background color.
-   * @param lineWidth Line width.
-   * @param style Line style (default is Board::SolidStyle).
-   * @param cap Line cap (default is Board::ButtCap).
-   * @param join Line join (default is Board::MiterJoin).
-   * @param depth Depth of the grid (default is -1 (auto)).
-   *
-   * @return The grid as a group.
-   */
-  static Group makeGrid(Point topLeft, size_t columns, size_t rows, double width, double height, Color penColor, Color fillColor, double lineWidth, const LineStyle style = SolidStyle,
-                        const LineCap cap = ButtCap, const LineJoin join = MiterJoin, int depth = -1);
-  /**
    * @brief penColor
    *
    * @return The current pen color.
    */
-  Color penColor() const;
+  inline const Color & penColor() const;
 
   /**
    * @brief fillColor
    *
    * @return The current fill color.
    */
-  Color fillColor() const;
+  inline const Color & fillColor() const;
+
+  /**
+   * Return the current style used when drawing shapes with board methods.
+   *
+   * @return Current style.
+   */
+  inline const Style & style() const;
+
+  /**
+   *  Globally enable linewidth scaling when using scale functions.
+   */
+  static void enableLineWidthScaling();
+
+  /**
+   *  Globally disable linewidth scaling when using scale functions.
+   */
+  static void disableLineWidthScaling();
+
+  /**
+   *  Globally enable/disable linewidth scaling when using scale functions.
+   */
+  static void setLineWidthScaling(bool);
+
+  /**
+   * @brief Standard page size as a rectangle Rect(0,0,width,height)
+   * @param size Page size enum
+   * @param unit Unit
+   * @return Rectangle according to unit
+   */
+  static Rect pageRect(PageSize size, Unit unit);
 
 protected:
   static double toMillimeter(double x, Unit unit);
 
   /**
    * Current graphical state for drawings made by the drawSomething() methods.
-   *
    */
   struct State {
-    Color penColor;             /**< The pen color. */
-    Color fillColor;            /**< The fill color. */
-    double lineWidth;           /**< The line thickness. */
-    Shape::LineStyle lineStyle; /**< The line style. */
-    Shape::LineCap lineCap;     /**< The type of line extremities. */
-    Shape::LineJoin lineJoin;   /**< The type of line junction. */
-    Fonts::Font font;           /**< The font. */
-    double fontSize;            /**< The font size. */
+    Style style;      /**< The style. */
+    Fonts::Font font; /**< The font. */
+    double fontSize;  /**< The font size. */
     State();
   };
   State _state;           /**< The current state. */
   Color _backgroundColor; /**< The color of the background. */
   Path _clippingPath;
 };
+
+// Helper functions
+
+/**
+ * Build a grid with specified number of rows and columns and a given size.
+ *
+ * @param topLeft Coordinates of the top left point of the grid.
+ * @param columns Number of columns of the grid.
+ * @param rows Number of rows of the grid.
+ * @param width Width of the grid.
+ * @param height Height of the grid.
+ * @param penColor Color of the lines.
+ * @param fillColor Background color.
+ * @param lineWidth Line width.
+ * @param style Line style (default is Board::SolidStyle).
+ * @param cap Line cap (default is Board::ButtCap).
+ * @param join Line join (default is Board::MiterJoin).
+ *
+ * @return The grid as a group.
+ */
+Group grid(Point topLeft, size_t columns, size_t rows, double width, double height, Color penColor, Color fillColor, double lineWidth, const LineStyle style = SolidStyle, const LineCap cap = ButtCap,
+           const LineJoin join = MiterJoin);
+
+/**
+ * Build a grid with specified number of rows and columns and a given size.
+ *
+ * @param topLeft Coordinates of the top left point of the grid.
+ * @param columns Number of columns of the grid.
+ * @param rows Number of rows of the grid.
+ * @param width Width of the grid.
+ * @param height Height of the grid.
+ * @param style Shape style
+ *
+ * @return The grid as a group.
+ */
+Group grid(Point topLeft, size_t columns, size_t rows, double width, double height, const Style & style = Style::defaultStyle());
+
+/**
+ * Make a small cross
+ * @param p
+ * @param style
+ * @return A cross made of two lines, centered at point p
+ */
+Group cross(Point p, const Style & style = Style::defaultStyle());
+
+/**
+ * @brief Produce a rectangular color matrix
+ * @param topLeft
+ * @param colors
+ * @param columns
+ * @param rows
+ * @param pixelWidth
+ * @param pixelHeight if zero (default), then it take the same value as pixelHeight
+ * @param lineWidth if zero, pixels are drawn with Color::Null outline (i.e. color is "none")
+ * @return A group of rows x columns rectangles colored after given vector
+ */
+Group array(Point topLeft, const std::vector<Color> & colors, unsigned int columns, unsigned int rows, double pixelWidth, double pixelHeight = 0.0, double lineWidth = 0.0);
+
+/**
+ * @brief Surround a shape with a rectangular frame
+ * @param shape A shape
+ * @param color Frame color
+ * @param lineWidth Frame line width
+ * @param margin Frame inner mergin
+ * @param sketchyCount If set to zero, the frame is a straight one, otherwise a sketchy frame is produced with given repetition count.
+ * @return A group of the shape with its frame
+ */
+Group framed(const Shape & shape, const Color & color = Style::defaultPenColor(), double lineWidth = Style::defaultLineWidth(), double margin = 0.0, int sketchyCount = 0);
+
+/**
+ * @brief Produce a polyline of the Biezer vertices and control points
+ * @param bezier A Bezier
+ * @param style Style of the polyline
+ * @return A polyline showing the Bezier points and controls
+ */
+Polyline bezierControls(const Bezier & bezier, const Style & style = Style::defaultStyle());
 
 // Inline methods and functions
 
@@ -930,40 +1023,63 @@ inline void Board::clear(unsigned char red, unsigned char green, unsigned char b
   clear(Color(red, green, blue));
 }
 
-inline Board & Board::setLineStyle(Shape::LineStyle style)
+inline Board & Board::setLineStyle(LineStyle style)
 {
-  _state.lineStyle = style;
+  _state.style.lineStyle = style;
   return *this;
 }
 
-inline Board & Board::setLineCap(Shape::LineCap cap)
+inline Board & Board::setLineCap(LineCap cap)
 {
-  _state.lineCap = cap;
+  _state.style.lineCap = cap;
   return *this;
 }
 
-inline Board & Board::setLineJoin(Shape::LineJoin join)
+inline Board & Board::setLineJoin(LineJoin join)
 {
-  _state.lineJoin = join;
+  _state.style.lineJoin = join;
   return *this;
+}
+
+const Color & Board::penColor() const
+{
+  return _state.style.penColor;
+}
+
+const Color & Board::fillColor() const
+{
+  return _state.style.fillColor;
+}
+
+const Style & Board::style() const
+{
+  return _state.style;
 }
 
 inline void Board::fillGouraudTriangle(const double x1, const double y1, const Color & color1, //
                                        const double x2, const double y2, const Color & color2, //
                                        const double x3, const double y3, const Color & color3, //
-                                       unsigned char divisions, int depth)
+                                       unsigned char divisions)
 {
-  fillGouraudTriangle(Point(x1, y1), color1, Point(x2, y2), color2, Point(x3, y3), color3, divisions, depth);
+  fillGouraudTriangle(Point(x1, y1), color1, Point(x2, y2), color2, Point(x3, y3), color3, divisions);
 }
 
 inline void Board::fillGouraudTriangle(const double x1, const double y1, const float brightness1, //
                                        const double x2, const double y2, const float brightness2, //
                                        const double x3, const double y3, const float brightness3, //
-                                       unsigned char divisions, int depth)
+                                       unsigned char divisions)
 {
-  fillGouraudTriangle(Point(x1, y1), brightness1, Point(x2, y2), brightness2, Point(x3, y3), brightness3, divisions, depth);
+  fillGouraudTriangle(Point(x1, y1), brightness1, Point(x2, y2), brightness2, Point(x3, y3), brightness3, divisions);
+}
+
+template <typename S> //
+Board & Board::operator<<(const std::vector<S> & shapes)
+{
+  return static_cast<Board &>(ShapeList::operator<<(shapes));
 }
 
 } // namespace LibBoard
+
+// TODO : Add rectangle tilling from a vector of colors (2A array) ( https://github.com/c-koi/libboard/pull/7 )
 
 #endif

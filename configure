@@ -1,62 +1,41 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+# This source code is part of the Board project, a C++ library whose
+# purpose is to allow simple drawings in EPS, FIG or SVG files.
+# Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr/>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 CXX=${CXX-g++}
-PREFIX=/usr
+DESTDIR=${DESTDIR-}
+PREFIX=${PREFIX-/usr}
 STATIC_LIB_ONLY=no
 NUMBER=
 DEBUG=
 ECHO=echo
-[ -f /usr/ucb/echo ] && ECHO=/usr/ucb/echo
+[[ -f /usr/ucb/echo ]] && ECHO=/usr/ucb/echo
 DOXYGEN=doxygen
 SANITIZE=""
-CXXVERSION="11"
 
 #
 # Get version number from CMakeLists.txt
 #
-VERSION=`grep "^Project.LibBoard" CMakeLists.txt | sed -e 's/.*VERSION\s*//' -e 's/\s*)$//'`
+VERSION=$(grep "^#define BOARD_VERSION" include/BoardConfig.h | head -1)
+VERSION=${VERSION/*VERSION }
+MAJOR_VERSION=${VERSION%%.*}
 
-echo "Configuring build of LibBoard version $VERSION"
-
-##
-## 1. ARGS
-## Reading configure arguments
-##
-while :
-do
-    case $# in
-    0) break ;;
-    esac
-
-    option=$1 ; shift
-
-    case $option in
-    --*=*)
-	optarg=`echo $option | sed -e 's/^[^=]*=//'`
-	arguments="$arguments $option"
-	;;
-    esac
-    case $option in
-    --prefix* | --pre*)
-	PREFIX=$optarg
-	;;
-    --static*)
-	STATIC_LIB_ONLY=yes
-	;;
-    --debug*)
-	DEBUG="-g"
-	;;
-    --no-doc*)
-	DOXYGEN=""
-	;;
-    --sanitize-address )
-	SANITIZE="-fsanitize=address"
-	;;
-    --force-cpp03 )
-	CXXVERSION="03"
-	;;
-    -help | --help | --hel | --he)
-    # Omit some internal or obsolete options to make the list less imposing.
-    # This message is too long to be a string in the A/UX 3.1 sh.
+function usage() {
     cat << EOF
 Usage: configure [options]
 Options: [defaults in brackets after descriptions]
@@ -68,35 +47,85 @@ Directory and file names:
   --no-doc                don't build the documentation [yes if Doxygen is present]
   --static		  build only the static version of the library [both static and dynamic]
   --sanitize-address      build using -fsanitize=address option
-  --force-cpp03           force C++03 even if compiler supports C++11
 EOF
     exit 0;
-    ;;
+}
 
-    *)
-    echo "${option}: invalid command-line switch"
-    exit 1
-    ;;
+TAB="	"
+MAKE_LDCONFIG_COMMAND="${TAB}ldconfig"
+
+##
+## 1. ARGS
+## Reading configure arguments
+##
+while :
+do
+    [[ $# == 0 ]] && break
+    option=$1 ; shift
+    case $option in
+      --*=*)
+	optarg=${option#*=}
+	option=${option#--}
+	option=${option%%=*}
+	;;
+      --* )
+	optarg=""
+	option=${option#--}
+	;;
+    esac
+    case $option in
+      static ) STATIC_LIB_ONLY=yes ;;
+      debug  ) DEBUG="-g -DBOARD_DEBUG" ;;
+      no-doc ) DOXYGEN="" ;;
+      sanitize-address ) SANITIZE="-fsanitize=address" ;;
+      force-cpp03 ) CXXVERSION="03" ;;
+      help | -h ) usage      ;;
+      # Debian build options
+      build ) BUILD=$optarg ;; # x86_64-linux-gnu
+      prefix ) PREFIX=$optarg ;; # --prefix=/usr
+      includedir ) INCLUDEDIR=$optarg ;; # \${prefix}/include
+      libdir ) LIBDIR=$optarg ;; # \${prefix}/lib/x86_64-linux-gnu
+      libexecdir ) LIBEXECDIR=$optarg ;; # \${prefix}/lib/x86_64-linux-gnu
+      mandir ) MANPATH=$optarg ;; # \${prefix}/share/man
+      infodir ) INFODIR=$optarg ;; # \${prefix}/share/info
+      sysconfdir ) SYSCONFDIR=$optarg ;; # /etc
+      localstatedir ) LOCALSTATEDIR=$optarg ;; # /var
+      disable-option-checking ) ;;
+      disable-silent-rules ) ;;
+      disable-maintainer-mode ) MAKE_LDCONFIG_COMMAND="" ; DEBUG="-g" ;;
+      disable-dependency-tracking ) ;;
+      *) echo "${option}: invalid command-line switch" ;  exit 1 ;;
     esac
 done
 
+# @param Check if a command exists
+function exists()
+{
+  local command="$1"
+  type $command >& /dev/null
+}
+
+echo "Configuring build of LibBoard version $VERSION"
+
+LIBDIR=${PREFIX}/lib
+
 mkdir -p obj bin lib
 
-LDFLAGSLIB=-shared
+LDFLAGSLIB="-shared -Wl,-soname,libboard.so.${MAJOR_VERSION}"
 DYNLIB_EXTENSION=so
 ##
 ## Are we on a powerpc (Mac ?)
 ##
-if [ `uname -m` = "ppc" ]; then
-    LDFLAGSLIB=-dynamiclib
-    DYNLIB_EXTENSION=dynlib
+if [[ $(uname -m) = "ppc" ]]; then
+  LDFLAGSLIB=-dynamiclib
+  DYNLIB_EXTENSION=dynlib
 fi
 
 ##
 ##  Are we trying to install "on place" ( PREFIX == `pwd` )
 ##
 ON_PLACE=no
-if [ -e ${PREFIX}/include/Board.h -a ./include/Board.h -ef ${PREFIX}/include/Board.h ]; then
+if [ $(realpath ${DESTDIR}${PREFIX}) == $(realpath $PWD) ]; then
     ON_PLACE=yes
     $ECHO Installation on current dir required.
 fi
@@ -107,7 +136,8 @@ fi
 ${ECHO} -n "Looking for ImageMagick C++ API..."
 cat > check_magick.cpp <<EOF
 #include <Magick++.h>
-int main() {
+int main(int , char * argv[]) {
+  Magick::InitializeMagick(*argv);
   Magick::Image image;
   try {
    image.read("resources/avatar.png");
@@ -118,65 +148,85 @@ int main() {
   return 0;
 }
 EOF
-g++ -o check_magick check_magick.cpp `Magick++-config --cppflags --cxxflags --ldflags --libs` > /dev/null 2>&1
-./check_magick > /dev/null 2>&1
-if [ $? = 0 ]; then
+if exists Magick++-config ; then
+  g++ -o check_magick check_magick.cpp $(Magick++-config --cppflags --cxxflags --ldflags --libs) >& /dev/null
+  ./check_magick >& /dev/null
+  if [[ $? = 0 ]]; then
     MAGICKPLUSPLUS=1
-    IMAGE_EXAMPLES="bin/images"
     IMAGE_CXXFLAGS=$(Magick++-config --cxxflags)
     IMAGE_CXXFLAGS="${IMAGE_CXXFLAGS} -Wno-long-long"
     IMAGE_LDFLAGS=$(Magick++-config --ldflags)
-    echo "Found"
-else
+    IMAGE_LDFLAGS+=" "$(Magick++-config --libs)
+  else
     MAGICKPLUSPLUS=0
-    IMAGE_EXAMPLES=""
-    IMAGE_CXXFLAGS=""
-    IMAGE_LDFLAGS=""
-    echo "Not found"
+  fi
+elif exists pkg-config ; then
+  g++ -o check_magick check_magick.cpp $(pkg-config --cflags --libs Magick++) >& /dev/null
+  ./check_magick >& /dev/null
+  if [[ $? = 0 ]]; then
+    MAGICKPLUSPLUS=1
+    IMAGE_CXXFLAGS=$(pkg-config --cflags Magick++)
+    IMAGE_CXXFLAGS="${IMAGE_CXXFLAGS} -Wno-long-long"
+    IMAGE_LDFLAGS=$(pkg-config --libs Magick++)
+  else
+    MAGICKPLUSPLUS=0
+  fi
 fi
-rm -f check_magick check_magick.cpp > /dev/null 2>&1
+if [[ $MAGICKPLUSPLUS == 1 ]]; then
+  IMAGE_EXAMPLES="bin/images"
+  echo "Found"
+else
+  IMAGE_EXAMPLES=""
+  IMAGE_CXXFLAGS=""
+  IMAGE_LDFLAGS=""
+  echo "Not found"
+fi
+rm -f check_magick check_magick.cpp >& /dev/null
 
 ##
 ## Doxygen ?
 ##
 DOXYGEN_TARGET=""
-if [ -n "$DOXYGEN" ]; then
-    ${ECHO} -n "Looking for doxygen..."
-    if ( $DOXYGEN --version > /dev/null 2>&1 ); then
-	echo "Found"
-	LICENSE=LICENSE.gz
-	DOXYGEN_TARGET="doc"
-    else
-	DOXYGEN=""
-	echo "Not found"
-    fi
+if [[ -n "$DOXYGEN" ]]; then
+  ${ECHO} -n "Looking for doxygen..."
+  if ( $DOXYGEN --version >& /dev/null ); then
+    echo "Found"
+    LICENSE=LICENSE.gz
+    DOXYGEN_TARGET="doc"
+  else
+    DOXYGEN=""
+    echo "Not found"
+  fi
 fi
 
 
+CPP11=no
+
 ##
-## C++ version
+## Check support of C++ 11
 ##
-if [ $CXXVERSION = "11" ]; then
-    echo -n "Checking that compiler supports C++11..."
-    cat > cpp11.cpp <<EOF
-    int main()
-    {
-      auto x = 1 + 2;
-      return 0;
-    }
+echo -n "Checking that compiler supports C++11..."
+cat > cpp11.cpp <<EOF
+int main()
+{
+ auto x = 1 + 2;
+ return x;
+}
 EOF
-    if ( ${CXX} --std=c++11 cpp11.cpp -o a.out > /dev/null 2>&1 ); then
-	echo "yes"
-    else
-	echo "no"
-	CXXVERSION="03"
-    fi
-    rm -f cpp11.cpp a.out
+if ( ${CXX} -std=c++11 cpp11.cpp -o a.out >& /dev/null ); then
+  CPP11=yes
+else
+  CPP11=no
 fi
-if [ $CXXVERSION = "03" ]; then
-    ${ECHO} "Compiling with C++98/03 standard."
+rm -f cpp11.cpp a.out
+${ECHO} $CPP11
+
+
+if [[ $CPP11 == no ]]; then
+  ${ECHO} "Error: Compiler (${CXX}) does not support C++11, which is required."
+  exit 1
 fi
-CXXVERSION="--std=c++${CXXVERSION}"
+
 
 ##
 ## GZip
@@ -184,11 +234,11 @@ CXXVERSION="--std=c++${CXXVERSION}"
 LICENSE=LICENSE
 ${ECHO} -n "Looking for gzip..."
 if ( gzip --version > /dev/null ); then
-    echo "Found"
-    gzip -c LICENSE > LICENSE.gz
-    LICENSE=LICENSE.gz
+  echo "Found"
+  gzip -c LICENSE > LICENSE.gz
+  LICENSE=LICENSE.gz
 else
-    echo "Not found (No big deal, license file won't be compressed. That's all.)"
+  echo "Not found (No big deal, license file won't be compressed. That's all.)"
 fi
 
 ##
@@ -204,11 +254,11 @@ int main() {
 EOF
 gcc -o is64 is64.c
 if ./is64; then
-CXX64FLAGS="-fPIC"
-echo yes
+  CXX64FLAGS="-fPIC"
+  echo yes
 else
-CXX64FLAGS=""
-echo no
+  CXX64FLAGS=""
+  echo no
 fi
 rm -f is64 is64.c
 
@@ -218,9 +268,11 @@ rm -f is64 is64.c
 #
 EXAMPLE_TARGETS=""
 for f in examples/*.cpp; do
-    name=`basename $f .cpp`
-    EXAMPLE_TARGETS="${EXAMPLE_TARGETS} bin/${name}"
+  name=`basename $f .cpp`
+  EXAMPLE_TARGETS="${EXAMPLE_TARGETS} bin/${name}"
 done
+
+CXXVERSION="--std=c++11"
 
 cat > Makefile <<EOF
 
@@ -234,7 +286,9 @@ DYNLIB_NAME=\$(LIBNAME).\$(DYNLIB_EXTENSION)
 STATICLIB_NAME=\$(LIBNAME).\$(STATICLIB_EXTENSION)
 DYNLIB=lib/\$(DYNLIB_NAME)
 STATICLIB=lib/\$(STATICLIB_NAME)
-PREFIX=$PREFIX
+DESTDIR=
+PREFIX=\$(DESTDIR)${PREFIX}
+LIBDIR=\$(DESTDIR)${LIBDIR}
 RM=rm -f
 CP=cp
 LD=\$(CXX)
@@ -243,10 +297,15 @@ AR=ar
 ARFLAGS=rsv
 LN=ln -s
 
-CXXFLAGSOBJ=-O3 ${CXXVERSION} -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include ${CXX64FLAGS}
-CXXFLAGSEXEC=-O3 ${CXXVERSION} -pedantic -Wall -W ${DEBUG} ${SANITIZE} -I./include
+ifeq (\$(CONFIG),Debug)
+CXXFLAGS += -DBOARD_DEBUG -g
+CFLAGS += -DBOARD_DEBUG -g
+endif
 
-.PHONY: all clean distclean install examples lib doc
+CXXFLAGSOBJ=-O3 ${CXXVERSION} -pedantic -Wall -Wextra -Wno-unknown-pragmas ${DEBUG} ${SANITIZE} -I./include ${CXX64FLAGS}
+CXXFLAGSEXEC=-O3 ${CXXVERSION} -pedantic -Wall -Wextra -Wno-unknown-pragmas ${DEBUG} ${SANITIZE} -I./include
+
+.PHONY: all clean install examples lib test_examples doc
 
 OBJS=\$(patsubst src/%.cpp,obj/%.o,\$(wildcard src/*.cpp))
 
@@ -260,11 +319,11 @@ LIBDEP="lib: \$(STATICLIB)"
 ${ECHO} -n "Checking plateform..."
 WIN32=0
 case $(uname) in
-    Linux ) WIN32=0; PLATEFORM=Linux ;;
-    Darwin) WIN32=0; PLATEFORM="Mac OS X" ;;
-    Darwin ) WIN32=0; PLATEFORM="Mac OS X" ;;
-    MINGW* ) WIN32=1; PLATEFORM="Win32/Mingw" ;;
-    CYGWIN* ) WIN32=0; PLATEFORM="Cygwin" ;;
+  Linux ) WIN32=0; PLATEFORM=Linux ;;
+  Darwin) WIN32=0; PLATEFORM="Mac OS X" ;;
+  Darwin ) WIN32=0; PLATEFORM="Mac OS X" ;;
+  MINGW* ) WIN32=1; PLATEFORM="Win32/Mingw" ;;
+  CYGWIN* ) WIN32=0; PLATEFORM="Cygwin" ;;
 esac
 ${ECHO} $PLATEFORM
 
@@ -298,38 +357,38 @@ obj/Board.o: src/Board.cpp include/Board.h
 	\$(CXX) \$(CXXFLAGSOBJ) ${IMAGE_CXXFLAGS} -c -o \$@ \$<
 
 bin/%: examples/%.cpp \$(STATICLIB)
-	\$(CXX) \$(CXXFLAGSEXEC) -o \$@ \$< ${IMAGE_CXXFLAGS} ${IMAGE_LDFLAGS} \$(STATICLIB)
+	\$(CXX) \$(CXXFLAGSEXEC) -o \$@ \$< ${IMAGE_CXXFLAGS} \$(STATICLIB) ${IMAGE_LDFLAGS}
 
 clean:
-	rm -f obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ *~
-
-distclean: clean
-	rm -rf obj lib bin
+	rm -rf out/* obj/*.o lib/* bin/* include/*~ include/board/*~ src/*~ examples/*~ doc/html doc/examples *~
 
 install: all
-	install -d \$(PREFIX)/lib
-	chmod 755 \$(PREFIX)/lib
+	install -d \$(LIBDIR)
+	chmod 755 \$(LIBDIR)
 EOF
 
-if [ ${ON_PLACE} = no ]; then
-    if [ "$STATIC_LIB_ONLY" = "no" ]; then
-	${ECHO} "	cp \$(DYNLIB) \$(PREFIX)/lib ; chmod 755 \$(PREFIX)/lib/\$(DYNLIB_NAME)" >> Makefile
-    fi
+if [[ ${ON_PLACE} == no ]]; then
+  if [ "$STATIC_LIB_ONLY" = "no" ]; then
     cat >> Makefile <<EOF
-	cp \$(STATICLIB) \$(PREFIX)/lib ; chmod 644 \$(PREFIX)/lib/\$(STATICLIB_NAME)
+	cp \$(DYNLIB) \$(LIBDIR)/\$(DYNLIB_NAME).${VERSION}
+	chmod 755 \$(LIBDIR)/\$(DYNLIB_NAME).${VERSION}
+	cd \$(LIBDIR) ; ln -s \$(DYNLIB_NAME).${VERSION} ./\$(DYNLIB_NAME)
+	cd \$(LIBDIR) ; ln -s \$(DYNLIB_NAME).${VERSION} ./\$(DYNLIB_NAME).${MAJOR_VERSION}
+EOF
+  fi
+  cat >> Makefile <<EOF
+	cp \$(STATICLIB) \$(LIBDIR) ; chmod 644 \$(LIBDIR)/\$(STATICLIB_NAME)
 	install -d \$(PREFIX)/include/board
 	\$(CP) include/Board.h \$(PREFIX)/include/
 	\$(CP) include/BoardConfig.h \$(PREFIX)/include/
 	\$(CP) include/board/*.h \$(PREFIX)/include/board
-	\$(CP) include/board/*.ih \$(PREFIX)/include/board
-	ldconfig
+${MAKE_LDCONFIG_COMMAND}
 EOF
 fi
 cat >> Makefile <<EOF
 	chmod 755 \$(PREFIX)/include/board
 	chmod 644 \$(PREFIX)/include/Board.h
 	chmod 644 \$(PREFIX)/include/board/*.h
-	chmod 644 \$(PREFIX)/include/board/*.ih
 	install -d \$(PREFIX)/share/libboard/examples
 	\$(CP) examples/*.cpp \$(PREFIX)/share/libboard/examples
 	\$(CP) examples/README \$(PREFIX)/share/libboard/examples
@@ -344,11 +403,20 @@ install-doc: doc
 	\$(RM) -rf \$(PREFIX)/share/doc/libboard/html
 	install -d \$(PREFIX)/share/doc/libboard
 	\$(CP) -r doc/html \$(PREFIX)/share/doc/libboard
+
+out:
+	mkdir out
+
+test_examples: out examples
 EOF
+for example in ${EXAMPLE_TARGETS}; do
+  ${ECHO} -e "\tcd out ; ../${example}" >> Makefile
+done
+
 
 ${ECHO} "done."
 
-if [ $MAGICKPLUSPLUS = 0 ]; then
+if [[ $MAGICKPLUSPLUS = 0 ]]; then
 cat <<EOF
 
 *******************************[ Warning ]**************************************
@@ -363,7 +431,7 @@ cat <<EOF
 
 Possible commands are:
  make
- make install      (Will install in ${PREFIX}/include and ${PREFIX}/lib )
+ make install      (Will install in ${PREFIX}/include and ${LIBDIR} )
  make doc
  make install-doc  (Will install in ${PREFIX}/share/doc/libboard)
 EOF

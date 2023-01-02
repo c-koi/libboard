@@ -6,9 +6,9 @@
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
- * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
+ * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include "Board.h"
+#include <Board.h>
 using namespace LibBoard;
 
 int main(int, char * [])
@@ -26,9 +26,9 @@ int main(int, char * [])
   board.addDuplicates(g, 5, 0, 15, 0.8, 0.8, -0.2);
   board << g.scaled(0.2);
 
-  board.saveEPS("scale_ellipse.eps", Board::A4);
-  board.saveFIG("scale_ellipse.fig", Board::A4);
+  board.saveEPS("scale_ellipse.eps", PageSize::A4);
+  board.saveFIG("scale_ellipse.fig", PageSize::A4);
 
-  board.scaleToWidth(25, Board::UseLineWidth);
-  board.saveSVG("scale_ellipse.svg", Board::BoundingBox, 0.0, Board::UCentimeter);
+  board.scaleToWidth(25, UseLineWidth);
+  board.saveSVG("scale_ellipse.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
 }

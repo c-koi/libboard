@@ -23,21 +23,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "board/Exception.h"
+#include <board/Exception.h>
 
 namespace LibBoard
 {
 
-Exception::Exception() BOARD_NOEXCEPT {}
+Exception::Exception() noexcept {}
 
-Exception::Exception(const char * what) BOARD_NOEXCEPT : _what(what) {}
+Exception::Exception(const char * what) noexcept : _what(what) {}
 
-Exception::Exception(const std::string & what) BOARD_NOEXCEPT : _what(what) {}
+Exception::Exception(const std::string & what) noexcept : _what(what) {}
 
-Exception::~Exception() BOARD_NOEXCEPT {}
+Exception::~Exception() noexcept {}
 
-const char * Exception::what() const BOARD_NOEXCEPT
+const char * Exception::what() const noexcept
 {
   return _what.c_str();
 }
-}
+} // namespace LibBoard

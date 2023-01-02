@@ -23,14 +23,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BOARD_POLYLINE_H_
-#define _BOARD_POLYLINE_H_
+#ifndef BOARD_POLYLINE_H
+#define BOARD_POLYLINE_H
 
-#include "board/Shape.h"
-
-#if __cplusplus < 201100
-#define override
-#endif
+#include <board/ShapeWithStyle.h>
 
 namespace LibBoard
 {
@@ -39,16 +35,23 @@ namespace LibBoard
  * The polyline structure.
  * @brief A polygonal line described by a series of 2D points.
  */
-struct Polyline : public Shape {
+struct Polyline : public ShapeWithStyle {
 
-  inline Polyline(const std::vector<Point> & points, bool closed, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-                  const LineStyle lineStyle = Shape::defaultLineStyle(), const LineCap cap = Shape::defaultLineCap(), const LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+  inline Polyline(const std::vector<Point> & points, Path::OpenClosed openClosed, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(),
+                  double lineWidth = Style::defaultLineWidth(), const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(),
+                  const LineJoin join = Style::defaultLineJoin());
 
-  inline Polyline(const Path & path, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-                  const LineStyle lineStyle = Shape::defaultLineStyle(), const LineCap cap = Shape::defaultLineCap(), const LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+  inline Polyline(const std::vector<Point> & points, Path::OpenClosed openClosed, const Style & style);
 
-  inline Polyline(bool closed, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-                  const LineStyle lineStyle = Shape::defaultLineStyle(), const LineCap cap = Shape::defaultLineCap(), const LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+  inline Polyline(const Path & path, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), double lineWidth = Style::defaultLineWidth(),
+                  const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
+
+  inline Polyline(const Path & path, const Style & style);
+
+  inline Polyline(Path::OpenClosed openClosed, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), double lineWidth = Style::defaultLineWidth(),
+                  const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
+
+  inline Polyline(Path::OpenClosed openClosed, const Style & style);
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -68,19 +71,16 @@ struct Polyline : public Shape {
 
   /**
    * Returns the n-th point of the polyline.
-   *
-   * @param i
-   *
-   * @return
+   * @param n
+   * @return A reference to the n-th point of the polyline.
    */
   Point & operator[](const std::size_t n) { return _path[n]; }
 
   /**
    * Returns the n-th point of the polyline.
    *
-   * @param i
-   *
-   * @return
+   * @param n
+   * @return  A constant reference to the n-th point of the polyline.
    */
   const Point & operator[](const std::size_t n) const { return _path[n]; }
 
@@ -197,6 +197,48 @@ struct Polyline : public Shape {
 
   void flushTikZ(std::ostream & stream, const TransformTikZ & transform) const override;
 
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a visitor object.
+   *
+   * @param visitor A visitor object.
+   */
+  virtual void accept(const ShapeVisitor & visitor) override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accepts a const-shape visitor object.
+   *
+   * @param visitor A const-shape visitor object.
+   */
+  virtual void accept(const ConstShapeVisitor & visitor) const override;
+
+  /**
+   * @brief Accept a composite shape transform.
+   *
+   * @param transform A composite shape transform object.
+   */
+  virtual Shape * accept(CompositeShapeTransform & transform) const override;
+
+  /**
+   * @brief Accept a constant composite shape transform.
+   *
+   * @param transform A constant composite shape transform object..
+   */
+  virtual Shape * accept(const CompositeShapeTransform & transform) const override;
+
   Rect boundingBox(LineWidthFlag) const override;
 
   Polyline * clone() const override;
@@ -206,6 +248,12 @@ struct Polyline : public Shape {
   inline const Path & path() const;
 
   void setRectangleFlag();
+
+  Polyline(const Polyline &) = default;
+  Polyline(Polyline &&) = default;
+  Polyline & operator=(Polyline &&) = default;
+  Polyline & operator=(const Polyline &) = default;
+  ~Polyline() override = default;
 
 private:
   static const std::string _name; /**< The generic name of the shape. */
@@ -218,21 +266,26 @@ protected:
   std::vector<Path> _holes;
 };
 
-Polyline rectangle(double left, double top, double width, double height, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(),
-                   double lineWidth = Shape::defaultLineWidth(), const Shape::LineStyle lineStyle = Shape::defaultLineStyle(), const Shape::LineCap cap = Shape::defaultLineCap(),
-                   const Shape::LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+Polyline rectangle(double left, double top, double width, double height, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(),
+                   double lineWidth = Style::defaultLineWidth(), const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(),
+                   const LineJoin join = Style::defaultLineJoin());
 
-Polyline rectangle(const Rect & rect, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(),
-                   const Shape::LineStyle lineStyle = Shape::defaultLineStyle(), const Shape::LineCap cap = Shape::defaultLineCap(), const Shape::LineJoin join = Shape::defaultLineJoin(),
-                   int depth = -1);
+Polyline rectangle(double left, double top, double width, double height, const Style & style);
 
-Polyline triangle(const Point & p1, const Point & p2, const Point & p3, Color penColor = Shape::defaultPenColor(), Color fillColor = Shape::defaultFillColor(),
-                  double lineWidth = Shape::defaultLineWidth(), const Shape::LineStyle lineStyle = Shape::defaultLineStyle(), const Shape::LineCap cap = Shape::defaultLineCap(),
-                  const Shape::LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+Polyline rectangle(const Rect & rect, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), double lineWidth = Style::defaultLineWidth(),
+                   const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
 
-Polyline triangle(const double x1, const double y1, const double x2, const double y2, const double x3, const double y3, Color penColor = Shape::defaultPenColor(),
-                  Color fillColor = Shape::defaultFillColor(), double lineWidth = Shape::defaultLineWidth(), const Shape::LineStyle lineStyle = Shape::defaultLineStyle(),
-                  const Shape::LineCap cap = Shape::defaultLineCap(), const Shape::LineJoin join = Shape::defaultLineJoin(), int depth = -1);
+Polyline rectangle(const Rect & rect, const Style & style);
+
+Polyline triangle(const Point & p1, const Point & p2, const Point & p3, Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(),
+                  double lineWidth = Style::defaultLineWidth(), const LineStyle lineStyle = Style::defaultLineStyle(), const LineCap cap = Style::defaultLineCap(),
+                  const LineJoin join = Style::defaultLineJoin());
+
+Polyline triangle(const double x1, const double y1, const double x2, const double y2, const double x3, const double y3, Color penColor = Style::defaultPenColor(),
+                  Color fillColor = Style::defaultFillColor(), double lineWidth = Style::defaultLineWidth(), const LineStyle lineStyle = Style::defaultLineStyle(),
+                  const LineCap cap = Style::defaultLineCap(), const LineJoin join = Style::defaultLineJoin());
+
+Polyline triangle(const Point & p1, const Point & p2, const Point & p3, const Style & style);
 
 /**
  * The GouraudTriangle structure.
@@ -240,9 +293,9 @@ Polyline triangle(const double x1, const double y1, const double x2, const doubl
  */
 struct GouraudTriangle : public Polyline {
 
-  GouraudTriangle(const Point & p0, const Color & color0, const Point & p1, const Color & color1, const Point & p2, const Color & color2, int subdivisions, int depth = -1);
+  GouraudTriangle(const Point & p0, const Color & color0, const Point & p1, const Color & color1, const Point & p2, const Color & color2, int subdivisions);
 
-  GouraudTriangle(const Point & p0, float brightness0, const Point & p1, float brightness1, const Point & p2, float brightness2, const Color & fillColor, int subdivisions, int depth = -1);
+  GouraudTriangle(const Point & p0, float brightness0, const Point & p1, float brightness1, const Point & p2, float brightness2, const Color & fillColor, int subdivisions);
 
   /**
    * Returns the generic name of the shape (e.g., Circle, Rectangle, etc.)
@@ -323,7 +376,6 @@ struct GouraudTriangle : public Polyline {
    *
    * @param stream
    * @param transform
-   * @param Color
    * @param colormap
    */
   void flushFIG(std::ostream & stream, const TransformFIG & transform, std::map<Color, int> & colormap) const override;
@@ -344,6 +396,15 @@ protected:
   int _subdivisions;
 };
 
+/**
+ * Return an interpolated polyline between two, according to a time.
+ * @param a First polyline
+ * @param b Second polyline
+ * @param time Time (0 is a, 1 is b)
+ * @return The interpolated polyline
+ */
+Polyline mix(const Polyline & a, const Polyline & b, double time);
+
 } // namespace LibBoard
 
 /*
@@ -352,20 +413,42 @@ protected:
 namespace LibBoard
 {
 
-Polyline::Polyline(const std::vector<Point> & points, bool closed, Color penColor, Color fillColor, double lineWidth, const LineStyle lineStyle, const LineCap cap, const LineJoin join, int depth)
-    : Shape(penColor, fillColor, lineWidth, lineStyle, cap, join, depth), _path(points, closed)
+Polyline::Polyline(const std::vector<Point> & points, Path::OpenClosed openClosed, //
+                   Color penColor, Color fillColor, double lineWidth,              //
+                   const LineStyle lineStyle, const LineCap cap, const LineJoin join)
+    : ShapeWithStyle(penColor, fillColor, lineWidth, lineStyle, cap, join), _path(points, openClosed)
 {
   _isCreatedRectangle = false;
 }
 
-Polyline::Polyline(const Path & path, Color penColor, Color fillColor, double lineWidth, const LineStyle lineStyle, const LineCap cap, const LineJoin join, int depth)
-    : Shape(penColor, fillColor, lineWidth, lineStyle, cap, join, depth), _path(path)
+Polyline::Polyline(const std::vector<Point> & points, Path::OpenClosed openClosed, const Style & style) //
+    : ShapeWithStyle(style), _path(points, openClosed)
 {
   _isCreatedRectangle = false;
 }
 
-Polyline::Polyline(bool closed, Color penColor, Color fillColor, double lineWidth, const LineStyle lineStyle, const LineCap cap, const LineJoin join, int depth)
-    : Shape(penColor, fillColor, lineWidth, lineStyle, cap, join, depth), _path(closed)
+Polyline::Polyline(const Path & path, Color penColor, Color fillColor, //
+                   double lineWidth, const LineStyle lineStyle, const LineCap cap, const LineJoin join)
+    : ShapeWithStyle(penColor, fillColor, lineWidth, lineStyle, cap, join), _path(path)
+{
+  _isCreatedRectangle = false;
+}
+
+Polyline::Polyline(const Path & path, const Style & style) //
+    : ShapeWithStyle(style), _path(path)
+{
+  _isCreatedRectangle = false;
+}
+
+Polyline::Polyline(Path::OpenClosed openClosed, Color penColor, Color fillColor, double lineWidth, //
+                   const LineStyle lineStyle, const LineCap cap, const LineJoin join)
+    : ShapeWithStyle(penColor, fillColor, lineWidth, lineStyle, cap, join), _path(openClosed)
+{
+  _isCreatedRectangle = false;
+}
+
+Polyline::Polyline(Path::OpenClosed openClosed, const Style & style) //
+    : ShapeWithStyle(style), _path(openClosed)
 {
   _isCreatedRectangle = false;
 }
@@ -381,8 +464,4 @@ const Path & Polyline::path() const
 }
 } // namespace LibBoard
 
-#if __cplusplus < 201100
-#undef override
-#endif
-
-#endif /* _BOARD_POLYLINE_H_ */
+#endif /* BOARD_POLYLINE_H */
