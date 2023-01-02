@@ -6,10 +6,10 @@
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
- * Copyright (C) 2007 Sebastien Fourey <http://foureys.users.greyc.fr>
+ * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include <vector>
 #include <Board.h>
+#include <vector>
 using namespace LibBoard;
 
 #include <board/PathBoundaries.h>
@@ -29,17 +29,17 @@ ShapeList strikeOut(const Path & path, double strokeWidth, LineCap lineCap, Line
     list << Line(a - shift, b - shift, Color::Black, strokeWidth * 0.01).scale(s);
     list << Line(a, b, Color::Red, strokeWidth * 0.01);
     if ((lineCap == RoundCap) || (lineJoin == RoundJoin)) {
-      list << LibBoard::circle(a, strokeWidth * 0.5, Color::Green, Color::Null, strokeWidth * 0.01);
+      list << circle(a, strokeWidth * 0.5, Color::Green, Color::Null, strokeWidth * 0.01);
     }
   }
   if ((!path.isClosed() && lineCap == RoundCap) || (lineJoin == RoundJoin)) {
     Point a = path[path.size() - 1];
-    list << LibBoard::circle(a, strokeWidth * 0.5, Color::Green, Color::Null, strokeWidth * 0.01);
+    list << circle(a, strokeWidth * 0.5, Color::Green, Color::Null, strokeWidth * 0.01);
   }
 
   for (size_t i = 0; i < e.size(); ++i) {
     Point c = e[i];
-    list << LibBoard::circle(c, 10.0, Color::Blue, Color::Null, strokeWidth * 0.01);
+    list << circle(c, 10.0, Color::Blue, Color::Null, strokeWidth * 0.01);
     list << Line(c - Point(10.0, 0.0), c + Point(10.0, 0), Color::Blue, strokeWidth * 0.01);
     list << Line(c - Point(0.0, 10.0), c + Point(0, 10.0), Color::Blue, strokeWidth * 0.01);
   }
