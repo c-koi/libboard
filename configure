@@ -52,7 +52,7 @@ EOF
 }
 
 TAB="	"
-MAKE_LDCONFIG_COMMAND="${TAB}ldconfig"
+MAKE_LDCONFIG_COMMAND="${TAB}test \$(USER) = root && ldconfig || true"
 
 ##
 ## 1. ARGS
