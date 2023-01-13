@@ -1023,6 +1023,20 @@ Group framed(const Shape & shape, const Color & color = Style::defaultPenColor()
 Group tiling(const Shape & shape, Point topLeftCorner, std::size_t columns, std::size_t rows, double spacing = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
 
 /**
+ * @brief Surround a shape with a cirle
+ * @param shape A shape
+ * @param margin Space between the shape and the circle
+ * @param penColor Pen color
+ * @param fillColor Fill color
+ * @param lineWidth Line width
+ * @param lineStyle Line style
+ * @return A Group of the shape with its surrounding circle
+ */
+Group circled(const Shape & shape, double margin = 0.0,                                               //
+              Color penColor = Style::defaultPenColor(), Color fillColor = Style::defaultFillColor(), //
+              double lineWidth = Style::defaultLineWidth(), LineStyle lineStyle = Style::defaultLineStyle());
+
+/**
  * @brief Produce a polyline of the Biezer vertices and control points
  * @param bezier A Bezier
  * @param style Style of the polyline

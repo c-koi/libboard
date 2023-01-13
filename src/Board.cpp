@@ -482,8 +482,9 @@ void Board::setClippingPath(const Path & path)
   _clippingPath = path;
   _clippingPath.close();
   if (_clippingPath.size() > 1) {
-    if (_clippingPath[0] == _clippingPath[_clippingPath.size() - 1])
+    if (_clippingPath[0] == _clippingPath[_clippingPath.size() - 1]) {
       _clippingPath.pop_back();
+    }
   }
 }
 
@@ -492,8 +493,9 @@ void Board::addDuplicates(const Shape & shape, std::size_t times, double dx, dou
   Shape * s = shape.clone();
   while (times--) {
     (*this) << (*s);
-    if (scale != 1.0)
+    if (scale != 1.0) {
       s->scale(scale);
+    }
     s->translate(dx, dy);
   }
   delete s;
@@ -504,12 +506,15 @@ void Board::addDuplicates(const Shape & shape, std::size_t times, double dx, dou
   Shape * s = shape.clone();
   while (times--) {
     (*this) << (*s);
-    if (scaleX != 1.0 || scaleY != 1.0)
+    if (scaleX != 1.0 || scaleY != 1.0) {
       s->scale(scaleX, scaleY);
-    if (dx != 0.0 || dy != 0.0)
+    }
+    if (dx != 0.0 || dy != 0.0) {
       s->translate(dx, dy);
-    if (angle != 0.0)
+    }
+    if (angle != 0.0) {
       s->rotate(angle);
+    }
   }
   delete s;
 }
@@ -517,15 +522,17 @@ void Board::addDuplicates(const Shape & shape, std::size_t times, double dx, dou
 void Board::saveEPS(const char * filename, PageSize size, double margin, Unit unit, const std::string & title) const
 {
   if (size == PageSize::BoundingBox) {
-    if (title == std::string())
+    if (title == std::string()) {
       saveEPS(filename, 0.0, 0.0, margin, unit, filename);
-    else
+    } else {
       saveEPS(filename, 0.0, 0.0, margin, unit, title);
+    }
   } else {
-    if (title == std::string())
+    if (title == std::string()) {
       saveEPS(filename, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter, filename);
-    else
+    } else {
       saveEPS(filename, pageSizes[int(size)][0], pageSizes[int(size)][1], toMillimeter(margin, unit), Unit::Millimeter, title);
+    }
   }
 }
 
@@ -1003,6 +1010,15 @@ Group tiling(const Shape & shape, Point topLeftCorner, std::size_t columns, std:
     delete topLeft;
   }
   return group;
+}
+
+Group circled(const Shape & shape, double margin, Color penColor, Color fillColor, double lineWidth, LineStyle lineStyle)
+{
+  Group g;
+  Rect r = shape.boundingBox(UseLineWidth);
+  g << circle(r.center(), r.diameter() * 0.5 + lineWidth + margin, penColor, fillColor, lineWidth, lineStyle);
+  g << shape;
+  return g;
 }
 
 Group cross(Point p, const Style & style)
