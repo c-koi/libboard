@@ -8,7 +8,6 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include <cmath>
 #include <Board.h>
 
 using namespace LibBoard;

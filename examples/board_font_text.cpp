@@ -1,18 +1,17 @@
 /**
- * @file   rough.cpp
+ * @file   board_font_text.cpp
  * @author Sebastien Fourey (GREYC)
  *
- * @brief  Illustrate the rough shape filter
+ * @brief  Sample use of Board's font
  *
  * This source code is part of the Board project, a C++ library whose
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include <cstdlib>
-#include <ctime>
 #include <Board.h>
 #include <board/BoardFontText.h>
-#include <board/Debug.h>
+#include <board/Tools.h>
+#include <ctime>
 using namespace LibBoard;
 
 Group text()

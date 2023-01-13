@@ -8,15 +8,9 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include <algorithm>
-#include <cassert>
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
-#include <utility>
-#include <vector>
 #include <Board.h>
 #include <board/Tools.h>
+#include <vector>
 using namespace LibBoard;
 
 /**

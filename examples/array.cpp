@@ -1,5 +1,5 @@
 /**
- * @file   rough.cpp
+ * @file   array.cpp
  * @author Sebastien Fourey (GREYC)
  *
  * @brief  Illustrate the rough shape filter
@@ -8,11 +8,7 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include <cstdlib>
-#include <ctime>
 #include <Board.h>
-#include <board/BoardFontText.h>
-#include <board/Debug.h>
 using namespace LibBoard;
 
 Group space_invader()

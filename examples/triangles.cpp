@@ -8,12 +8,9 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include <cassert>
-#include <cstdlib>
-#include <ctime>
 #include <Board.h>
-#include <board/BoardFontText.h>
-#include <board/Debug.h>
+#include <cassert>
+#include <ctime>
 using namespace LibBoard;
 
 enum Division
@@ -93,10 +90,10 @@ int main(int, char *[])
   result.push_back(triangle(Point(500, 500), Point(1000, 1000), Point(0, 1000)));
   auto seed = time(nullptr);
   std::cout << "SEED: " << seed << std::endl;
-  srand(seed);
+  Tools::initBoardRand(seed);
   int n = 3;
   while (n--) {
-    result = divided(result, Division(rand() % 4));
+    result = divided(result, Division(Tools::boardRand() % 4));
   }
   // board << divided(t, DivTriangle);
   // board << divided(t, DivVertexA);

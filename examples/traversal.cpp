@@ -9,10 +9,9 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include <cstdlib>
+#include <Board.h>
 #include <ctime>
 #include <iostream>
-#include <Board.h>
 using namespace LibBoard;
 
 const int NbColors = 4;
@@ -24,16 +23,16 @@ ShapeList generateGroup(int n)
     return ShapeList() << (Group() << LibBoard::rectangle(0, 0, 10, 10, Color("#404040"), Color::Null, 0.1, DashStyle));
   }
   if (n == 1) {
-    switch (rand() % 2) {
+    switch (Tools::boardRand() % 2) {
     case 0:
-      return ShapeList() << circle(0, 0, 5, Colors[rand() % NbColors], Color::Null, 1.0);
+      return ShapeList() << circle(0, 0, 5, Colors[Tools::boardRand() % NbColors], Color::Null, 1.0);
     case 1:
-      return ShapeList() << rectangle(0, 0, 10, 10, Colors[rand() % NbColors], Color::Null, 1.0);
+      return ShapeList() << rectangle(0, 0, 10, 10, Colors[Tools::boardRand() % NbColors], Color::Null, 1.0);
     }
   }
   int count[4] = {0, 0, 0, 0};
   while (count[0] + count[1] + count[2] + count[3] != n) {
-    count[rand() % 4] += 1;
+    count[Tools::boardRand() % 4] += 1;
   }
   ShapeList topLeft = generateGroup(count[0]);
   ShapeList topRight = generateGroup(count[1]);
@@ -82,7 +81,7 @@ template <typename T> ShapeList findAll(ShapeList & list)
 int main(int, char *[])
 {
   // srand(time(0));
-  srand(1000);
+  Tools::initBoardRand(1000);
   Board board;
 
   Style::setDefaultLineWidth(0.5);
@@ -95,7 +94,7 @@ int main(int, char *[])
   // Build a random list of shapes
   int n = 25;
   while (n--) {
-    int r = rand() % 3;
+    int r = Tools::boardRand() % 3;
     switch (r) {
     case 0:
       board.append(circle(0, 0, 5.0), Direction::Right, Alignment::Center);

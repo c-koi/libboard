@@ -9,7 +9,6 @@
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  *
  */
-#include <cmath>
 #include <Board.h>
 using namespace LibBoard;
 
@@ -28,8 +27,9 @@ int main(int, char *[])
   Point p = board.last<Line>().boundingBox(IgnoreLineWidth).centerLeft();
   int n = 20;
   double angle = -M_PI / (2 * n);
-  while (n--)
+  while (n--) {
     board << board.last<Line>().rotated(angle, p);
+  }
 
   n = 30;
   angle = -M_PI / (n);

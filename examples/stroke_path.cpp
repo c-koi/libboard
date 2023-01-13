@@ -10,7 +10,6 @@
  */
 #include <Board.h>
 #include <vector>
-#include "Board.h"
 using namespace LibBoard;
 
 #include <board/PathBoundaries.h>

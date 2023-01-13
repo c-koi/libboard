@@ -8,25 +8,24 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include <cmath>
-#include <cstdlib>
+#include <Board.h>
+#include <board/Tools.h>
 #include <ctime>
 #include <vector>
-#include <Board.h>
 
 using namespace std;
 using namespace LibBoard;
 
 int coordinate(int width)
 {
-  return 1 + (int)(width * (rand() / (RAND_MAX + 1.0)));
+  return 1 + (int)(width * (Tools::boardRand() / (RAND_MAX + 1.0)));
 }
 
-int main(int, char * [])
+int main(int, char *[])
 {
   Board board;
   board.clear(Color::White);
-  srand(static_cast<unsigned int>(time(0)));
+  Tools::initBoardRand(static_cast<unsigned int>(time(nullptr)));
 
   vector<Point> points;
   vector<Point>::iterator i1, i2, end;
@@ -41,7 +40,7 @@ int main(int, char * [])
     i2 = i1;
     Color pen = Color::fromHueColormap(static_cast<float>(Tools::boardRandDouble()));
     while (i2 != end) {
-      if (i1 != i2 && !(rand() % 6)) {
+      if (i1 != i2 && !(Tools::boardRand() % 6)) {
         board << Arrow(*i1, *i2, Arrow::ExtremityType::Plain, pen, pen, 0.1);
         Point v = (*i2 - *i1);
         Point vn = v.normalised();

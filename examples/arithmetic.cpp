@@ -10,11 +10,6 @@
  * Copyright (C) 2007 Sebastien Fourey <https://foureys.users.greyc.fr>
  */
 #include <Board.h>
-#include <board/Tools.h>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 using namespace std;
 using namespace LibBoard;
 

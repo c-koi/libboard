@@ -9,14 +9,9 @@
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  *
  */
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
 #include <Board.h>
+#include <board/Tools.h>
+#include <sstream>
 using namespace LibBoard;
 
 #ifndef M_PI
@@ -25,7 +20,7 @@ using namespace LibBoard;
 
 float random_gray()
 {
-  return rand() / static_cast<float>(RAND_MAX);
+  return Tools::boardRand() / static_cast<float>(RAND_MAX);
 }
 
 int main(int, char *[])
@@ -33,7 +28,7 @@ int main(int, char *[])
   Board board;
   board.clear(Color(233, 250, 140));
   board.setLineWidth(0.25);
-  srand(static_cast<unsigned int>(time(nullptr)));
+  Tools::initBoardRand(static_cast<unsigned int>(time(nullptr)));
 
   double angle = 0.0;
   board << LibBoard::rectangle(-8, 12, 16, 24, Color::Black, Color::Null, 0.1);

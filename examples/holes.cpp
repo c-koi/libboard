@@ -8,11 +8,11 @@
  * purpose is to allow simple drawings in EPS, FIG or SVG files.
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
-#include <cstdlib>
+#include <Board.h>
+#include <board/Tools.h>
 #include <ctime>
 #include <set>
 #include <vector>
-#include <Board.h>
 using namespace LibBoard;
 
 int main(int, char *[])
@@ -21,7 +21,7 @@ int main(int, char *[])
   Board::enableLineWidthScaling();
   board.clear(Color::White);
 
-  srand(static_cast<unsigned int>(time(nullptr)));
+  Tools::initBoardRand(static_cast<unsigned int>(time(nullptr)));
 
   Path pA(Path::Closed);
   pA << Point(0, 0) << Point(180, 0) << Point(180, 300) << Point(0, 300);
@@ -50,7 +50,7 @@ int main(int, char *[])
   int n = 80;
   std::set<std::pair<int, int>> holes;
   while (n--) {
-    holes.insert(std::make_pair((int)(rand() % 20) - 10, (int)(rand() % 20) - 10));
+    holes.insert(std::make_pair((int)(Tools::boardRand() % 20) - 10, (int)(Tools::boardRand() % 20) - 10));
   }
   std::set<std::pair<int, int>>::iterator it = holes.begin();
   while (it != holes.end()) {
@@ -61,8 +61,6 @@ int main(int, char *[])
     ++it;
   }
   board << square.scaled(3).translated(1000, 0).rotated(45 * Board::Degree);
-
-  //  board << Polyline(losange,Shape::defaultPenColor(),Color::White);
 
   board.saveEPS("holes.eps", PageSize::A4);
   board.scaleToWidth(25, UseLineWidth);

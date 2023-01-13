@@ -9,11 +9,6 @@
  * Copyright (C) 2007 Sebastien Fourey <https://fourey.users.greyc.fr>
  */
 #include <Board.h>
-#include <cmath>
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-#include <vector>
 using namespace LibBoard;
 
 int main(int, char *[])
