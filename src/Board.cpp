@@ -992,7 +992,7 @@ Group grid(Point topLeft, size_t columns, size_t rows, //
   return grid(topLeft, columns, rows, width, height, style.penColor, style.fillColor, style.lineWidth, style.lineStyle, style.lineCap, style.lineJoin);
 }
 
-Group tiling(const Shape & shape, Point topLeftCorner, std::size_t columns, std::size_t rows, double spacing, LineWidthFlag lineWidthFlag)
+Group tiling(const Shape & shape, Point topLeftCorner, int columns, int rows, double spacing, LineWidthFlag lineWidthFlag)
 {
   Group group;
   if (columns && rows) {

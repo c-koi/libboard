@@ -229,11 +229,6 @@ unsigned int boardRand()
   return static_cast<unsigned int>((boardRandNext / 65536) % modulo);
 }
 
-void boardSRand(unsigned int seed)
-{
-  boardRandNext = seed;
-}
-
 double boardRandDouble()
 {
   return boardRand() / static_cast<double>(RAND_MAX);

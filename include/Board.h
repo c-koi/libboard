@@ -1020,7 +1020,7 @@ Group framed(const Shape & shape, const Color & color = Style::defaultPenColor()
  * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
  * @return The tiling that has been created, as a Group.
  */
-Group tiling(const Shape & shape, Point topLeftCorner, std::size_t columns, std::size_t rows, double spacing = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
+Group tiling(const Shape & shape, Point topLeftCorner, int columns, int rows, double spacing = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
 
 /**
  * @brief Surround a shape with a cirle
