@@ -815,7 +815,7 @@ void Board::saveSVG(std::ostream & out, double pageWidth, double pageHeight, dou
   out << "<desc>"
          "Drawing created with the Board library (v"
       << BOARD_VERSION_STRING
-      << ") Copyleft 2007 Sebastien Fourey"
+      << ") Copyright Sebastien Fourey"
          "</desc>"
       << std::endl;
 
@@ -983,6 +983,26 @@ Group grid(Point topLeft, size_t columns, size_t rows, //
            const Style & style)
 {
   return grid(topLeft, columns, rows, width, height, style.penColor, style.fillColor, style.lineWidth, style.lineStyle, style.lineCap, style.lineJoin);
+}
+
+Group tiling(const Shape & shape, Point topLeftCorner, std::size_t columns, std::size_t rows, double spacing, LineWidthFlag lineWidthFlag)
+{
+  Group group;
+  if (columns && rows) {
+    Rect box = shape.boundingBox(lineWidthFlag);
+    Shape * topLeft = shape.clone();
+    topLeft->translate(topLeftCorner.x - box.left, topLeftCorner.y - box.top);
+    for (int r = 0; r < rows; ++r) {
+      for (int c = 0; c < columns; ++c) {
+        Shape * shape = topLeft->clone();
+        shape->translate(c * (box.width + spacing), -r * (box.height + spacing));
+        group << (*shape);
+        delete shape;
+      }
+    }
+    delete topLeft;
+  }
+  return group;
 }
 
 Group cross(Point p, const Style & style)

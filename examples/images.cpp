@@ -22,14 +22,12 @@ int main(int, char *[])
   g << rectangle;
   g << michel;
 
-  ShapeList tiling;
-  tiling.addTiling(g, Point(0, 0), 5, 4, 0.0, UseLineWidth);
-  board << tiling;
+  board << tiling(g, Point(0, 0), 5, 4, 0.0, UseLineWidth);
 
   ShapeList avatars;
   Image avatar("../resources/avatar.png", 0, 0, 80);
   avatar.rotateDeg(45);
-  avatars.addTiling(avatar, Point(0, 0), 4, 4, 10.0, UseLineWidth);
+  avatars << tiling(avatar, Point(0, 0), 4, 4, 10.0, UseLineWidth);
   avatars.moveCenter(board.center());
   board << avatars;
 #else

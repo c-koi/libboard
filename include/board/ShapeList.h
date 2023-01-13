@@ -27,13 +27,13 @@
 #ifndef BOARD_SHAPELIST_H
 #define BOARD_SHAPELIST_H
 
+#include <board/Exception.h>
+#include <board/Shape.h>
+#include <board/Tools.h>
 #include <queue>
 #include <stack>
 #include <typeinfo>
 #include <vector>
-#include <board/Exception.h>
-#include <board/Shape.h>
-#include <board/Tools.h>
 
 namespace LibBoard
 {
@@ -215,21 +215,7 @@ struct ShapeList : public Shape {
   ShapeList & append(const Shape & shape, Direction direction = Direction::Right, Alignment alignment = Alignment::Center, double margin = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
 
   /**
-   * Insert a tiling based on a shape by repeating this shape along its
-   * bounding box.
-   *
-   * @param shape A shape to be repeated.
-   * @param topLeftCorner Position of the top left corner of the tiling.
-   * @param columns Number of columns of the tiling.
-   * @param rows Number of rows of the tiling.
-   * @param spacing Spacing between rows and columns.
-   * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
-   * @return A reference to the tiling that has been added, as a Group.
-   */
-  Group & addTiling(const Shape & shape, Point topLeftCorner, std::size_t columns, std::size_t rows, double spacing = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
-
-  /**
-   * A a repeated shape (with translation, scaling & rotation)
+   * Add a repeated shape (with translation, scaling & rotation)
    * @param shape The shape to be repeated.
    * @param times The number of repetitions.
    * @param dx The x shift between two repetitions.
@@ -238,7 +224,7 @@ struct ShapeList : public Shape {
    * @param scaleY The y scaling factor between two repetitions.
    * @param angle The rotation angle between two repetitions.
    */
-  void repeat(const Shape & shape, unsigned int times, double dx, double dy, double scaleX = 1.0, double scaleY = 1.0, double angle = 0.0);
+  void addRepeated(const Shape & shape, unsigned int times, double dx, double dy, double scaleX = 1.0, double scaleY = 1.0, double angle = 0.0);
 
   /**
    * Duplicates the last inserted shape.

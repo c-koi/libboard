@@ -30,7 +30,7 @@ int main(int, char *[])
 
   Polyline l(Path::Open, Color::Blue, Color::Null);
   l << Point(-10, 0) << Point(0, 0) << Point(0, 10);
-  grid.addTiling(l, Point(0, 0), 10, 20, 0.0, IgnoreLineWidth);
+  grid << tiling(l, Point(0, 0), 10, 20, 0.0, IgnoreLineWidth);
 
   grid.rotateDeg(45);
   board << grid;

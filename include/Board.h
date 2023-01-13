@@ -1009,6 +1009,20 @@ Group array(Point topLeft, const std::vector<Color> & colors, unsigned int colum
 Group framed(const Shape & shape, const Color & color = Style::defaultPenColor(), double lineWidth = Style::defaultLineWidth(), double margin = 0.0, int sketchyCount = 0);
 
 /**
+ * Builds a tiling based on a shape by repeating this shape along its
+ * bounding box.
+ *
+ * @param shape A shape to be repeated.
+ * @param topLeftCorner Position of the top left corner of the tiling.
+ * @param columns Number of columns of the tiling.
+ * @param rows Number of rows of the tiling.
+ * @param spacing Spacing between rows and columns.
+ * @param lineWidthFlag Should the line width be considered when computing bounding boxes.
+ * @return The tiling that has been created, as a Group.
+ */
+Group tiling(const Shape & shape, Point topLeftCorner, std::size_t columns, std::size_t rows, double spacing = 0.0, LineWidthFlag lineWidthFlag = UseLineWidth);
+
+/**
  * @brief Produce a polyline of the Biezer vertices and control points
  * @param bezier A Bezier
  * @param style Style of the polyline

@@ -24,14 +24,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <board/ShapeList.h>
-#include <algorithm>
-#include <typeinfo>
-#include <utility>
 #include <BoardConfig.h>
+#include <algorithm>
 #include <board/Group.h>
+#include <board/ShapeList.h>
 #include <board/ShapeVisitor.h>
 #include <board/Tools.h>
+#include <typeinfo>
+#include <utility>
 
 #if defined(max)
 #undef max
@@ -211,38 +211,20 @@ ShapeList & ShapeList::operator+=(const Shape & shape)
   return *this;
 }
 
-Group & ShapeList::addTiling(const Shape & shape, Point topLeftCorner, std::size_t columns, std::size_t rows, double spacing, LineWidthFlag lineWidthFlag)
-{
-  Group group;
-  if (columns && rows) {
-    Shape * s = shape.clone();
-    Rect box = shape.boundingBox(lineWidthFlag);
-    s->translate(topLeftCorner.x - box.left, topLeftCorner.y - box.top);
-    for (std::size_t r = 0; r < rows; ++r) {
-      group << (*s);
-      for (std::size_t c = 1; c < columns; ++c) {
-        group << group.last();
-        group.last().translate(box.width + spacing, 0);
-      }
-      s->translate(0, -(box.height + spacing));
-    }
-    delete s;
-  }
-  (*this) << group;
-  return last<Group>();
-}
-
-void ShapeList::repeat(const Shape & shape, unsigned int times, double dx, double dy, double scaleX, double scaleY, double angle)
+void ShapeList::addRepeated(const Shape & shape, unsigned int times, double dx, double dy, double scaleX, double scaleY, double angle)
 {
   Shape * s = shape.clone();
   while (times--) {
     (*this) << (*s);
-    if (scaleX != 1.0 || scaleY != 1.0)
+    if (scaleX != 1.0 || scaleY != 1.0) {
       s->scale(scaleX, scaleY);
-    if (dx != 0.0 || dy != 0.0)
+    }
+    if (dx != 0.0 || dy != 0.0) {
       s->translate(dx, dy);
-    if (angle != 0.0)
+    }
+    if (angle != 0.0) {
       s->rotate(angle);
+    }
   }
   delete s;
 }
