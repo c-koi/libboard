@@ -26,8 +26,9 @@
 #ifndef BOARD_RECT_H
 #define BOARD_RECT_H
 
-#include <iostream>
 #include <board/Point.h>
+#include <cmath>
+#include <iostream>
 
 namespace LibBoard
 {
@@ -134,6 +135,12 @@ struct Rect {
    * @return The x coordinate of the right side of the rectangle
    */
   double right() const { return left + width; }
+
+  /**
+   * @brief diameter
+   * @return The distance between two opposite corners
+   */
+  double diameter() const { return std::hypot(width, height); }
 
   /**
    * @brief Set to a rectangle with zero width and height at position (0,0)
