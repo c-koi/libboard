@@ -122,7 +122,7 @@ inline bool almostEqual(const double & a, const double & b);
 
 inline double mix(const double & a, const double & b, const double & time)
 {
-  return a + time * (b - a);
+  return a * (1 - time) + (b * time);
 }
 
 template <typename T> inline void unused(const T &, ...) {}
