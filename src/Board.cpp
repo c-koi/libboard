@@ -1108,6 +1108,7 @@ Group framed(const Shape & shape, double margin, //
  * @example examples/arrows.cpp
  * @example examples/bezier.cpp
  * @example examples/board_font_text.cpp
+ * @example examples/circled_framed.cpp
  * @example examples/clipping.cpp
  * @example examples/ellipse.cpp
  * @example examples/example1.cpp

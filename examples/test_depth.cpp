@@ -18,9 +18,6 @@ int main(int, char *[])
   Board board;
   Board::disableLineWidthScaling();
 
-  board.setLineWidth(1.0);
-  board.setPenColor(Color::Blue);
-  board.setFillColor(Color::Red);
   Style::setDefaultPenColor(Color::Red);
   Style::setDefaultFillColor(Color::Green);
   Style::setDefaultLineWidth(0.5);
