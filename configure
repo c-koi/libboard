@@ -31,8 +31,9 @@ SANITIZE=""
 #
 # Get version number from CMakeLists.txt
 #
-VERSION=$(grep "^#define BOARD_VERSION" include/BoardConfig.h | head -1)
+VERSION=$(grep -F "LibBoard VERSION" CMakeLists.txt | head -1)
 VERSION=${VERSION/*VERSION }
+VERSION=${VERSION%)}
 MAJOR_VERSION=${VERSION%%.*}
 
 function usage() {
