@@ -959,7 +959,11 @@ protected:
  *
  * @return The grid as a group.
  */
-Group grid(Point topLeft, size_t columns, size_t rows, double width, double height, Color penColor, Color fillColor, double lineWidth, const LineStyle style = SolidStyle, const LineCap cap = ButtCap,
+Group grid(Point topLeft, size_t columns, size_t rows, double width, double height, //
+           Color penColor, Color fillColor,                                         //
+           double lineWidth,                                                        //
+           const LineStyle style = SolidStyle,                                      //
+           const LineCap cap = ButtCap,                                             //
            const LineJoin join = MiterJoin);
 
 /**
@@ -1000,13 +1004,21 @@ Group array(Point topLeft, const std::vector<Color> & colors, unsigned int colum
 /**
  * @brief Surround a shape with a rectangular frame
  * @param shape A shape
+ * @param margin Space between the shape and the frame
  * @param color Frame color
- * @param lineWidth Frame line width
- * @param margin Frame inner mergin
+ * @param fillColor Fill color
+ * @param penColor Pen color
+ * @param lineWidth Line width
+ * @param lineStyle Line style
  * @param sketchyCount If set to zero, the frame is a straight one, otherwise a sketchy frame is produced with given repetition count.
  * @return A group of the shape with its frame
  */
-Group framed(const Shape & shape, const Color & color = Style::defaultPenColor(), double lineWidth = Style::defaultLineWidth(), double margin = 0.0, int sketchyCount = 0);
+Group framed(const Shape & shape, double margin = 0.0,            //
+             const Color & penColor = Style::defaultPenColor(),   //
+             const Color & fillColor = Style::defaultFillColor(), //
+             double lineWidth = Style::defaultLineWidth(),        //
+             LineStyle lineStyle = Style::defaultLineStyle(),     //
+             int sketchyCount = 0);
 
 /**
  * Builds a tiling based on a shape by repeating this shape along its

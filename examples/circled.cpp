@@ -20,6 +20,7 @@ int main(int, char *[])
   const double TEXT_LINEWIDTH = 0.33 * Style::defaultLineWidth();
   board << circled(boardFontText(Point(), "Hello World!", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH), 2.0);
   board << tiling(circled(boardFontText(Point(), "X", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH), 2.0, Color::Red, Color("#5effa9")), board.bbox(UseLineWidth).topRight(), 5, 5, 2);
+  board << tiling(framed(boardFontText(Point(), "X", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH), 2.0, Color::Red, Color("#5effa9")), board.bbox(UseLineWidth).topRight(), 5, 5, 2);
   board.saveSVG("circled.svg");
   system("display circled.svg");
 }

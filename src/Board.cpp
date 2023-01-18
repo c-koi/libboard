@@ -1078,20 +1078,25 @@ Group array(Point topLeft, const std::vector<Color> & colors, //
   return result;
 }
 
-Group framed(const Shape & shape, const Color & color, double lineWidth, double margin, int sketchyCount)
+Group framed(const Shape & shape, double margin, //
+             const Color & penColor,             //
+             const Color & fillColor,            //
+             double lineWidth,                   //
+             LineStyle lineStyle,                //
+             int sketchyCount)
 {
   Group result;
-  result << shape;
   Rect bbox = shape.bbox(UseLineWidth);
   if (margin != 0.0) {
     bbox.grow(margin);
   }
-  Polyline r = rectangle(bbox, color, Color::Null, lineWidth);
+  Polyline r = rectangle(bbox, penColor, fillColor, lineWidth, lineStyle);
   if (sketchyCount > 0) {
     result << makeRough(r, sketchyCount, NoFilling);
   } else {
     result << r;
   }
+  result << shape;
   return result;
 }
 

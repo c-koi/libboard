@@ -27,7 +27,7 @@ int main(int, char *[])
   g << Line(8, 80, 100, 80, Color("#1f77b4"));
   g << Line(103, 80, 142, 5, Color("#1f77b4"));
 
-  board << framed(makeRough(g), Color::Black, 0.5, 10);
+  board << framed(makeRough(g), 10, Color::Black, Color::Null, 0.5);
 
   Group pointText;
   pointText << boardFontText(Point(), "THE DAY I REALIZED", TEXT_SIZE, Color::Black, TEXT_LINEWIDTH);

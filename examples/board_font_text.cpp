@@ -27,7 +27,7 @@ Group text()
   g.accept(ShapeWithStyleVisitor(Color::Red, Color::Null));
   g.append(makeRough(boardFontText(Point(0, 0), s, 40), 1), Direction::Bottom, Alignment::Left);
   g << Dot(0, 0);
-  return framed(g, Color::Null, 0.0, 30);
+  return framed(g, 10.0, Color::Black, Color::White, 1.0);
 }
 
 int main(int, char *[])

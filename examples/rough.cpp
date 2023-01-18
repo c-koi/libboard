@@ -64,7 +64,7 @@ Group rough()
   Group g;
   g.append(l, Direction::Right, Alignment::Center);
   g.append(makeRough(l, 1, SketchyCrossingHachure, 25 * Board::Degree), Direction::Bottom, Alignment::Center);
-  g.append(framed(boardFontText(Point(0, 0), "Hello world!", 10, Color::DarkGreen, 1.5), Color::Black, 2.0, 5.0), Direction::Right, Alignment::Center, 5);
+  g.append(framed(boardFontText(Point(0, 0), "Hello world!", 10, Color::DarkGreen, 1.5), 5.0, Color::Black, Color::Null, 2.0), Direction::Right, Alignment::Center, 5);
   return g;
 }
 

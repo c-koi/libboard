@@ -109,7 +109,7 @@ Group LeaveBox(const Node & node)
   Group codeword = boardFontText(Point(), std::string(node.codeword), 5, Color::Black);
   top.append(bottom, Direction::Bottom, Alignment::Center, 5);
   top.append(codeword, Direction::Bottom, Alignment::Center, 5);
-  return framed(top, Color::Blue, 1.0, 5.0);
+  return framed(top, 5.0, Color::Blue, Color::Null, 1.0);
 }
 
 struct NodeGreaterThan {
