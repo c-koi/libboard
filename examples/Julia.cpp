@@ -96,5 +96,5 @@ int main(int, char *[])
   Tools::initBoardRand(time(nullptr));
   board << julia(Complex{0.25, 0.75});
   board.saveSVG("Julia.svg");
-  system("display Julia.svg");
+  // system("display Julia.svg");
 }
