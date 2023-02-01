@@ -1122,6 +1122,7 @@ Group framed(const Shape & shape, double margin, //
  * @example examples/hull.cpp
  * @example examples/images.cpp
  * @example examples/interpolate.cpp
+ * @example examples/Julia.cpp
  * @example examples/koch.cpp
  * @example examples/line_segment.cpp
  * @example examples/line_style.cpp
