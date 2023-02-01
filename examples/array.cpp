@@ -13,7 +13,6 @@ using namespace LibBoard;
 
 Group space_invader()
 {
-  Group g;
   const Color b = Color::White;
   const Color w = Color::Green;
   std::vector<Color> v = {
@@ -28,8 +27,7 @@ Group space_invader()
       b, b, b, b, w, w, b, w, w, b, b, b, b, //
       b, b, b, b, b, b, b, b, b, b, b, b, b, //
   };
-  g << array(Point(0, 0), v, 13, 10, 4, 4, 0.1);
-  return g;
+  return array(Point(0, 0), v, 13, 10, 4, 4, 0.1);
 }
 
 int main(int, char *[])
@@ -37,7 +35,7 @@ int main(int, char *[])
   Board board;
   Board::disableLineWidthScaling();
   board.setLineWidth(1.0);
-  board.append(space_invader(), Direction::Right, Alignment::Center);
+  board << space_invader();
   board.append(makeRough(board.last<Group>(), 2, LibBoard::SketchyHachure, 10.0 * Board::Degree));
   board.saveSVG("array.svg", PageSize::BoundingBox);
   // system("svgviewer array.svg");
