@@ -81,7 +81,8 @@ struct ShapeList : public Shape {
   ShapeList(const Shape & shape, unsigned int times, double dx, double dy, double scaleX, double scaleY, double angle);
 
   /**
-   * Add a list of shapes
+   * Construct a ShapeList from a vector of shapes
+   * @param shapes A vector of shapes
    */
   template <typename S> ShapeList(const std::vector<S> & shapes);
 
@@ -110,6 +111,11 @@ struct ShapeList : public Shape {
    */
   ShapeList rotated(double angle, const Point & center);
 
+  /**
+   * Rotate the shape list around its bounding box's center.
+   * @param angle Rotation angle in radian
+   * @return The ShapeList itself.
+   */
   ShapeList & rotate(double angle) override;
 
   /**
@@ -119,6 +125,12 @@ struct ShapeList : public Shape {
    */
   ShapeList rotated(double angle);
 
+  /**
+   * Translate the shape list.
+   * @param dx x shift value
+   * @param dy y shift value
+   * @return The ShapeList itself.
+   */
   ShapeList & translate(double dx, double dy) override;
 
   /**
@@ -129,8 +141,19 @@ struct ShapeList : public Shape {
    */
   ShapeList translated(double dx, double dy);
 
+  /**
+   * Scale the shape list in X and Y directions.
+   * @param sx x scaling factor
+   * @param sy y scaling factor
+   * @return The ShapeList itself.
+   */
   ShapeList & scale(double sx, double sy) override;
 
+  /**
+   * Scale the shape list.
+   * @param s The scaling factor
+   * @return The ShapeList itself.
+   */
   ShapeList & scale(double s) override;
 
   /**

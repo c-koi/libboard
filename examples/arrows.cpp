@@ -77,4 +77,5 @@ int main(int, char *[])
   board.saveSVG("arrows.svg", PageSize::BoundingBox, 0.0, Unit::Centimeter);
   board.saveEPS("arrows.eps", PageSize::BoundingBox, 0.0, Unit::Centimeter);
   board.saveFIG("arrows.fig", PageSize::BoundingBox, 0.0, Unit::Centimeter);
+  // system("display arrows.svg");
 }
