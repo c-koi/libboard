@@ -23,8 +23,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <board/PathBoundaries.h>
 #include <BoardConfig.h>
+#include <board/PathBoundaries.h>
 #include <board/Shape.h>
 namespace LibBoard
 {
@@ -351,6 +351,7 @@ Rect pathBoundingBox(const Path & path, double strokeWidth, LineCap lineCap, Lin
   std::vector<Point> v = pathBoundaryPoints(path, strokeWidth, lineCap, lineJoin, miterLimit);
   std::vector<Point>::iterator it = v.begin();
   if (it == v.end()) {
+    Tools::warning << "Computing the bounding box of an empty path makes no sense";
     return Rect();
   }
   Rect result(*it);

@@ -358,6 +358,7 @@ Path Path::getCounterclockwise() const
 Rect Path::boundingBox() const
 {
   if (_points.empty()) {
+    Tools::warning << "Computing the bounding box of an empty path makes no sense";
     return Rect(0, 0, 0, 0);
   }
   Rect rect(_points.front(), 0.0, 0.0);
