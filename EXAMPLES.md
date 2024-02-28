@@ -136,6 +136,13 @@
   [GitHub](examples/interpolate.cpp)
 * [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.6/interpolate.svg)
 
+### Julia.cpp
+
+* ![Julia](http://foureys.users.greyc.fr/board/examples/0.9.6/thumbnail_Julia.png)
+* C++ code: from [Doxygen](https://foureys.users.greyc.fr/board/doc/0.9.6/examples_2Julia_8cpp-example.html) doc or on
+  [GitHub](examples/Julia.cpp)
+* [Full sized SVG output](http://foureys.users.greyc.fr/board/examples/0.9.6/Julia.svg)
+
 ### koch.cpp
 
 * ![koch](http://foureys.users.greyc.fr/board/examples/0.9.6/thumbnail_koch.png)
