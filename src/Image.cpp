@@ -32,8 +32,6 @@
 #include <sstream>
 
 #if (BOARD_HAVE_MAGICKPLUSPLUS == 1)
-#define MAGICKCORE_QUANTUM_DEPTH 16
-#define MAGICKCORE_HDRI_ENABLE 0
 #include <Magick++.h>
 #endif
 
