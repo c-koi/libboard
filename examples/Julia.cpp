@@ -1,5 +1,5 @@
 /**
- * @file   Madelbrot.cpp
+ * @file   Julia.cpp
  * @author Sebastien Fourey (GREYC)
  *
  * @brief  Sample drawing using the board library.

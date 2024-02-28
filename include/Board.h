@@ -1005,15 +1005,15 @@ Group array(Point topLeft, const std::vector<Color> & colors, unsigned int colum
  * @brief Surround a shape with a rectangular frame
  * @param shape A shape
  * @param margin Space between the shape and the frame
- * @param color Frame color
+ * @param penColor Frame color
  * @param fillColor Fill color
- * @param penColor Pen color
  * @param lineWidth Line width
  * @param lineStyle Line style
  * @param sketchyCount If set to zero, the frame is a straight one, otherwise a sketchy frame is produced with given repetition count.
  * @return A group of the shape with its frame
  */
-Group framed(const Shape & shape, double margin = 0.0,            //
+Group framed(const Shape & shape,            //
+	     double margin = 0.0,            //
              const Color & penColor = Style::defaultPenColor(),   //
              const Color & fillColor = Style::defaultFillColor(), //
              double lineWidth = Style::defaultLineWidth(),        //

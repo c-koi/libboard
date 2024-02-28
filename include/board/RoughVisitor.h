@@ -70,7 +70,6 @@ struct RoughVisitor : public CompositeShapeTransform {
    *
    * @param point A point.
    * @param radius Maximum radius of the motion.
-   * @return The point, once slided.
    */
   static void slideRandomly(Point & point, const double & radius);
 
