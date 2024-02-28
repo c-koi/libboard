@@ -1165,7 +1165,7 @@ Group framed(const Shape & shape, double margin, //
  *
  * <ul>
  * <li>See the "Examples" tab above or visit
- *     <a href="https://github.com/c-koi/libboard/blob/v0.9.6/EXAMPLES.md">dedicated page on GitHub</a>.
+ *     <a href="https://github.com/c-koi/libboard/blob/v0.9.7/EXAMPLES.md">dedicated page on GitHub</a>.
  * </ul>
  *
  * @section links_sec Links

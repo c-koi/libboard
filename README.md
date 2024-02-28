@@ -21,7 +21,7 @@ For now, LibBoard can handle primitives like lines, rectangles, triangles, polyl
 
 ### Documentation
 
- * See the Doxygen-made [documentation](https://foureys.users.greyc.fr/board/doc/0.9.6/).
+ * See the Doxygen-made [documentation](https://foureys.users.greyc.fr/board/doc/0.9.7/).
 
  * [Sample codes](EXAMPLES.md) with their output.
 
@@ -31,11 +31,11 @@ Starting with version 0.9.0, LibBoard is distributed under the term of the [GNU 
 
 #### Citing LibBoard
 
-LibBoard: A vector graphics C++ library (Version 0.9.6). GREYC laboratory. [Software]. https://github.com/c-koi/libboard. [accessed Sept. 2015].
+LibBoard: A vector graphics C++ library (Version 0.9.7). GREYC laboratory. [Software]. https://github.com/c-koi/libboard. [accessed Sept. 2015].
 ```
     @misc{LibBoard,
       key = {{LibBoard}},
-      title = {{LibBoard: A vector graphics C++ library (Version 0.9.6). [Software]. GREYC Laboratory}},
+      title = {{LibBoard: A vector graphics C++ library (Version 0.9.7). [Software]. GREYC Laboratory}},
       howpublished = {{https://github.com/c-koi/libboard}},
       note = {{[accessed June 2016]}},
       year = {2016},
